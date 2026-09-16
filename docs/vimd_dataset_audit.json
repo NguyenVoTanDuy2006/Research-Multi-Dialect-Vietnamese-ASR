@@ -1,0 +1,824 @@
+{
+  "audit_timestamp_utc": "2026-09-12T15:10:24.554237+00:00",
+  "cache_dir": "/home/fernir/.cache/huggingface/datasets/nguyendv02___vi_md_dataset/default/0.0.0/3a5b30157034e7eadd5c75fae1a820c6f9383398",
+  "dataset_info_sha256": "90a3137a8a6c98b4445cec2ec8d7379097238bbcbb24b16e1c07781820a0a365",
+  "dataset_info": {
+    "expected_rows": {
+      "train": 15023,
+      "test": 2026,
+      "valid": 1900
+    },
+    "observed_rows": {
+      "train": 15023,
+      "test": 2026,
+      "valid": 1900
+    },
+    "expected_shards": {
+      "train": 87,
+      "test": 11,
+      "valid": 10
+    },
+    "observed_shards": {
+      "train": 87,
+      "test": 11,
+      "valid": 10
+    },
+    "download_size_bytes": 59828302626,
+    "processed_dataset_size_bytes": 64018793651,
+    "total_cache_size_bytes_reported": 123847096277
+  },
+  "checks": {
+    "all_shards_opened": true,
+    "row_counts_match_dataset_info": true,
+    "shard_counts_match_dataset_info": true,
+    "required_metadata_has_no_nulls": true,
+    "required_string_metadata_has_no_blanks": true,
+    "audio_struct_has_no_nulls": true,
+    "sampled_audio_headers_readable": true,
+    "filename_unique_globally": true,
+    "filename_unique_within_split": true,
+    "speaker_disjoint_splits": false,
+    "speaker_metadata_consistent": false,
+    "province_code_name_mapping_consistent": true,
+    "filename_prefix_matches_province_code": true,
+    "region_values_valid": true,
+    "gender_values_valid": true
+  },
+  "issues": {
+    "shard_errors": [],
+    "audio_failures": [],
+    "metadata_null_counts": {
+      "region": 0,
+      "province_code": 0,
+      "province_name": 0,
+      "filename": 0,
+      "text": 0,
+      "speakerID": 0,
+      "gender": 0
+    },
+    "metadata_blank_counts": {
+      "region": 0,
+      "province_name": 0,
+      "filename": 0,
+      "text": 0,
+      "speakerID": 0
+    },
+    "audio_null_counts": {
+      "struct": 0,
+      "bytes": 0,
+      "path": 0
+    },
+    "global_duplicate_filename_rows": 0,
+    "within_split_duplicate_filename_rows": 0,
+    "exact_metadata_duplicate_rows": 0,
+    "duplicate_text_rows": 117,
+    "duplicate_text_values": 57,
+    "cross_split_duplicate_text_values": 10,
+    "cross_split_duplicate_text_rows": 20,
+    "duplicate_text_examples": [
+      {
+        "_text_key": "Chúng tôi xác định là công tác dân vận khéo là một trong những nhiệm vụ rất trọng tâm, thường xuyên trong công tác vận động, tập hợp quần chúng nhân dân thực hiện chủ trương, chính",
+        "rows": 3,
+        "split_count": 1,
+        "speaker_count": 3
+      },
+      {
+        "_text_key": "Chúng tôi đánh giá rất cao phong trào dân vận khéo trên địa bàn thành phố Đà Nẵng. Có những mô hình làm hết sức sáng tạo và có những đóng góp tích cực trong phong trào vận động nhâ",
+        "rows": 3,
+        "split_count": 1,
+        "speaker_count": 3
+      },
+      {
+        "_text_key": "Để đảm bảo cái tiến độ thì công ty cũng chia làm nhiều tổ đội, đồng thời chia làm nhiều mũi thi công để đảm bảo thi công song song đồng thời nhiều hạng mục. Nếu điều kiện thời tiết",
+        "rows": 3,
+        "split_count": 1,
+        "speaker_count": 3
+      },
+      {
+        "_text_key": "Ban ngày quá trình triển khai thi công thì có công nhân điều tiết. Còn vào buổi tối thì trước khi mà công trường nghỉ thì đơn vị thi công phải dọn dẹp lại mặt bằng cho nó sạch sẽ.",
+        "rows": 2,
+        "split_count": 1,
+        "speaker_count": 2
+      },
+      {
+        "_text_key": "Bên ban có cử cán bộ giám sát trực tiếp thường xuyên ở tại công trình. Ngoài cái việc giám sát chất lượng thì công tác đảm bảo an toàn giao thông thì cũng được cán bộ giám sát và t",
+        "rows": 2,
+        "split_count": 1,
+        "speaker_count": 2
+      },
+      {
+        "_text_key": "Bộ đội biên phòng tuyên truyền thì bà con ngư dân cũng đã nắm bắt và hiểu biết được cái luật Cho nên là chúng ta không vì một hai vấn đề kinh tế nhỏ đó mà làm nó bị xấu đi cái hình",
+        "rows": 2,
+        "split_count": 1,
+        "speaker_count": 2
+      },
+      {
+        "_text_key": "Chi bộ Ban tuyên giáo huyện ủy cũng xác định là hàng năm thì đều tập trung tham mưu cho Ban thường vụ huyện ủy là xây dựng cái kế hoạch và tổ chức nghiêm túc hiệu quả cái việc tổ c",
+        "rows": 2,
+        "split_count": 1,
+        "speaker_count": 2
+      },
+      {
+        "_text_key": "Chúng tôi tổng đầu tư chúng tôi thì bây giờ nó khoảng có trên tám trăm triệu đồng. Trong đó chúng tôi đã làm về phía ngoài đồng ruộng là chúng tôi đổ hai cái tuyến đường bê tông dà",
+        "rows": 2,
+        "split_count": 2,
+        "speaker_count": 2
+      },
+      {
+        "_text_key": "Các bạn đều rất thích những tiết học như thế này vì nó rất vui và sôi động và có thể hiểu bài sâu hơn ạ.",
+        "rows": 2,
+        "split_count": 1,
+        "speaker_count": 2
+      },
+      {
+        "_text_key": "Cái giá lúa năm nay là tăng hơn hồi năm rồi là tám trăm đồng, đến chín trăm, mà RVT hăm mốt. Lúa giờ tại ruộng là mua là giá bảy ngàn chín, năng suất lúa năm nay ở vùng này cũng th",
+        "rows": 2,
+        "split_count": 1,
+        "speaker_count": 2
+      }
+    ],
+    "cross_split_duplicate_text_examples": [
+      {
+        "_text_key": "Chúng tôi tổng đầu tư chúng tôi thì bây giờ nó khoảng có trên tám trăm triệu đồng. Trong đó chúng tôi đã làm về phía ngoài đồng ruộng là chúng tôi đổ hai cái tuyến đường bê tông dà",
+        "rows": 2,
+        "split_count": 2,
+        "speaker_count": 2
+      },
+      {
+        "_text_key": "Cứ phải biết là cái như cái ủ cỏ chua này, cái này, cái nọ, là cái cám, cái gì, phải biết là cái cỏ chua này thì là mình ủ đơn giản thôi mà, mình thái ra, thái ra (..), cái khăn th",
+        "rows": 2,
+        "split_count": 2,
+        "speaker_count": 2
+      },
+      {
+        "_text_key": "Khi khách đến mua hàng thì chúng tôi cũng bảo khách giữ khoảng cách khoảng hai mét để phòng chống dịch cho mình và khách và đeo khẩu trang.",
+        "rows": 2,
+        "split_count": 2,
+        "speaker_count": 2
+      },
+      {
+        "_text_key": "Năm nay thì có khá hơn năm ngoái một chút về vấn đề thị trường của Trung Quốc, cởi mở hơn, thông thoáng hơn. Tuy nhiên rằng là trước, trong và sau Tết thì cũng phải có độ giãn cách",
+        "rows": 2,
+        "split_count": 2,
+        "speaker_count": 2
+      },
+      {
+        "_text_key": "Năm ngày nay là tất cả các nhà máy đang ngừng hoạt động. Ở Lào Cai, Rồi Ninh Bình, Thanh Hóa, Hưng Yên ngừng hết. Cũng chẳng biết làm sao cả. Bây giờ dứa đang mới chín nhiều. Kêu g",
+        "rows": 2,
+        "split_count": 2,
+        "speaker_count": 2
+      },
+      {
+        "_text_key": "Thì tôi thấy riêng cái mặt đất ở dưới là năm nay là nó xốp là trùng nó nhiều hơn mấy cái loại phân kia. Dùng trùng là nó nổi lên nó rất là nhiều. Thì nó tạo cái độ đất thì thấy nó ",
+        "rows": 2,
+        "split_count": 2,
+        "speaker_count": 2
+      },
+      {
+        "_text_key": "Thế còn về khu dân cư thì chúng tôi còn một số cái dòng mà chúng tôi chưa hoàn thiện về đường bê tông, đường dòng thì chúng tôi cũng hoàn thiện. Trong những cái năm tới thì chúng t",
+        "rows": 2,
+        "split_count": 2,
+        "speaker_count": 2
+      },
+      {
+        "_text_key": "Trong thời gian tới, thì nhà trường tiếp tục phát huy cái truyền thống dạy tốt, học tốt và đặc biệt là cái giáo dục mũi nhọn.Như chúng tôi cũng đã lên, ngay từ bây giờ, chúng tôi đ",
+        "rows": 2,
+        "split_count": 2,
+        "speaker_count": 2
+      },
+      {
+        "_text_key": "Tôi thấy đất lành đây thì vị trí đẹp nè, đường xá cao ráo, không bị ngập lụt, đi lại thì cũng thuận tiện, cơ sở thì nói chung là đầy đủ hơn chỗ cũ. Con cái tôi đi học thì nó cũng t",
+        "rows": 2,
+        "split_count": 2,
+        "speaker_count": 2
+      },
+      {
+        "_text_key": "Đề thi năm nay vào đoàn thuyền đánh cá. Và em thấy là đề nó cũng không đến nỗi quá tệ và không làm được. Năm nay khá là nhiều hồ sơ ấy ạ. Và em thấy trong phòng thi của em thì mọi ",
+        "rows": 2,
+        "split_count": 2,
+        "speaker_count": 2
+      }
+    ],
+    "suspicious_audio_rows_hashed": 25,
+    "cross_split_identical_audio_hashes_in_suspicious_rows": 0,
+    "speaker_overlap": {
+      "train__valid": 0,
+      "train__test": 0,
+      "valid__test": 2
+    },
+    "overlapping_speaker_examples": [
+      {
+        "split": "test",
+        "speakerID": "spk_73_0186",
+        "region": "Central",
+        "province_code": 73,
+        "province_name": "QuangBinh",
+        "filename": "73_0307.wav",
+        "gender": 0
+      },
+      {
+        "split": "test",
+        "speakerID": "spk_73_0186",
+        "region": "Central",
+        "province_code": 73,
+        "province_name": "QuangBinh",
+        "filename": "73_0308.wav",
+        "gender": 0
+      },
+      {
+        "split": "valid",
+        "speakerID": "spk_73_0186",
+        "region": "Central",
+        "province_code": 73,
+        "province_name": "QuangBinh",
+        "filename": "73_0309.wav",
+        "gender": 1
+      },
+      {
+        "split": "test",
+        "speakerID": "spk_76_0219",
+        "region": "Central",
+        "province_code": 76,
+        "province_name": "QuangNgai",
+        "filename": "76_0294.wav",
+        "gender": 1
+      },
+      {
+        "split": "valid",
+        "speakerID": "spk_76_0219",
+        "region": "Central",
+        "province_code": 76,
+        "province_name": "QuangNgai",
+        "filename": "76_0295.wav",
+        "gender": 0
+      }
+    ],
+    "inconsistent_speakers": 17,
+    "inconsistent_speaker_fields": {
+      "region": 0,
+      "province": 0,
+      "gender": 17
+    },
+    "inconsistent_speaker_examples": [
+      {
+        "split": "test",
+        "speakerID": "spk_24_0280",
+        "region": "North",
+        "province_code": 24,
+        "province_name": "LaoCai",
+        "gender": 1
+      },
+      {
+        "split": "test",
+        "speakerID": "spk_24_0280",
+        "region": "North",
+        "province_code": 24,
+        "province_name": "LaoCai",
+        "gender": 0
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_28_0030",
+        "region": "North",
+        "province_code": 28,
+        "province_name": "HoaBinh",
+        "gender": 0
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_28_0030",
+        "region": "North",
+        "province_code": 28,
+        "province_name": "HoaBinh",
+        "gender": 1
+      },
+      {
+        "split": "valid",
+        "speakerID": "spk_28_0169",
+        "region": "North",
+        "province_code": 28,
+        "province_name": "HoaBinh",
+        "gender": 0
+      },
+      {
+        "split": "valid",
+        "speakerID": "spk_28_0169",
+        "region": "North",
+        "province_code": 28,
+        "province_name": "HoaBinh",
+        "gender": 1
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_36_0048",
+        "region": "Central",
+        "province_code": 36,
+        "province_name": "ThanhHoa",
+        "gender": 1
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_36_0048",
+        "region": "Central",
+        "province_code": 36,
+        "province_name": "ThanhHoa",
+        "gender": 0
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_36_0069",
+        "region": "Central",
+        "province_code": 36,
+        "province_name": "ThanhHoa",
+        "gender": 0
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_36_0069",
+        "region": "Central",
+        "province_code": 36,
+        "province_name": "ThanhHoa",
+        "gender": 1
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_37_0133",
+        "region": "Central",
+        "province_code": 37,
+        "province_name": "NgheAn",
+        "gender": 0
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_37_0133",
+        "region": "Central",
+        "province_code": 37,
+        "province_name": "NgheAn",
+        "gender": 1
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_60_0054",
+        "region": "South",
+        "province_code": 60,
+        "province_name": "DongNai",
+        "gender": 0
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_60_0054",
+        "region": "South",
+        "province_code": 60,
+        "province_name": "DongNai",
+        "gender": 1
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_63_0006",
+        "region": "South",
+        "province_code": 63,
+        "province_name": "TienGiang",
+        "gender": 0
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_63_0006",
+        "region": "South",
+        "province_code": 63,
+        "province_name": "TienGiang",
+        "gender": 1
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_66_0017",
+        "region": "South",
+        "province_code": 66,
+        "province_name": "DongThap",
+        "gender": 1
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_66_0017",
+        "region": "South",
+        "province_code": 66,
+        "province_name": "DongThap",
+        "gender": 0
+      },
+      {
+        "split": "test",
+        "speakerID": "spk_73_0186",
+        "region": "Central",
+        "province_code": 73,
+        "province_name": "QuangBinh",
+        "gender": 0
+      },
+      {
+        "split": "valid",
+        "speakerID": "spk_73_0186",
+        "region": "Central",
+        "province_code": 73,
+        "province_name": "QuangBinh",
+        "gender": 1
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_76_0030",
+        "region": "Central",
+        "province_code": 76,
+        "province_name": "QuangNgai",
+        "gender": 1
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_76_0030",
+        "region": "Central",
+        "province_code": 76,
+        "province_name": "QuangNgai",
+        "gender": 0
+      },
+      {
+        "split": "test",
+        "speakerID": "spk_76_0219",
+        "region": "Central",
+        "province_code": 76,
+        "province_name": "QuangNgai",
+        "gender": 1
+      },
+      {
+        "split": "valid",
+        "speakerID": "spk_76_0219",
+        "region": "Central",
+        "province_code": 76,
+        "province_name": "QuangNgai",
+        "gender": 0
+      },
+      {
+        "split": "valid",
+        "speakerID": "spk_77_0153",
+        "region": "Central",
+        "province_code": 77,
+        "province_name": "BinhDinh",
+        "gender": 0
+      },
+      {
+        "split": "valid",
+        "speakerID": "spk_77_0153",
+        "region": "Central",
+        "province_code": 77,
+        "province_name": "BinhDinh",
+        "gender": 1
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_78_0101",
+        "region": "Central",
+        "province_code": 78,
+        "province_name": "PhuYen",
+        "gender": 0
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_78_0101",
+        "region": "Central",
+        "province_code": 78,
+        "province_name": "PhuYen",
+        "gender": 1
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_78_0102",
+        "region": "Central",
+        "province_code": 78,
+        "province_name": "PhuYen",
+        "gender": 0
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_78_0102",
+        "region": "Central",
+        "province_code": 78,
+        "province_name": "PhuYen",
+        "gender": 1
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_79_0096",
+        "region": "Central",
+        "province_code": 79,
+        "province_name": "KhanhHoa",
+        "gender": 1
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_79_0096",
+        "region": "Central",
+        "province_code": 79,
+        "province_name": "KhanhHoa",
+        "gender": 0
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_82_0067",
+        "region": "Central",
+        "province_code": 82,
+        "province_name": "KonTum",
+        "gender": 0
+      },
+      {
+        "split": "train",
+        "speakerID": "spk_82_0067",
+        "region": "Central",
+        "province_code": 82,
+        "province_name": "KonTum",
+        "gender": 1
+      }
+    ],
+    "province_code_name_mapping_conflicts": 0,
+    "filename_prefix_mismatches": 0
+  },
+  "profile": {
+    "total_rows": 18949,
+    "total_speakers": 12953,
+    "total_provinces": 63,
+    "regions": [
+      "Central",
+      "North",
+      "South"
+    ],
+    "split_summary": [
+      {
+        "split": "test",
+        "rows": 2026,
+        "speakers": 1344,
+        "provinces": 63,
+        "regions": 3
+      },
+      {
+        "split": "train",
+        "rows": 15023,
+        "speakers": 10291,
+        "provinces": 63,
+        "regions": 3
+      },
+      {
+        "split": "valid",
+        "rows": 1900,
+        "speakers": 1320,
+        "provinces": 63,
+        "regions": 3
+      }
+    ],
+    "region_summary": [
+      {
+        "split": "test",
+        "region": "Central",
+        "rows": 623,
+        "speakers": 444,
+        "provinces": 19
+      },
+      {
+        "split": "test",
+        "region": "North",
+        "rows": 783,
+        "speakers": 528,
+        "provinces": 25
+      },
+      {
+        "split": "test",
+        "region": "South",
+        "rows": 620,
+        "speakers": 372,
+        "provinces": 19
+      },
+      {
+        "split": "train",
+        "region": "Central",
+        "rows": 4705,
+        "speakers": 3197,
+        "provinces": 19
+      },
+      {
+        "split": "train",
+        "region": "North",
+        "rows": 5913,
+        "speakers": 4339,
+        "provinces": 25
+      },
+      {
+        "split": "train",
+        "region": "South",
+        "rows": 4405,
+        "speakers": 2755,
+        "provinces": 19
+      },
+      {
+        "split": "valid",
+        "region": "Central",
+        "rows": 602,
+        "speakers": 434,
+        "provinces": 19
+      },
+      {
+        "split": "valid",
+        "region": "North",
+        "rows": 752,
+        "speakers": 544,
+        "provinces": 25
+      },
+      {
+        "split": "valid",
+        "region": "South",
+        "rows": 546,
+        "speakers": 342,
+        "provinces": 19
+      }
+    ],
+    "gender_summary": [
+      {
+        "split": "test",
+        "gender": 0,
+        "rows": 596
+      },
+      {
+        "split": "test",
+        "gender": 1,
+        "rows": 1430
+      },
+      {
+        "split": "train",
+        "gender": 0,
+        "rows": 4209
+      },
+      {
+        "split": "train",
+        "gender": 1,
+        "rows": 10814
+      },
+      {
+        "split": "valid",
+        "gender": 0,
+        "rows": 540
+      },
+      {
+        "split": "valid",
+        "gender": 1,
+        "rows": 1360
+      }
+    ],
+    "province_rows_min": 263,
+    "province_rows_median": 303.0,
+    "province_rows_max": 363,
+    "five_smallest_provinces": [
+      {
+        "province_code": 65,
+        "province_name": "CanTho",
+        "region": "South",
+        "rows": 263,
+        "speakers": 213
+      },
+      {
+        "province_code": 88,
+        "province_name": "VinhPhuc",
+        "region": "North",
+        "rows": 266,
+        "speakers": 208
+      },
+      {
+        "province_code": 35,
+        "province_name": "NinhBinh",
+        "region": "North",
+        "rows": 268,
+        "speakers": 250
+      },
+      {
+        "province_code": 90,
+        "province_name": "HaNam",
+        "region": "North",
+        "rows": 272,
+        "speakers": 213
+      },
+      {
+        "province_code": 98,
+        "province_name": "BacGiang",
+        "region": "North",
+        "rows": 272,
+        "speakers": 207
+      }
+    ],
+    "five_largest_provinces": [
+      {
+        "province_code": 76,
+        "province_name": "QuangNgai",
+        "region": "Central",
+        "rows": 330,
+        "speakers": 242
+      },
+      {
+        "province_code": 43,
+        "province_name": "DaNang",
+        "region": "Central",
+        "rows": 337,
+        "speakers": 253
+      },
+      {
+        "province_code": 73,
+        "province_name": "QuangBinh",
+        "region": "Central",
+        "rows": 345,
+        "speakers": 208
+      },
+      {
+        "province_code": 11,
+        "province_name": "CaoBang",
+        "region": "North",
+        "rows": 357,
+        "speakers": 158
+      },
+      {
+        "province_code": 37,
+        "province_name": "NgheAn",
+        "region": "Central",
+        "rows": 363,
+        "speakers": 275
+      }
+    ],
+    "audio_sample_summary": {
+      "samples_checked": 108,
+      "sampling_rates_hz": [
+        32000,
+        44100,
+        48000
+      ],
+      "channels": [
+        1,
+        2
+      ],
+      "sample_width_bytes": [
+        2,
+        4
+      ],
+      "compression_types": [
+        "IEEE_FLOAT",
+        "PCM"
+      ],
+      "format_combinations": [
+        {
+          "compression": "PCM",
+          "sample_rate_hz": 44100,
+          "channels": 2,
+          "sample_width_bytes": 2,
+          "sampled_shards": 90
+        },
+        {
+          "compression": "PCM",
+          "sample_rate_hz": 48000,
+          "channels": 1,
+          "sample_width_bytes": 4,
+          "sampled_shards": 5
+        },
+        {
+          "compression": "PCM",
+          "sample_rate_hz": 48000,
+          "channels": 2,
+          "sample_width_bytes": 2,
+          "sampled_shards": 5
+        },
+        {
+          "compression": "IEEE_FLOAT",
+          "sample_rate_hz": 48000,
+          "channels": 1,
+          "sample_width_bytes": 4,
+          "sampled_shards": 4
+        },
+        {
+          "compression": "PCM",
+          "sample_rate_hz": 48000,
+          "channels": 1,
+          "sample_width_bytes": 2,
+          "sampled_shards": 2
+        },
+        {
+          "compression": "PCM",
+          "sample_rate_hz": 44100,
+          "channels": 1,
+          "sample_width_bytes": 2,
+          "sampled_shards": 1
+        },
+        {
+          "compression": "PCM",
+          "sample_rate_hz": 32000,
+          "channels": 2,
+          "sample_width_bytes": 2,
+          "sampled_shards": 1
+        }
+      ],
+      "duration_seconds_quantiles": {
+        "0.0": 4.908,
+        "0.25": 14.48,
+        "0.5": 19.82,
+        "0.75": 25.191,
+        "1.0": 29.932
+      }
+    }
+  }
+}
