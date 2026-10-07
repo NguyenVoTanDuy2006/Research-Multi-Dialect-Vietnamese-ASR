@@ -1,0 +1,82 @@
+\section{Giới thiệu}
+
+\subsection{Lý do chọn đề tài}
+
+Việc trồng cây trong nhà ngày càng phổ biến, đặc biệt tại các khu vực đô thị có
+không gian hạn chế. Tuy nhiên, người chăm sóc cây không phải lúc nào cũng có thể
+theo dõi độ ẩm đất, nhiệt độ hoặc tưới cây đúng thời điểm. Lịch làm việc, những
+chuyến đi xa và sự thay đổi của thời tiết đều có thể làm gián đoạn quá trình chăm
+sóc, ảnh hưởng đến sức khỏe của cây.
+
+Các hệ thống nông nghiệp quy mô lớn thường có chi phí và yêu cầu lắp đặt vượt quá
+nhu cầu của một hộ gia đình. Từ thực tế đó, nhóm lựa chọn xây dựng SmartGarden,
+một mô hình IoT nhỏ gọn có khả năng thu thập dữ liệu môi trường, điều khiển thiết
+bị và hỗ trợ chăm sóc cây từ xa. Đề tài đồng thời tạo điều kiện để nhóm kết hợp
+kiến thức về cảm biến, mạch điều khiển, truyền thông mạng, dịch vụ đám mây và phát
+triển phần mềm trong cùng một sản phẩm.
+
+\subsection{Mục tiêu đồ án}
+
+Mục tiêu của đồ án là xây dựng một mô hình SmartGarden hoàn chỉnh từ tầng thiết
+bị đến tầng ứng dụng. Hệ thống sử dụng ESP32 để đọc cảm biến và điều khiển tải;
+back-end tiếp nhận dữ liệu, quản lý nghiệp vụ và lưu trữ; Website cùng Telegram
+Bot cung cấp giao diện theo dõi và điều khiển cho người dùng.
+
+Các mục tiêu cụ thể gồm:
+
+\begin{itemize}
+    \item \textbf{Phần cứng:} lắp ráp bộ điều khiển ESP32, các cảm biến môi
+    trường, relay, máy bơm, quạt và đèn; bảo đảm relay ở trạng thái an toàn khi
+    khởi động và giới hạn thời gian chạy của máy bơm.
+    \item \textbf{Kết nối:} trao đổi dữ liệu giữa ESP32 và back-end qua MQTT/TLS,
+    đồng thời duy trì cơ chế kết nối lại khi Wi-Fi hoặc máy chủ MQTT bị gián đoạn.
+    \item \textbf{Phần mềm:} xây dựng REST API, Website và Telegram Bot dùng
+    chung lớp nghiệp vụ, hỗ trợ xác thực, phân quyền, giám sát, điều khiển, lập
+    lịch, cảnh báo và phân tích dữ liệu.
+    \item \textbf{Lưu trữ:} sử dụng Firebase Authentication và Realtime Database
+    để quản lý tài khoản, dữ liệu cảm biến, trạng thái thiết bị và lịch sử vận
+    hành.
+\end{itemize}
+
+Các tiêu chí vận hành được xác định cho phiên bản hiện tại như sau:
+
+\begin{itemize}
+    \item ESP32 đọc và gửi dữ liệu cảm biến theo chu kỳ khoảng 1 giây; trạng thái
+    thiết bị và tín hiệu duy trì kết nối được gửi khoảng 5 giây một lần.
+    \item Người dùng có thể điều khiển máy bơm, quạt và đèn từ Website hoặc
+    Telegram sau khi được xác thực.
+    \item Hệ thống hỗ trợ ba chế độ vận hành: thủ công, theo ngưỡng và theo lịch.
+    Máy bơm được giới hạn thời gian chạy liên tục ở mức 180 giây.
+    \item Các tình huống đất khô, nhiệt độ cao, máy bơm chạy quá lâu và thiết bị
+    mất kết nối được phát hiện để tạo cảnh báo.
+    \item Việc truy cập từ Internet được thực hiện khi Website và back-end được
+    triển khai trên máy chủ; trong giai đoạn phát triển, hệ thống có thể chạy
+    trong mạng nội bộ.
+    \item Chi phí phần cứng được kiểm soát theo danh sách linh kiện trình bày ở
+    Mục 4; chi phí dịch vụ đám mây không nằm trong phạm vi thống kê này.
+\end{itemize}
+
+\subsection{Giới thiệu sản phẩm SmartGarden}
+
+SmartGarden là mô hình quản lý vườn thông minh dành cho nhu cầu chăm sóc cây tại
+nhà. Các cảm biến cung cấp dữ liệu nhiệt độ, độ ẩm không khí, độ ẩm đất và ánh
+sáng. ESP32 xử lý dữ liệu tại thiết bị, điều khiển máy bơm, quạt và đèn, đồng
+thời trao đổi với back-end qua MQTT. Back-end đảm nhiệm xác thực, lưu trữ, cảnh
+báo, quản lý cấu hình và cung cấp REST API cho Website và Telegram Bot.
+
+Hệ thống được tổ chức thành ba lớp:
+
+\begin{itemize}
+    \item \textbf{Lớp thiết bị:} ESP32, cảm biến môi trường, relay và các thiết
+    bị chấp hành.
+    \item \textbf{Lớp dịch vụ:} Flask API, Firebase, máy chủ MQTT, bộ xử lý lịch,
+    dịch vụ cảnh báo và dịch vụ phân tích AI.
+    \item \textbf{Lớp ứng dụng:} Website phục vụ giám sát và quản trị, cùng
+    Telegram Bot phục vụ thao tác nhanh và nhận thông báo.
+\end{itemize}
+
+Trong phạm vi đồ án, thành phẩm được triển khai cho một chậu cây với một máy bơm
+và một nguồn nước nhỏ. Quy mô này đủ để minh họa luồng thu thập dữ liệu, điều
+khiển, tự động hóa và cảnh báo của hệ thống. Kiến trúc phần mềm được tách thành
+các mô-đun để thuận tiện mở rộng thêm thiết bị hoặc khu vực trồng trong các phiên
+bản tiếp theo.

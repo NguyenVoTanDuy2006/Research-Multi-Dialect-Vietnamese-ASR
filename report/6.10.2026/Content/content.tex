@@ -1,0 +1,47 @@
+Đến thời điểm hiện tại em đã fine-tuning model Qwen3-ASR 7B(\href{https://huggingface.co/Qwen/Qwen3-ASR-1.7B}{checkpoint}) với 2 tập dữ liệu khác nhau: ViMD \textbf{(1)}, small ViMD \textbf{(2)} - một dataset có thời lượng nhỏ hơn tuy nhiên có tỷ lệ về audio giữa các tỉnh, người nói và giới tính là giống với tập ViMD. Sau khi fine-tuning và benchmark trên tập test của \textbf{(1)} thì kết quả có cải thiện tuy nhiên còn ko cải thiện nhiêu 
+
+\begin{table}[htbp]
+\centering
+\caption{So sánh kết quả các mô hình}
+\label{tab:model_comparison}
+% \resizebox{\textwidth}{!}{
+\begin{tabular}{l l l l l r r r r r r r r}
+\hline
+\textbf{Mô hình} & \textbf{Số mẫu} & \textbf{lỗi} & \textbf{CER(\%)} & \textbf{WER(\%)}\\
+\hline
+qwen\_base  & 2026 & 0 & 8.2240 & 10.9050  \\
+small\_vimd & 2026 & 0 & 8.0424 & 10.2377  \\
+full\_vimd  & 2026 & 0 & 7.1616 & 9.3620  \\
+\hline
+\end{tabular}
+% }
+\end{table}
+
+Tuy nhiên với kết quả chạy thực tế thì vẫn còn thấp và cho thấy việc fine-tuning bằng phương pháp AdaLoRA chưa thật sự mang lại hiệu quả 1 cách rõ rệt nếu sử dụng ngoài thực tế.
+
+\begin{table}[htbp]
+\centering
+\caption{So sánh kết quả các mô hình với audio thực tế}
+\label{tab:model_comparison}
+% \resizebox{\textwidth}{!}{
+\begin{tabular}{l l l l l}
+\hline
+\textbf{Mô hình} & \textbf{Số mẫu} & \textbf{lỗi} & \textbf{CER(\%)} & \textbf{WER(\%)}\\
+\hline
+qwen\_base  & 1 & 0 & 47.1591 &  47.1591 \\
+small\_vimd & 1 & 0 & 44.3182 &  60.3448 \\
+full\_vimd  & 1 & 0 & 42.6136 &	60.3448 \\
+\hline
+\end{tabular}
+% }
+\end{table}
+
+Hướng tiếp theo:
+\begin{enumerate}
+    \item \textbf{Tiếp tục finetuning model}: sẽ fine-tuning model trên các phương pháp khác nhau và model khác nhau.
+    \begin{itemize}
+        \item \textbf{Model: } (\href{https://huggingface.co/Qwen/Qwen3-ASR-1.7B}{Qwen3 ASR 1.7B}), \href{https://huggingface.co/CohereLabs/cohere-transcribe-03-2026}{cohere-transcribe-03-2026}
+        \item \textbf{Phương pháp}: Ada-LoRA, PiSSA
+    \end{itemize}
+    \item \textbf{LMs: } áp dụng SLM hoặc LLM để xử lý hậu kì transcripts.
+\end{enumerate}
