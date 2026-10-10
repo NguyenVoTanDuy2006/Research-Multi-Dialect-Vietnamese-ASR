@@ -1,0 +1,9 @@
+# Tested model/training API versions; do not force-reinstall Kaggle Torch/NumPy.
+transformers==5.17.0
+peft==0.21.1
+accelerate==1.15.0
+datasets>=3.0
+kagglehub>=0.3
+soundfile>=0.12
+scipy>=1.10
+pandas>=2.0

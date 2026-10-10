@@ -1,0 +1,25 @@
+{
+  "dataset": {
+    "kind": "auto",
+    "root": null,
+    "handle": "thanhlamdev/vimd-dataset",
+    "dataset_id": "vimd",
+    "cache_dir": "outputs/cache",
+    "allow_download": true
+  },
+  "decode": {"language": "Vietnamese", "max_new_tokens": 768, "do_sample": false, "num_beams": 1},
+  "benchmark": {
+    "split": "test",
+    "resume": true,
+    "flush_every": 10,
+    "models": [
+      {"key": "qwen_asr", "backend": "qwen3_asr", "model_id": "Qwen/Qwen3-ASR-1.7B-hf", "dtype": "float16"},
+      {"key": "ark_asr_3b", "backend": "ark", "model_id": "AutoArk-AI/ARK-ASR-3B", "dtype": "float16", "trust_remote_code": true},
+      {"key": "ark_asr_06b", "backend": "ark", "model_id": "AutoArk-AI/ARK-ASR-0.6B", "dtype": "float16", "trust_remote_code": true},
+      {"key": "cohere_transcribe", "backend": "cohere", "model_id": "CohereLabs/cohere-transcribe-03-2026", "dtype": "float16", "trust_remote_code": true},
+      {"key": "granite_speech", "backend": "granite", "model_id": "ibm-granite/granite-speech-4.1-2b", "dtype": "float16", "trust_remote_code": true}
+    ]
+  },
+  "output_dir": "outputs/benchmark_models/vimd_transformers_only",
+  "run_id": "vimd_transformers_only"
+}
