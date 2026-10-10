@@ -14,10 +14,10 @@ From the repository root, render all four videos:
 .venv/bin/python demo/render_demos.py
 ```
 
-To render only the new super-hard video, run:
+To render one selected case, pass its `filename` from `predictions.csv`; for example:
 
 ```bash
-.venv/bin/python demo/render_demos.py --only super_hard
+.venv/bin/python demo/render_demos.py --case-id 37_0338.wav
 ```
 
 The renderer needs ManimGL 1.7.2, `setuptools<81`, Noto Sans, FFmpeg, and an
