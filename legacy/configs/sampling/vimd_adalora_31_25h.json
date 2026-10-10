@@ -1,0 +1,11 @@
+{
+  "seed": 24127159,
+  "target_seconds": {
+    "train": 90000,
+    "valid": 11250,
+    "test": 11250
+  },
+  "balance_train_gender": true,
+  "exclude_valid_speakers_in_test": true,
+  "province_stratified": true
+}
