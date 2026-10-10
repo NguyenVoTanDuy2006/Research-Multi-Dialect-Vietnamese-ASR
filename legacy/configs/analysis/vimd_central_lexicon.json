@@ -1,0 +1,19 @@
+{
+  "dataset": {
+    "kind": "auto",
+    "root": null,
+    "handle": "thanhlamdev/vimd-dataset",
+    "dataset_id": "vimd",
+    "cache_dir": "outputs/cache",
+    "allow_download": true
+  },
+  "lexicon": {
+    "regions": ["Central"],
+    "splits": ["train"],
+    "top_k_per_province": 250,
+    "p_value_threshold": 0.05,
+    "prior_alpha": 0.01
+  },
+  "output_dir": "outputs/central_province_lexicon",
+  "run_id": "vimd_central_lexicon"
+}
