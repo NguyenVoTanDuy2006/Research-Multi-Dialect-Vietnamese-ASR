@@ -1,0 +1,11 @@
+{
+  "case_ids": [],
+  "baseline_key": "qwen_base",
+  "adapted_key": "qwen_small_vimd",
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "font": "Noto Sans",
+  "palette": {},
+  "output_dir": "demo/rendered"
+}

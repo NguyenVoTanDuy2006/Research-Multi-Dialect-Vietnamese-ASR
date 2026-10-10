@@ -1,0 +1,12 @@
+{
+  "case_ids": [],
+  "baseline_key": "pretrained",
+  "adapted_key": "epoch_3_adapter",
+  "audio_overrides": {"test_super_hard_000000": "outputs/super_hard_instance/audio/super_hard.wav"},
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "font": "Noto Sans",
+  "palette": {},
+  "output_dir": "demo/rendered"
+}
