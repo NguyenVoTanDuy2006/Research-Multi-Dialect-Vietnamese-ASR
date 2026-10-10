@@ -1,0 +1,12 @@
+{
+  "dataset": {
+    "kind": "auto",
+    "root": null,
+    "handle": "thanhlamdev/vimd-dataset",
+    "dataset_id": "vimd",
+    "cache_dir": "outputs/cache",
+    "allow_download": true
+  },
+  "output_dir": "outputs/vimd_inspection",
+  "run_id": "vimd_full"
+}
