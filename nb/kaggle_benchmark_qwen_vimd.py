@@ -59,7 +59,7 @@ print("Runtime config:", CONFIG_PATH)
 print("Predictions/metrics output:", OUTPUT_DIR)
 
 # %%
-subprocess.run([sys.executable, "-m", "mdv_asr.cli", "benchmark", "run",
+subprocess.run([sys.executable, "-m", "mdv_asr_module.cli", "benchmark", "run",
                 "--config", str(CONFIG_PATH)], cwd=REPO_DIR, env=env, check=True)
 
 # %%

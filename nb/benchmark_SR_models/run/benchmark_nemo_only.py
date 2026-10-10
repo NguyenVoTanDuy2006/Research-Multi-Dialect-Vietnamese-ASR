@@ -11,9 +11,9 @@ except ImportError:
     from nb._bootstrap import initialize_project
 
 ROOT = initialize_project()
-from mdv_asr.config.loader import ConfigLoader
-from mdv_asr.workflows.dataset import DatasetWorkflow
-from mdv_asr.workflows.benchmark import ASRBenchmarkWorkflow
+from mdv_asr_module.config.loader import ConfigLoader
+from mdv_asr_module.workflows.dataset import DatasetWorkflow
+from mdv_asr_module.workflows.benchmark import ASRBenchmarkWorkflow
 
 CONFIG_PATH = ROOT / "configs/benchmark/sr_nemo.json"
 config = ConfigLoader().load(CONFIG_PATH)

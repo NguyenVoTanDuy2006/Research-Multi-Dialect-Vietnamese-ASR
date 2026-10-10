@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from mdv_asr.evaluation.records import PredictionRecord
-from mdv_asr.evaluation.records import ErrorCounts, EvaluationResult
-from mdv_asr.evaluation.reports import BenchmarkReporter
-from mdv_asr.evaluation.store import PredictionStore
+from mdv_asr_module.evaluation.records import PredictionRecord
+from mdv_asr_module.evaluation.records import ErrorCounts, EvaluationResult
+from mdv_asr_module.evaluation.reports import BenchmarkReporter
+from mdv_asr_module.evaluation.store import PredictionStore
 
 
 def test_prediction_store_flush_reload_and_retry_errors(tmp_path):

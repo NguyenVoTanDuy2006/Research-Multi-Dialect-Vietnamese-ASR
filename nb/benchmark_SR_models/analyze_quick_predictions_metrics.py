@@ -13,8 +13,8 @@ except ImportError:
     from nb._bootstrap import initialize_project
 
 ROOT = initialize_project()
-from mdv_asr.evaluation.metrics import MetricAggregator
-from mdv_asr.evaluation.records import PredictionRecord
+from mdv_asr_module.evaluation.metrics import MetricAggregator
+from mdv_asr_module.evaluation.records import PredictionRecord
 
 PREDICTION_FILES = [ROOT / "outputs/benchmark_models/vimd_three_models/predictions.csv"]
 

@@ -11,7 +11,7 @@ def initialize_project() -> Path:
                   Path(__file__).resolve().parents[1],
                   *Path(__file__).resolve().parents[1].parents]
     for root in candidates:
-        if (root / "src" / "mdv_asr").is_dir():
+        if (root / "src" / "mdv_asr_module").is_dir():
             if str(root / "src") not in sys.path:
                 sys.path.insert(0, str(root / "src"))
             return root
@@ -23,7 +23,7 @@ def initialize_project() -> Path:
             if configs.is_dir() and (configs / "datasets").is_dir():
                 return configs.parent
     try:
-        import mdv_asr  # noqa: F401
+        import mdv_asr_module  # noqa: F401
 
         return Path.cwd()
     except ImportError as exc:

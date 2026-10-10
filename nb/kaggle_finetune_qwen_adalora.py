@@ -79,7 +79,7 @@ print("Train config:", CONFIG_PATH)
 # This checks two-GPU distributed initialization, model forward/backward, AdaLoRA updates, and a decode before the full run.
 
 # %%
-subprocess.run([sys.executable, "-m", "mdv_asr.cli", "train", "smoke",
+subprocess.run([sys.executable, "-m", "mdv_asr_module.cli", "train", "smoke",
                 "--config", str(CONFIG_PATH)], cwd=REPO_DIR, env=env, check=True)
 
 # %% [markdown]
@@ -88,7 +88,7 @@ subprocess.run([sys.executable, "-m", "mdv_asr.cli", "train", "smoke",
 # The trainer selects the best epoch using validation CER and writes adapter checkpoints plus a resumable state to `OUTPUT_DIR`.
 
 # %%
-subprocess.run([sys.executable, "-m", "mdv_asr.cli", "train", "run",
+subprocess.run([sys.executable, "-m", "mdv_asr_module.cli", "train", "run",
                 "--config", str(CONFIG_PATH)], cwd=REPO_DIR, env=env, check=True)
 
 # %%
@@ -100,6 +100,6 @@ print("Best checkpoint metadata:", OUTPUT_DIR / "best_checkpoint.json")
 
 # %%
 # Evaluate the selected adapter on the configured test split.
-subprocess.run([sys.executable, "-m", "mdv_asr.cli", "train", "evaluate",
+subprocess.run([sys.executable, "-m", "mdv_asr_module.cli", "train", "evaluate",
                 "--config", str(CONFIG_PATH)], cwd=REPO_DIR, env=env, check=True)
 print("Run outputs:", OUTPUT_DIR)
