@@ -23,9 +23,7 @@ For Qwen/AdaLoRA training, install the training extra in a compatible environmen
 python -m pip install -e ".[data,train]"
 ```
 
-The project intentionally keeps Torch and NumPy out of its base wheel dependency resolution so Kaggle can install the project wheel with `pip install --no-deps` and retain its preinstalled runtime stack. NeMo is optional; demo rendering dependencies are isolated in `demo/requirements.txt`.
-
-Demo-only source code, settings, configs, predictions, source video, and rendered videos belong under `demo/`. Demo rendering is intentionally separate from the `mdv_asr` package and main CLI; shared ASR evaluation/alignment remains in the package. The extracted super-hard audio package under `outputs/` is also used as benchmark data, so it stays with the dataset artifacts.
+The project intentionally keeps Torch and NumPy out of its base wheel dependency resolution so Kaggle can install the project wheel with `pip install --no-deps` and retain its preinstalled runtime stack. NeMo is optional.
 
 ## CLI
 
@@ -34,8 +32,6 @@ mdv-asr config validate --config configs/training/qwen_full_vimd_2epoch.json
 mdv-asr train smoke --config configs/training/qwen_full_vimd_2epoch.json
 mdv-asr benchmark run --config configs/benchmark/vimd_three_models.json
 ```
-
-Install demo dependencies with `python -m pip install -r demo/requirements.txt`, then render saved predictions with `python demo/render_demos.py`; see [demo/README.md](demo/README.md) for inputs and options.
 
 Set `HF_TOKEN` in the environment or create a Kaggle Secret named `HF_TOKEN`; never put access tokens in source/config files. Dataset download is opt-in in configs; prefer attaching the dataset through Kaggle Input.
 
@@ -47,7 +43,7 @@ Python notebook scripts in `nb/` use Jupyter percent-cell markers. Benchmark/tra
 python scripts/export_notebooks.py
 ```
 
-The exporter skips existing `.ipynb` files by default. Existing datasets, checkpoints, outputs and third-party repositories are not moved or modified by package installation.
+The exporter skips existing `.ipynb` files by default. Datasets, checkpoints, outputs and third-party repositories are external runtime inputs; they are not bundled as source.
 
 ## Kaggle and benchmarks
 
@@ -57,7 +53,7 @@ Build a code-only Kaggle bundle (wheel, configs, checksums; no dataset, model, o
 python scripts/build_kaggle_bundle.py --output outputs/kaggle_code_bundle
 ```
 
-Before running `configs/benchmark/vimd_three_models.json`, replace
-`SET_FULL_VIMD_ADAPTER_PATH` with the local or Kaggle Input path to the full-ViMD
-adapter. The small-ViMD adapter path is configured separately in the same file.
-Use `python -m pytest` to run the unit tests when the `dev` extra is installed.
+Before running `configs/benchmark/vimd_three_models.json`, set both adapter paths
+to the local or Kaggle Input locations of the small- and full-ViMD adapters. Model
+weights and datasets are deliberately not stored in this code repository. Use
+`python -m pytest` to run the unit tests when the `dev` extra is installed.
