@@ -1,0 +1,286 @@
+[{"stream_name":"stderr","time":6.779866667,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":6.779923156,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":6.779929914,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":6.7799337600000005,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":7.365634692,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":7.365662225,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":7.365667129,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":7.365670886,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":11.285971623,"data":"\u001b[?25l   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m0.0/12.3 MB\u001b[0m \u001b[31m?\u001b[0m eta \u001b[36m-:--:--\u001b[0m\r\u001b[2K   \u001b[91m━━━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[90m╺\u001b[0m\u001b[90m━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m6.8/12.3 MB\u001b[0m \u001b[31m205.7 MB/s\u001b[0m eta \u001b[36m0:00:01\u001b[0m\r\u001b[2K   \u001b[91m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[91m╸\u001b[0m \u001b[32m12.3/12.3 MB\u001b[0m \u001b[31m242.4 MB/s\u001b[0m eta \u001b[36m0:00:01\u001b[0m\r\u001b[2K   \u001b[91m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[91m╸\u001b[0m \u001b[32m12.3/12.3 MB\u001b[0m \u001b[31m242.4 MB/s\u001b[0m eta \u001b[36m0:00:01\u001b[0m\r\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m12.3/12.3 MB\u001b[0m \u001b[31m104.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n"}
+,{"stream_name":"stdout","time":11.286028643,"data":"\u001b[?25h\u001b[?25l   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m0.0/835.4 kB\u001b[0m \u001b[31m?\u001b[0m eta \u001b[36m-:--:--\u001b[0m\r\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m835.4/835.4 kB\u001b[0m \u001b[31m27.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n"}
+,{"stream_name":"stdout","time":26.117395244,"data":"\u001b[?25hNote: you may need to restart the kernel to use updated packages.\n"}
+,{"stream_name":"stdout","time":52.426185759,"data":"torch: 2.11.0+cu128\n"}
+,{"stream_name":"stdout","time":52.42624307,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":52.464533702,"data":"GPU: Tesla T4\n"}
+,{"stream_name":"stdout","time":53.035556466,"data":"ViMD: /kaggle/input/datasets/thanhlamdev/vimd-dataset/0.0.0\n"}
+,{"stream_name":"stdout","time":53.03564786,"data":"Adapters: {'small_vimd': PosixPath('/kaggle/input/models/nvtd1796/qwen-vimd-adalora/pytorch/small-vimd/1'), 'full_vimd': PosixPath('/kaggle/input/models/nvtd1796/qwen-vimd-adalora/pytorch/full-vimd/1')}\n"}
+,{"stream_name":"stdout","time":53.035659549,"data":"Output: /kaggle/working/vimd_three_model_benchmark\n"}
+,{"stream_name":"stdout","time":310.065460684,"data":"Test shards: 11\n"}
+,{"stream_name":"stdout","time":310.065529925,"data":"Test instances: 2026\n"}
+,{"stream_name":"stdout","time":310.065535944,"data":"Audio hours (header scan will occur during inference).\n"}
+,{"stream_name":"stdout","time":310.139501507,"data":"small_vimd {'tensor_count': 312, 'zero_shape_count': 81, 'zero_shape_examples': [('base_model.model.model.audio_tower.layers.0.self_attn.q_proj.lora_A', [0, 1024]), ('base_model.model.model.audio_tower.layers.0.self_attn.q_proj.lora_B', [1024, 0]), ('base_model.model.model.audio_tower.layers.0.self_attn.q_proj.lora_E', [0, 1]), ('base_model.model.model.audio_tower.layers.0.self_attn.v_proj.lora_A', [0, 1024]), ('base_model.model.model.audio_tower.layers.0.self_attn.v_proj.lora_B', [1024, 0])], 'rank_pattern_entries': 104, 'config_base_model': 'Qwen/Qwen3-ASR-1.7B-hf'}\n"}
+,{"stream_name":"stdout","time":310.139532716,"data":"full_vimd {'tensor_count': 312, 'zero_shape_count': 60, 'zero_shape_examples': [('base_model.model.model.audio_tower.layers.0.self_attn.q_proj.lora_A', [0, 1024]), ('base_model.model.model.audio_tower.layers.0.self_attn.q_proj.lora_B', [1024, 0]), ('base_model.model.model.audio_tower.layers.0.self_attn.q_proj.lora_E', [0, 1]), ('base_model.model.model.audio_tower.layers.0.self_attn.v_proj.lora_A', [0, 1024]), ('base_model.model.model.audio_tower.layers.0.self_attn.v_proj.lora_B', [1024, 0])], 'rank_pattern_entries': 104, 'config_base_model': 'Qwen/Qwen3-ASR-1.7B-hf'}\n"}
+,{"stream_name":"stdout","time":312.699372248,"data":"\n"}
+,{"stream_name":"stdout","time":312.699402864,"data":"qwen_base: cached 0/2,026; pending 2,026\n"}
+,{"stream_name":"stdout","time":424.806643767,"data":"qwen_base: 25/2,026 | 80.8s elapsed\n"}
+,{"stream_name":"stdout","time":506.163034659,"data":"qwen_base: 50/2,026 | 162.1s elapsed\n"}
+,{"stream_name":"stdout","time":579.43030605,"data":"qwen_base: 75/2,026 | 235.4s elapsed\n"}
+,{"stream_name":"stdout","time":655.889067146,"data":"qwen_base: 100/2,026 | 311.9s elapsed\n"}
+,{"stream_name":"stdout","time":742.65599575,"data":"qwen_base: 125/2,026 | 398.6s elapsed\n"}
+,{"stream_name":"stdout","time":831.080452973,"data":"qwen_base: 150/2,026 | 487.1s elapsed\n"}
+,{"stream_name":"stdout","time":924.63916772,"data":"qwen_base: 175/2,026 | 580.6s elapsed\n"}
+,{"stream_name":"stdout","time":1013.665665002,"data":"qwen_base: 200/2,026 | 669.6s elapsed\n"}
+,{"stream_name":"stdout","time":1094.945624993,"data":"qwen_base: 225/2,026 | 750.9s elapsed\n"}
+,{"stream_name":"stdout","time":1181.863098085,"data":"qwen_base: 250/2,026 | 837.8s elapsed\n"}
+,{"stream_name":"stdout","time":1267.622512192,"data":"qwen_base: 275/2,026 | 923.6s elapsed\n"}
+,{"stream_name":"stdout","time":1352.563078923,"data":"qwen_base: 300/2,026 | 1008.5s elapsed\n"}
+,{"stream_name":"stdout","time":1428.143299003,"data":"qwen_base: 325/2,026 | 1084.1s elapsed\n"}
+,{"stream_name":"stdout","time":1504.418898458,"data":"qwen_base: 350/2,026 | 1160.4s elapsed\n"}
+,{"stream_name":"stdout","time":1571.25245721,"data":"qwen_base: 375/2,026 | 1227.2s elapsed\n"}
+,{"stream_name":"stdout","time":1639.196891805,"data":"qwen_base: 400/2,026 | 1295.2s elapsed\n"}
+,{"stream_name":"stdout","time":1731.964062197,"data":"qwen_base: 425/2,026 | 1387.9s elapsed\n"}
+,{"stream_name":"stdout","time":1805.7660146,"data":"qwen_base: 450/2,026 | 1461.7s elapsed\n"}
+,{"stream_name":"stdout","time":1890.894368397,"data":"qwen_base: 475/2,026 | 1546.9s elapsed\n"}
+,{"stream_name":"stdout","time":1978.862130899,"data":"qwen_base: 500/2,026 | 1634.8s elapsed\n"}
+,{"stream_name":"stdout","time":2057.695417952,"data":"qwen_base: 525/2,026 | 1713.7s elapsed\n"}
+,{"stream_name":"stdout","time":2151.296191388,"data":"qwen_base: 550/2,026 | 1807.3s elapsed\n"}
+,{"stream_name":"stdout","time":2243.477198433,"data":"qwen_base: 575/2,026 | 1899.5s elapsed\n"}
+,{"stream_name":"stdout","time":2341.807555171,"data":"qwen_base: 600/2,026 | 1997.8s elapsed\n"}
+,{"stream_name":"stdout","time":2433.1899757,"data":"qwen_base: 625/2,026 | 2089.2s elapsed\n"}
+,{"stream_name":"stdout","time":2525.460239597,"data":"qwen_base: 650/2,026 | 2181.4s elapsed\n"}
+,{"stream_name":"stdout","time":2603.329308832,"data":"qwen_base: 675/2,026 | 2259.3s elapsed\n"}
+,{"stream_name":"stdout","time":2692.12931868,"data":"qwen_base: 700/2,026 | 2348.1s elapsed\n"}
+,{"stream_name":"stdout","time":2781.711253196,"data":"qwen_base: 725/2,026 | 2437.7s elapsed\n"}
+,{"stream_name":"stdout","time":2865.524822217,"data":"qwen_base: 750/2,026 | 2521.5s elapsed\n"}
+,{"stream_name":"stdout","time":2939.611489452,"data":"qwen_base: 775/2,026 | 2595.6s elapsed\n"}
+,{"stream_name":"stdout","time":3029.944068152,"data":"qwen_base: 800/2,026 | 2685.9s elapsed\n"}
+,{"stream_name":"stdout","time":3118.304012058,"data":"qwen_base: 825/2,026 | 2774.3s elapsed\n"}
+,{"stream_name":"stdout","time":3196.522729032,"data":"qwen_base: 850/2,026 | 2852.5s elapsed\n"}
+,{"stream_name":"stdout","time":3281.384948126,"data":"qwen_base: 875/2,026 | 2937.4s elapsed\n"}
+,{"stream_name":"stdout","time":3372.428482334,"data":"qwen_base: 900/2,026 | 3028.4s elapsed\n"}
+,{"stream_name":"stdout","time":3465.314612149,"data":"qwen_base: 925/2,026 | 3121.3s elapsed\n"}
+,{"stream_name":"stdout","time":3543.535605287,"data":"qwen_base: 950/2,026 | 3199.5s elapsed\n"}
+,{"stream_name":"stdout","time":3631.417742079,"data":"qwen_base: 975/2,026 | 3287.4s elapsed\n"}
+,{"stream_name":"stdout","time":3709.977106679,"data":"qwen_base: 1,000/2,026 | 3366.0s elapsed\n"}
+,{"stream_name":"stdout","time":3793.441594554,"data":"qwen_base: 1,025/2,026 | 3449.4s elapsed\n"}
+,{"stream_name":"stdout","time":3886.834344869,"data":"qwen_base: 1,050/2,026 | 3542.8s elapsed\n"}
+,{"stream_name":"stdout","time":3972.897348779,"data":"qwen_base: 1,075/2,026 | 3628.9s elapsed\n"}
+,{"stream_name":"stdout","time":4068.202750442,"data":"qwen_base: 1,100/2,026 | 3724.2s elapsed\n"}
+,{"stream_name":"stdout","time":4151.896639563,"data":"qwen_base: 1,125/2,026 | 3807.9s elapsed\n"}
+,{"stream_name":"stdout","time":4224.241160601,"data":"qwen_base: 1,150/2,026 | 3880.2s elapsed\n"}
+,{"stream_name":"stdout","time":4307.587450232,"data":"qwen_base: 1,175/2,026 | 3963.6s elapsed\n"}
+,{"stream_name":"stdout","time":4381.001844977,"data":"qwen_base: 1,200/2,026 | 4037.0s elapsed\n"}
+,{"stream_name":"stdout","time":4460.253138534,"data":"qwen_base: 1,225/2,026 | 4116.2s elapsed\n"}
+,{"stream_name":"stdout","time":4544.451618336,"data":"qwen_base: 1,250/2,026 | 4200.4s elapsed\n"}
+,{"stream_name":"stdout","time":4635.172212832,"data":"qwen_base: 1,275/2,026 | 4291.2s elapsed\n"}
+,{"stream_name":"stdout","time":4718.124690164,"data":"qwen_base: 1,300/2,026 | 4374.1s elapsed\n"}
+,{"stream_name":"stdout","time":4805.504960979,"data":"qwen_base: 1,325/2,026 | 4461.5s elapsed\n"}
+,{"stream_name":"stdout","time":4883.886122281,"data":"qwen_base: 1,350/2,026 | 4539.9s elapsed\n"}
+,{"stream_name":"stdout","time":4959.824949227,"data":"qwen_base: 1,375/2,026 | 4615.8s elapsed\n"}
+,{"stream_name":"stdout","time":5051.160058231,"data":"qwen_base: 1,400/2,026 | 4707.1s elapsed\n"}
+,{"stream_name":"stdout","time":5110.593877382,"data":"qwen_base: 1,425/2,026 | 4766.6s elapsed\n"}
+,{"stream_name":"stdout","time":5208.574038153,"data":"qwen_base: 1,450/2,026 | 4864.6s elapsed\n"}
+,{"stream_name":"stdout","time":5296.302613642,"data":"qwen_base: 1,475/2,026 | 4952.3s elapsed\n"}
+,{"stream_name":"stdout","time":5380.225890386,"data":"qwen_base: 1,500/2,026 | 5036.2s elapsed\n"}
+,{"stream_name":"stdout","time":5463.261226423,"data":"qwen_base: 1,525/2,026 | 5119.2s elapsed\n"}
+,{"stream_name":"stdout","time":5545.277382953,"data":"qwen_base: 1,550/2,026 | 5201.3s elapsed\n"}
+,{"stream_name":"stdout","time":5621.180820316,"data":"qwen_base: 1,575/2,026 | 5277.2s elapsed\n"}
+,{"stream_name":"stdout","time":5691.419426642,"data":"qwen_base: 1,600/2,026 | 5347.4s elapsed\n"}
+,{"stream_name":"stdout","time":5771.268850386,"data":"qwen_base: 1,625/2,026 | 5427.2s elapsed\n"}
+,{"stream_name":"stdout","time":5842.127983413,"data":"qwen_base: 1,650/2,026 | 5498.1s elapsed\n"}
+,{"stream_name":"stdout","time":5912.818687359,"data":"qwen_base: 1,675/2,026 | 5568.8s elapsed\n"}
+,{"stream_name":"stdout","time":5980.0109995,"data":"qwen_base: 1,700/2,026 | 5636.0s elapsed\n"}
+,{"stream_name":"stdout","time":6061.416053569,"data":"qwen_base: 1,725/2,026 | 5717.4s elapsed\n"}
+,{"stream_name":"stdout","time":6154.5878144,"data":"qwen_base: 1,750/2,026 | 5810.6s elapsed\n"}
+,{"stream_name":"stdout","time":6242.588882795,"data":"qwen_base: 1,775/2,026 | 5898.6s elapsed\n"}
+,{"stream_name":"stdout","time":6333.218747628,"data":"qwen_base: 1,800/2,026 | 5989.2s elapsed\n"}
+,{"stream_name":"stdout","time":6420.860742763,"data":"qwen_base: 1,825/2,026 | 6076.8s elapsed\n"}
+,{"stream_name":"stdout","time":6510.247233517,"data":"qwen_base: 1,850/2,026 | 6166.2s elapsed\n"}
+,{"stream_name":"stdout","time":6599.387638594,"data":"qwen_base: 1,875/2,026 | 6255.4s elapsed\n"}
+,{"stream_name":"stdout","time":6689.581494503,"data":"qwen_base: 1,900/2,026 | 6345.6s elapsed\n"}
+,{"stream_name":"stdout","time":6768.494187624,"data":"qwen_base: 1,925/2,026 | 6424.5s elapsed\n"}
+,{"stream_name":"stdout","time":6852.879262655,"data":"qwen_base: 1,950/2,026 | 6508.9s elapsed\n"}
+,{"stream_name":"stdout","time":6933.64138694,"data":"qwen_base: 1,975/2,026 | 6589.6s elapsed\n"}
+,{"stream_name":"stdout","time":7017.760267925,"data":"qwen_base: 2,000/2,026 | 6673.7s elapsed\n"}
+,{"stream_name":"stdout","time":7105.837954214,"data":"qwen_base: 2,025/2,026 | 6761.8s elapsed\n"}
+,{"stream_name":"stdout","time":7111.813226185,"data":"qwen_base: 2,026/2,026 | 6767.7s elapsed\n"}
+,{"stream_name":"stdout","time":7112.151857504,"data":"\n"}
+,{"stream_name":"stdout","time":7112.151890179,"data":"small_vimd: cached 0/2,026; pending 2,026\n"}
+,{"stream_name":"stdout","time":7116.249786358,"data":"CHECKPOINT LOAD WARNING: {\"zero_shape_tensors\": 81, \"rank_pattern_warning\": true, \"load_warnings\": [\"The following rank_pattern keys did not match any targeted module and were ignored: ['model.audio_tower.layers.0.self_attn.q_proj.lora_E', 'model.audio_tower.layers.0.self_attn.v_proj.lora_E', 'model.audio_tower.layers.1.self_attn.q_proj.lora_E', 'model.audio_tower.layers.1.self_attn.v_proj.lora_E', 'model.audio_tower.layers.10.self_attn.q_proj.lora_E', 'model.audio_tower.layers.10.self_attn.v_proj.lora_E', 'model.audio_tower.layers.11.self_attn.q_proj.lora_E', 'model.audio_tower.layers.11.self_attn.v_proj.lora_E', 'model.audio_tower.layers.12.self_attn.q_proj.lora_E', 'model.audio_tower.layers.12.self_attn.v_proj.lora_E', 'model.audio_tower.layers.13.self_attn.q_proj.lora_E', 'model.audio_tower.layers.13.self_attn.v_proj.lora_E', 'model.audio_tower.layers.14.self_attn.q_proj.lora_E', 'model.audio_tower.layers.14.self_attn.v_proj.lora_E', 'model.audio_tower.layers.15.self_attn.q_proj.lora_E', 'model.audio_tower.layers.15.self_attn.v_proj.lora_E', 'model.audio_tower.layers.16.self_attn.q_proj.lora_E', 'model.audio_tower.layers.16.self_attn.v_proj.lora_E', 'model.audio_tower.layers.17.self_attn.q_proj.lora_E', 'model.audio_tower.layers.17.self_attn.v_proj.lora_E', 'model.audio_tower.layers.18.self_attn.q_proj.lora_E', 'model.audio_tower.layers.18.self_attn.v_proj.lora_E', 'model.audio_tower.layers.19.self_attn.q_proj.lora_E', 'model.audio_tower.layers.19.self_attn.v_proj.lora_E', 'model.audio_tower.layers.2.self_attn.q_proj.lora_E', 'model.audio_tower.layers.2.self_attn.v_proj.lora_E', 'model.audio_tower.layers.20.self_attn.q_proj.lora_E', 'model.audio_tower.layers.20.self_attn.v_proj.lora_E', 'model.audio_tower.layers.21.self_attn.q_proj.lora_E', 'model.audio_tower.layers.21.self_attn.v_proj.lora_E', 'model.audio_tower.layers.22.self_attn.q_proj.lora_E', 'model.audio_tower.layers.22.self_attn.v_proj.lora_E', 'model.audio_tower.layers.23.self_attn.q_proj.lora_E', 'model.audio_tower.layers.23.s\n"}
+,{"stream_name":"stdout","time":7217.762652515,"data":"small_vimd: 25/2,026 | 101.5s elapsed\n"}
+,{"stream_name":"stdout","time":7321.39601266,"data":"small_vimd: 50/2,026 | 205.1s elapsed\n"}
+,{"stream_name":"stdout","time":7413.966248654,"data":"small_vimd: 75/2,026 | 297.7s elapsed\n"}
+,{"stream_name":"stdout","time":7511.228533683,"data":"small_vimd: 100/2,026 | 395.0s elapsed\n"}
+,{"stream_name":"stdout","time":7622.133339726,"data":"small_vimd: 125/2,026 | 505.9s elapsed\n"}
+,{"stream_name":"stdout","time":7735.060472253,"data":"small_vimd: 150/2,026 | 618.8s elapsed\n"}
+,{"stream_name":"stdout","time":7852.432568898,"data":"small_vimd: 175/2,026 | 736.2s elapsed\n"}
+,{"stream_name":"stdout","time":7964.683597886,"data":"small_vimd: 200/2,026 | 848.4s elapsed\n"}
+,{"stream_name":"stdout","time":8069.504558729,"data":"small_vimd: 225/2,026 | 953.1s elapsed\n"}
+,{"stream_name":"stdout","time":8183.026328972,"data":"small_vimd: 250/2,026 | 1066.8s elapsed\n"}
+,{"stream_name":"stdout","time":8293.123486566,"data":"small_vimd: 275/2,026 | 1176.9s elapsed\n"}
+,{"stream_name":"stdout","time":8399.850578093,"data":"small_vimd: 300/2,026 | 1283.6s elapsed\n"}
+,{"stream_name":"stdout","time":8495.803503398,"data":"small_vimd: 325/2,026 | 1379.5s elapsed\n"}
+,{"stream_name":"stdout","time":8592.070859073,"data":"small_vimd: 350/2,026 | 1475.8s elapsed\n"}
+,{"stream_name":"stdout","time":8675.639922937,"data":"small_vimd: 375/2,026 | 1559.4s elapsed\n"}
+,{"stream_name":"stdout","time":8762.173264272,"data":"small_vimd: 400/2,026 | 1645.9s elapsed\n"}
+,{"stream_name":"stdout","time":8878.124428211,"data":"small_vimd: 425/2,026 | 1761.9s elapsed\n"}
+,{"stream_name":"stdout","time":8970.299938063,"data":"small_vimd: 450/2,026 | 1854.0s elapsed\n"}
+,{"stream_name":"stdout","time":9077.405589934,"data":"small_vimd: 475/2,026 | 1961.1s elapsed\n"}
+,{"stream_name":"stdout","time":9187.03979894,"data":"small_vimd: 500/2,026 | 2070.8s elapsed\n"}
+,{"stream_name":"stdout","time":9285.388669789,"data":"small_vimd: 525/2,026 | 2169.1s elapsed\n"}
+,{"stream_name":"stdout","time":9403.892893388,"data":"small_vimd: 550/2,026 | 2287.6s elapsed\n"}
+,{"stream_name":"stdout","time":9519.149544202,"data":"small_vimd: 575/2,026 | 2402.9s elapsed\n"}
+,{"stream_name":"stdout","time":9642.488895063,"data":"small_vimd: 600/2,026 | 2526.2s elapsed\n"}
+,{"stream_name":"stdout","time":9755.931029722,"data":"small_vimd: 625/2,026 | 2639.7s elapsed\n"}
+,{"stream_name":"stdout","time":9870.327806006,"data":"small_vimd: 650/2,026 | 2754.1s elapsed\n"}
+,{"stream_name":"stdout","time":9967.600106325,"data":"small_vimd: 675/2,026 | 2851.3s elapsed\n"}
+,{"stream_name":"stdout","time":10076.70481345,"data":"small_vimd: 700/2,026 | 2960.4s elapsed\n"}
+,{"stream_name":"stdout","time":10186.740155107,"data":"small_vimd: 725/2,026 | 3070.5s elapsed\n"}
+,{"stream_name":"stdout","time":10290.020318548,"data":"small_vimd: 750/2,026 | 3173.8s elapsed\n"}
+,{"stream_name":"stdout","time":10383.140775547,"data":"small_vimd: 775/2,026 | 3266.9s elapsed\n"}
+,{"stream_name":"stdout","time":10496.331114951,"data":"small_vimd: 800/2,026 | 3380.1s elapsed\n"}
+,{"stream_name":"stdout","time":10607.98725036,"data":"small_vimd: 825/2,026 | 3491.7s elapsed\n"}
+,{"stream_name":"stdout","time":10706.198072982,"data":"small_vimd: 850/2,026 | 3589.9s elapsed\n"}
+,{"stream_name":"stdout","time":10812.442055491,"data":"small_vimd: 875/2,026 | 3696.2s elapsed\n"}
+,{"stream_name":"stdout","time":10929.702349903,"data":"small_vimd: 900/2,026 | 3813.4s elapsed\n"}
+,{"stream_name":"stdout","time":11045.240691902,"data":"small_vimd: 925/2,026 | 3929.0s elapsed\n"}
+,{"stream_name":"stdout","time":11141.367131907,"data":"small_vimd: 950/2,026 | 4025.1s elapsed\n"}
+,{"stream_name":"stdout","time":11252.329913538,"data":"small_vimd: 975/2,026 | 4136.1s elapsed\n"}
+,{"stream_name":"stdout","time":11351.843177444,"data":"small_vimd: 1,000/2,026 | 4235.6s elapsed\n"}
+,{"stream_name":"stdout","time":11456.922185218,"data":"small_vimd: 1,025/2,026 | 4340.7s elapsed\n"}
+,{"stream_name":"stdout","time":11576.216082329,"data":"small_vimd: 1,050/2,026 | 4460.0s elapsed\n"}
+,{"stream_name":"stdout","time":11685.236917561,"data":"small_vimd: 1,075/2,026 | 4569.0s elapsed\n"}
+,{"stream_name":"stdout","time":11807.973166668,"data":"small_vimd: 1,100/2,026 | 4691.7s elapsed\n"}
+,{"stream_name":"stdout","time":11914.740632515,"data":"small_vimd: 1,125/2,026 | 4798.5s elapsed\n"}
+,{"stream_name":"stdout","time":12009.224080257,"data":"small_vimd: 1,150/2,026 | 4893.0s elapsed\n"}
+,{"stream_name":"stdout","time":12116.602832109,"data":"small_vimd: 1,175/2,026 | 5000.3s elapsed\n"}
+,{"stream_name":"stdout","time":12212.444755387,"data":"small_vimd: 1,200/2,026 | 5096.2s elapsed\n"}
+,{"stream_name":"stdout","time":12315.548916763,"data":"small_vimd: 1,225/2,026 | 5199.3s elapsed\n"}
+,{"stream_name":"stdout","time":12422.362023019,"data":"small_vimd: 1,250/2,026 | 5306.1s elapsed\n"}
+,{"stream_name":"stdout","time":12539.614305791,"data":"small_vimd: 1,275/2,026 | 5423.4s elapsed\n"}
+,{"stream_name":"stdout","time":12646.030360382,"data":"small_vimd: 1,300/2,026 | 5529.8s elapsed\n"}
+,{"stream_name":"stdout","time":12758.899243007,"data":"small_vimd: 1,325/2,026 | 5642.6s elapsed\n"}
+,{"stream_name":"stdout","time":12856.240864742,"data":"small_vimd: 1,350/2,026 | 5740.0s elapsed\n"}
+,{"stream_name":"stdout","time":12952.656285483,"data":"small_vimd: 1,375/2,026 | 5836.4s elapsed\n"}
+,{"stream_name":"stdout","time":13067.898131337,"data":"small_vimd: 1,400/2,026 | 5951.6s elapsed\n"}
+,{"stream_name":"stdout","time":13144.648226268,"data":"small_vimd: 1,425/2,026 | 6028.4s elapsed\n"}
+,{"stream_name":"stdout","time":13308.30002061,"data":"small_vimd: 1,450/2,026 | 6192.0s elapsed\n"}
+,{"stream_name":"stdout","time":13422.497879182,"data":"small_vimd: 1,475/2,026 | 6306.2s elapsed\n"}
+,{"stream_name":"stdout","time":13566.231662547,"data":"small_vimd: 1,500/2,026 | 6450.0s elapsed\n"}
+,{"stream_name":"stdout","time":13672.410629877,"data":"small_vimd: 1,525/2,026 | 6556.2s elapsed\n"}
+,{"stream_name":"stdout","time":13778.380871762,"data":"small_vimd: 1,550/2,026 | 6662.1s elapsed\n"}
+,{"stream_name":"stdout","time":13876.487797885,"data":"small_vimd: 1,575/2,026 | 6760.2s elapsed\n"}
+,{"stream_name":"stdout","time":13968.646768519,"data":"small_vimd: 1,600/2,026 | 6852.4s elapsed\n"}
+,{"stream_name":"stdout","time":14072.259914476,"data":"small_vimd: 1,625/2,026 | 6956.0s elapsed\n"}
+,{"stream_name":"stdout","time":14162.504735473,"data":"small_vimd: 1,650/2,026 | 7046.2s elapsed\n"}
+,{"stream_name":"stdout","time":14250.129361581,"data":"small_vimd: 1,675/2,026 | 7133.9s elapsed\n"}
+,{"stream_name":"stdout","time":14337.830559607,"data":"small_vimd: 1,700/2,026 | 7221.6s elapsed\n"}
+,{"stream_name":"stdout","time":14441.052872875,"data":"small_vimd: 1,725/2,026 | 7324.8s elapsed\n"}
+,{"stream_name":"stdout","time":14559.438703893,"data":"small_vimd: 1,750/2,026 | 7443.2s elapsed\n"}
+,{"stream_name":"stdout","time":14670.873360645,"data":"small_vimd: 1,775/2,026 | 7554.6s elapsed\n"}
+,{"stream_name":"stdout","time":14784.862138417,"data":"small_vimd: 1,800/2,026 | 7668.6s elapsed\n"}
+,{"stream_name":"stdout","time":14897.412467903,"data":"small_vimd: 1,825/2,026 | 7781.2s elapsed\n"}
+,{"stream_name":"stdout","time":15047.548724371,"data":"small_vimd: 1,850/2,026 | 7931.3s elapsed\n"}
+,{"stream_name":"stdout","time":15161.734595023,"data":"small_vimd: 1,875/2,026 | 8045.5s elapsed\n"}
+,{"stream_name":"stdout","time":15278.033556737,"data":"small_vimd: 1,900/2,026 | 8161.8s elapsed\n"}
+,{"stream_name":"stdout","time":15380.969617542,"data":"small_vimd: 1,925/2,026 | 8264.7s elapsed\n"}
+,{"stream_name":"stdout","time":15486.835768654,"data":"small_vimd: 1,950/2,026 | 8370.6s elapsed\n"}
+,{"stream_name":"stdout","time":15590.425162739,"data":"small_vimd: 1,975/2,026 | 8474.2s elapsed\n"}
+,{"stream_name":"stdout","time":15699.054487076,"data":"small_vimd: 2,000/2,026 | 8582.8s elapsed\n"}
+,{"stream_name":"stdout","time":15811.906544014,"data":"small_vimd: 2,025/2,026 | 8695.6s elapsed\n"}
+,{"stream_name":"stdout","time":15819.295865131,"data":"small_vimd: 2,026/2,026 | 8703.0s elapsed\n"}
+,{"stream_name":"stdout","time":15819.656188062,"data":"\n"}
+,{"stream_name":"stdout","time":15819.656241267,"data":"full_vimd: cached 0/2,026; pending 2,026\n"}
+,{"stream_name":"stdout","time":15823.407175599,"data":"CHECKPOINT LOAD WARNING: {\"zero_shape_tensors\": 60, \"rank_pattern_warning\": true, \"load_warnings\": [\"The following rank_pattern keys did not match any targeted module and were ignored: ['model.audio_tower.layers.0.self_attn.q_proj.lora_E', 'model.audio_tower.layers.0.self_attn.v_proj.lora_E', 'model.audio_tower.layers.1.self_attn.q_proj.lora_E', 'model.audio_tower.layers.1.self_attn.v_proj.lora_E', 'model.audio_tower.layers.10.self_attn.q_proj.lora_E', 'model.audio_tower.layers.10.self_attn.v_proj.lora_E', 'model.audio_tower.layers.11.self_attn.q_proj.lora_E', 'model.audio_tower.layers.11.self_attn.v_proj.lora_E', 'model.audio_tower.layers.12.self_attn.q_proj.lora_E', 'model.audio_tower.layers.12.self_attn.v_proj.lora_E', 'model.audio_tower.layers.13.self_attn.q_proj.lora_E', 'model.audio_tower.layers.13.self_attn.v_proj.lora_E', 'model.audio_tower.layers.14.self_attn.q_proj.lora_E', 'model.audio_tower.layers.14.self_attn.v_proj.lora_E', 'model.audio_tower.layers.15.self_attn.q_proj.lora_E', 'model.audio_tower.layers.15.self_attn.v_proj.lora_E', 'model.audio_tower.layers.16.self_attn.q_proj.lora_E', 'model.audio_tower.layers.16.self_attn.v_proj.lora_E', 'model.audio_tower.layers.17.self_attn.q_proj.lora_E', 'model.audio_tower.layers.17.self_attn.v_proj.lora_E', 'model.audio_tower.layers.18.self_attn.q_proj.lora_E', 'model.audio_tower.layers.18.self_attn.v_proj.lora_E', 'model.audio_tower.layers.19.self_attn.q_proj.lora_E', 'model.audio_tower.layers.19.self_attn.v_proj.lora_E', 'model.audio_tower.layers.2.self_attn.q_proj.lora_E', 'model.audio_tower.layers.2.self_attn.v_proj.lora_E', 'model.audio_tower.layers.20.self_attn.q_proj.lora_E', 'model.audio_tower.layers.20.self_attn.v_proj.lora_E', 'model.audio_tower.layers.21.self_attn.q_proj.lora_E', 'model.audio_tower.layers.21.self_attn.v_proj.lora_E', 'model.audio_tower.layers.22.self_attn.q_proj.lora_E', 'model.audio_tower.layers.22.self_attn.v_proj.lora_E', 'model.audio_tower.layers.23.self_attn.q_proj.lora_E', 'model.audio_tower.layers.23.s\n"}
+,{"stream_name":"stdout","time":15924.656373667,"data":"full_vimd: 25/2,026 | 101.2s elapsed\n"}
+,{"stream_name":"stdout","time":16027.559948638,"data":"full_vimd: 50/2,026 | 204.1s elapsed\n"}
+,{"stream_name":"stdout","time":16120.087351266,"data":"full_vimd: 75/2,026 | 296.7s elapsed\n"}
+,{"stream_name":"stdout","time":16216.840281205,"data":"full_vimd: 100/2,026 | 393.4s elapsed\n"}
+,{"stream_name":"stdout","time":16329.945707533,"data":"full_vimd: 125/2,026 | 506.5s elapsed\n"}
+,{"stream_name":"stdout","time":16443.046630638,"data":"full_vimd: 150/2,026 | 619.6s elapsed\n"}
+,{"stream_name":"stdout","time":16561.191000925,"data":"full_vimd: 175/2,026 | 737.8s elapsed\n"}
+,{"stream_name":"stdout","time":16674.250344973,"data":"full_vimd: 200/2,026 | 850.8s elapsed\n"}
+,{"stream_name":"stdout","time":16778.906055375,"data":"full_vimd: 225/2,026 | 955.5s elapsed\n"}
+,{"stream_name":"stdout","time":16892.136010149,"data":"full_vimd: 250/2,026 | 1068.7s elapsed\n"}
+,{"stream_name":"stdout","time":17004.656989473,"data":"full_vimd: 275/2,026 | 1181.2s elapsed\n"}
+,{"stream_name":"stdout","time":17112.946090932,"data":"full_vimd: 300/2,026 | 1289.5s elapsed\n"}
+,{"stream_name":"stdout","time":17209.826754763,"data":"full_vimd: 325/2,026 | 1386.4s elapsed\n"}
+,{"stream_name":"stdout","time":17307.109691313,"data":"full_vimd: 350/2,026 | 1483.7s elapsed\n"}
+,{"stream_name":"stdout","time":17392.223693438,"data":"full_vimd: 375/2,026 | 1568.8s elapsed\n"}
+,{"stream_name":"stdout","time":17479.045776025,"data":"full_vimd: 400/2,026 | 1655.6s elapsed\n"}
+,{"stream_name":"stdout","time":17595.556722037,"data":"full_vimd: 425/2,026 | 1772.1s elapsed\n"}
+,{"stream_name":"stdout","time":17689.312033715,"data":"full_vimd: 450/2,026 | 1865.9s elapsed\n"}
+,{"stream_name":"stdout","time":17797.065849123,"data":"full_vimd: 475/2,026 | 1973.7s elapsed\n"}
+,{"stream_name":"stdout","time":17907.465413131,"data":"full_vimd: 500/2,026 | 2084.0s elapsed\n"}
+,{"stream_name":"stdout","time":18006.122951906,"data":"full_vimd: 525/2,026 | 2182.7s elapsed\n"}
+,{"stream_name":"stdout","time":18126.496090088,"data":"full_vimd: 550/2,026 | 2303.1s elapsed\n"}
+,{"stream_name":"stdout","time":18243.812844552,"data":"full_vimd: 575/2,026 | 2420.4s elapsed\n"}
+,{"stream_name":"stdout","time":18369.022438708,"data":"full_vimd: 600/2,026 | 2545.6s elapsed\n"}
+,{"stream_name":"stdout","time":18482.668688345,"data":"full_vimd: 625/2,026 | 2659.2s elapsed\n"}
+,{"stream_name":"stdout","time":18599.278614582,"data":"full_vimd: 650/2,026 | 2775.9s elapsed\n"}
+,{"stream_name":"stdout","time":18697.323864099,"data":"full_vimd: 675/2,026 | 2873.9s elapsed\n"}
+,{"stream_name":"stdout","time":18809.549251488,"data":"full_vimd: 700/2,026 | 2986.1s elapsed\n"}
+,{"stream_name":"stdout","time":18921.605550077,"data":"full_vimd: 725/2,026 | 3098.2s elapsed\n"}
+,{"stream_name":"stdout","time":19027.85392335,"data":"full_vimd: 750/2,026 | 3204.4s elapsed\n"}
+,{"stream_name":"stdout","time":19123.301462422,"data":"full_vimd: 775/2,026 | 3299.9s elapsed\n"}
+,{"stream_name":"stdout","time":19238.296231396,"data":"full_vimd: 800/2,026 | 3414.9s elapsed\n"}
+,{"stream_name":"stdout","time":19352.226097354,"data":"full_vimd: 825/2,026 | 3528.8s elapsed\n"}
+,{"stream_name":"stdout","time":19451.968711347,"data":"full_vimd: 850/2,026 | 3628.6s elapsed\n"}
+,{"stream_name":"stdout","time":19559.970926018,"data":"full_vimd: 875/2,026 | 3736.5s elapsed\n"}
+,{"stream_name":"stdout","time":19680.100847893,"data":"full_vimd: 900/2,026 | 3856.7s elapsed\n"}
+,{"stream_name":"stdout","time":19796.810360386,"data":"full_vimd: 925/2,026 | 3973.4s elapsed\n"}
+,{"stream_name":"stdout","time":19895.488671611,"data":"full_vimd: 950/2,026 | 4072.1s elapsed\n"}
+,{"stream_name":"stdout","time":20007.989487025,"data":"full_vimd: 975/2,026 | 4184.6s elapsed\n"}
+,{"stream_name":"stdout","time":20108.175977973,"data":"full_vimd: 1,000/2,026 | 4284.8s elapsed\n"}
+,{"stream_name":"stdout","time":20215.634236693,"data":"full_vimd: 1,025/2,026 | 4392.2s elapsed\n"}
+,{"stream_name":"stdout","time":20339.874790253,"data":"full_vimd: 1,050/2,026 | 4516.5s elapsed\n"}
+,{"stream_name":"stdout","time":20449.354880053,"data":"full_vimd: 1,075/2,026 | 4625.9s elapsed\n"}
+,{"stream_name":"stdout","time":20575.348143179,"data":"full_vimd: 1,100/2,026 | 4751.9s elapsed\n"}
+,{"stream_name":"stdout","time":20683.684771326,"data":"full_vimd: 1,125/2,026 | 4860.3s elapsed\n"}
+,{"stream_name":"stdout","time":20778.365927567,"data":"full_vimd: 1,150/2,026 | 4954.9s elapsed\n"}
+,{"stream_name":"stdout","time":20886.010563532,"data":"full_vimd: 1,175/2,026 | 5062.6s elapsed\n"}
+,{"stream_name":"stdout","time":20982.492282626,"data":"full_vimd: 1,200/2,026 | 5159.1s elapsed\n"}
+,{"stream_name":"stdout","time":21085.256700151,"data":"full_vimd: 1,225/2,026 | 5261.8s elapsed\n"}
+,{"stream_name":"stdout","time":21192.158477093,"data":"full_vimd: 1,250/2,026 | 5368.7s elapsed\n"}
+,{"stream_name":"stdout","time":21309.777300067,"data":"full_vimd: 1,275/2,026 | 5486.4s elapsed\n"}
+,{"stream_name":"stdout","time":21416.810197878,"data":"full_vimd: 1,300/2,026 | 5593.4s elapsed\n"}
+,{"stream_name":"stdout","time":21530.0117046,"data":"full_vimd: 1,325/2,026 | 5706.6s elapsed\n"}
+,{"stream_name":"stdout","time":21627.610333907,"data":"full_vimd: 1,350/2,026 | 5804.2s elapsed\n"}
+,{"stream_name":"stdout","time":21724.175804278,"data":"full_vimd: 1,375/2,026 | 5900.8s elapsed\n"}
+,{"stream_name":"stdout","time":21839.167030244,"data":"full_vimd: 1,400/2,026 | 6015.8s elapsed\n"}
+,{"stream_name":"stdout","time":21915.851905828,"data":"full_vimd: 1,425/2,026 | 6092.4s elapsed\n"}
+,{"stream_name":"stdout","time":22042.133158998,"data":"full_vimd: 1,450/2,026 | 6218.7s elapsed\n"}
+,{"stream_name":"stdout","time":22154.327129878,"data":"full_vimd: 1,475/2,026 | 6330.9s elapsed\n"}
+,{"stream_name":"stdout","time":22262.185457547,"data":"full_vimd: 1,500/2,026 | 6438.8s elapsed\n"}
+,{"stream_name":"stdout","time":22370.353177735,"data":"full_vimd: 1,525/2,026 | 6546.9s elapsed\n"}
+,{"stream_name":"stdout","time":22478.704921135,"data":"full_vimd: 1,550/2,026 | 6655.3s elapsed\n"}
+,{"stream_name":"stdout","time":22577.553772221,"data":"full_vimd: 1,575/2,026 | 6754.1s elapsed\n"}
+,{"stream_name":"stdout","time":22668.772794052,"data":"full_vimd: 1,600/2,026 | 6845.4s elapsed\n"}
+,{"stream_name":"stdout","time":22773.176898235,"data":"full_vimd: 1,625/2,026 | 6949.8s elapsed\n"}
+,{"stream_name":"stdout","time":22862.062722913,"data":"full_vimd: 1,650/2,026 | 7038.6s elapsed\n"}
+,{"stream_name":"stdout","time":22948.753700685,"data":"full_vimd: 1,675/2,026 | 7125.3s elapsed\n"}
+,{"stream_name":"stdout","time":23034.989115615,"data":"full_vimd: 1,700/2,026 | 7211.6s elapsed\n"}
+,{"stream_name":"stdout","time":23136.740633028,"data":"full_vimd: 1,725/2,026 | 7313.3s elapsed\n"}
+,{"stream_name":"stdout","time":23254.672652978,"data":"full_vimd: 1,750/2,026 | 7431.2s elapsed\n"}
+,{"stream_name":"stdout","time":23365.048707976,"data":"full_vimd: 1,775/2,026 | 7541.6s elapsed\n"}
+,{"stream_name":"stdout","time":23478.07322967,"data":"full_vimd: 1,800/2,026 | 7654.7s elapsed\n"}
+,{"stream_name":"stdout","time":23591.089383718,"data":"full_vimd: 1,825/2,026 | 7767.7s elapsed\n"}
+,{"stream_name":"stdout","time":23741.83329412,"data":"full_vimd: 1,850/2,026 | 7918.4s elapsed\n"}
+,{"stream_name":"stdout","time":23856.415013987,"data":"full_vimd: 1,875/2,026 | 8033.0s elapsed\n"}
+,{"stream_name":"stdout","time":23972.833001645,"data":"full_vimd: 1,900/2,026 | 8149.4s elapsed\n"}
+,{"stream_name":"stdout","time":24076.295534477,"data":"full_vimd: 1,925/2,026 | 8252.9s elapsed\n"}
+,{"stream_name":"stdout","time":24182.779201146,"data":"full_vimd: 1,950/2,026 | 8359.4s elapsed\n"}
+,{"stream_name":"stdout","time":24289.132554471,"data":"full_vimd: 1,975/2,026 | 8465.7s elapsed\n"}
+,{"stream_name":"stdout","time":24398.112751026,"data":"full_vimd: 2,000/2,026 | 8574.7s elapsed\n"}
+,{"stream_name":"stdout","time":24509.425287978,"data":"full_vimd: 2,025/2,026 | 8686.0s elapsed\n"}
+,{"stream_name":"stdout","time":24516.74235592,"data":"full_vimd: 2,026/2,026 | 8693.3s elapsed\n"}
+,{"stream_name":"stdout","time":24517.458602917,"data":"Kết quả lưu tại: /kaggle/working/vimd_three_model_benchmark\n"}
+,{"stream_name":"stderr","time":24524.181626344,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":24524.181658745,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":24524.348279754,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":24524.348305936,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":24525.085322848,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":24525.216570831,"data":"[NbConvertApp] Writing 203998 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":24527.677025327,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":24528.307860123,"data":"[NbConvertApp] Writing 514706 bytes to __results__.html\n"}
+]

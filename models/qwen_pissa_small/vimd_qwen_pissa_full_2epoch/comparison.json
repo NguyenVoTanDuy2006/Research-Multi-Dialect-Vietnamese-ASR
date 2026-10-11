@@ -1,0 +1,11 @@
+{
+  "qwen_full_vimd_pissa": {
+    "n_samples": 484,
+    "wer_errors": 3338,
+    "reference_words": 38179,
+    "WER": 0.08743026270986667,
+    "cer_errors": 8417,
+    "reference_chars": 125692,
+    "CER": 0.06696528020876429
+  }
+}
