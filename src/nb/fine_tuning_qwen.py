@@ -51,9 +51,12 @@ if not all("T4" in name.upper() for name in gpu_names):
 print("HF_TOKEN available:", bool(runtime.get_hf_token()))
 
 # %%
+# Chỉnh đường dẫn này để chọn cấu hình fine-tuning muốn chạy.
+CONFIG_FILE = Path(REPO_DIR / "src/mdv_asr_module/configs/training/qwen_small_vimd_pissa.json")
+
+# %%
 config_loader = ConfigLoader()
-SOURCE_CONFIG_PATH = REPO_DIR / "src/mdv_asr_module/configs/training/qwen_small_vimd_pissa.json"
-config = config_loader.load(SOURCE_CONFIG_PATH)
+config = config_loader.load(CONFIG_FILE)
 runtime = RuntimeEnvironment(platform=config.platform, project_root=REPO_DIR)
 config = runtime.resolve_config_paths(config, create_output=True)
 if config.dataset.root is None:
@@ -106,6 +109,26 @@ try:
         print(f"Speaker overlap {left}/{right}:", len(speaker_sets[left] & speaker_sets[right]))
 finally:
     source.close()
+
+# %%
+# PEFT kiểm tra mọi LoRA dispatcher khi gắn adapter. TorchAO cũ có thể làm
+# bước này lỗi dù training không dùng quantization; worker torchrun chạy process mới.
+import importlib
+import importlib.util
+
+if importlib.util.find_spec("torchao") is not None:
+    uninstall = subprocess.run(
+        [sys.executable, "-m", "pip", "uninstall", "-y", "torchao"],
+        check=False,
+    )
+    if uninstall.returncode != 0:
+        raise RuntimeError("Không gỡ được torchao; dừng trước khi khởi tạo launcher.")
+    importlib.invalidate_caches()
+    if importlib.util.find_spec("torchao") is not None:
+        raise RuntimeError("torchao vẫn còn được cài; dừng trước khi khởi tạo launcher.")
+    print("Đã gỡ TorchAO không tương thích; tiếp tục dùng LoRA/PiSSA thường.")
+else:
+    print("TorchAO không được cài; tiếp tục dùng LoRA/PiSSA thường.")
 
 # %%
 # Smoke phải chạy thành công trước khi bắt đầu full training.
