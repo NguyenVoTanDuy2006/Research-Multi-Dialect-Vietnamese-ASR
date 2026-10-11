@@ -1,0 +1,42 @@
+{
+  "dataset": {
+    "kind": "auto",
+    "root": null,
+    "handle": "thanhlamdev/vimd-dataset",
+    "dataset_id": "vimd",
+    "cache_dir": "outputs/cache",
+    "allow_download": true
+  },
+  "decode": {"language": "Vietnamese", "max_new_tokens": 768, "do_sample": false, "num_beams": 1},
+  "benchmark": {
+    "split": "test",
+    "resume": true,
+    "flush_every": 10,
+    "models": [
+      {
+        "key": "qwen_base", 
+        "backend": "qwen3_asr", 
+        "model_id": "Qwen/Qwen3-ASR-1.7B-hf", 
+        "display_name": "Qwen3-ASR 1.7B", 
+        "dtype": "float16"
+      },
+      {
+        "key": "qwen_small_vimd", 
+        "backend": "qwen3_asr", 
+        "model_id": "Qwen/Qwen3-ASR-1.7B-hf", 
+        "adapter_path": "outputs/fine-tuning/vimd_qwen_adalora/epoch_3_adapter", 
+        "display_name": "AdaLoRA · ViMD small", 
+        "dtype": "float16"},
+      {
+        "key": "qwen_full_vimd", 
+        "backend": "qwen3_asr", 
+        "model_id": "Qwen/Qwen3-ASR-1.7B-hf", 
+        "adapter_path": "SET_FULL_VIMD_ADAPTER_PATH", 
+        "display_name": "AdaLoRA · ViMD full", 
+        "dtype": "float16"
+      }
+    ]
+  },
+  "output_dir": "outputs/benchmark_models/vimd_three_models",
+  "run_id": "vimd_three_models"
+}

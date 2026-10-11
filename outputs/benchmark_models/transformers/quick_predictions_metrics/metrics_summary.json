@@ -1,0 +1,20 @@
+{
+  "input_csv": "/run/media/fernir/Data/Documents/HCMUS/Research/outputs/benchmark_models/transformers/quick_predictions.csv",
+  "n_rows_input": 500,
+  "n_successful_rows": 500,
+  "n_error_rows": 0,
+  "n_models": 5,
+  "models": [
+    "AutoArk-AI/ARK-ASR-0.6B",
+    "AutoArk-AI/ARK-ASR-3B",
+    "CohereLabs/cohere-transcribe-03-2026",
+    "Qwen/Qwen3-ASR-1.7B-hf",
+    "ibm-granite/granite-speech-4.1-2b"
+  ],
+  "aggregation": "macro mean of per-audio WER/CER; errors excluded",
+  "outputs": {
+    "overall": "/run/media/fernir/Data/Documents/HCMUS/Research/outputs/benchmark_models/transformers/quick_predictions_metrics/overall_metrics.csv",
+    "region": "/run/media/fernir/Data/Documents/HCMUS/Research/outputs/benchmark_models/transformers/quick_predictions_metrics/metrics_by_region.csv",
+    "province": "/run/media/fernir/Data/Documents/HCMUS/Research/outputs/benchmark_models/transformers/quick_predictions_metrics/metrics_by_province.csv"
+  }
+}

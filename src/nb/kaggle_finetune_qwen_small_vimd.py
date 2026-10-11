@@ -141,7 +141,9 @@ print("ZIP paths checked:", sum(len(value) for value in zip_members.values()), "
 # Dùng config nhỏ đã nằm trong source repo: AdaLoRA, 3 epoch, batch 1/GPU,
 # accumulation 8, q_proj/v_proj ở audio encoder và language decoder.
 config_loader = ConfigLoader()
-config = config_loader.load(REPO_DIR / "configs/training/qwen_small_vimd_3epoch.json")
+config = config_loader.load(
+    REPO_DIR / "src/mdv_asr_module/configs/training/qwen_small_vimd_3epoch.json"
+)
 config_data = config.to_dict()
 config_data["dataset"]["root"] = str(DATASET_ROOT)
 config_data["output_dir"] = str(OUTPUT_DIR)
@@ -226,3 +228,20 @@ print("Theo vùng:", OUTPUT_DIR / "metrics_by_region.csv")
 print("Theo tỉnh:", OUTPUT_DIR / "metrics_by_province.csv")
 display(pd.read_csv(OUTPUT_DIR / "metrics_overall.csv"))
 display(pd.read_csv(OUTPUT_DIR / "metrics_by_province.csv").head(10))
+
+# %% [markdown]
+# ## Dọn source clone khỏi output Kaggle
+#
+# Cell cuối chỉ chạy sau khi train và benchmark hoàn tất. Kết quả trong
+# OUTPUT_DIR nằm ngoài source clone nên vẫn được giữ để tải xuống.
+
+# %% [code]
+from mdv_asr_module.runtime.cleanup import NotebookOutputCleaner
+
+if runtime.platform == "kaggle":
+    removed = NotebookOutputCleaner(working_dir=runtime.working_dir).remove_source_checkout(
+        REPO_DIR, preserve_paths=[OUTPUT_DIR]
+    )
+    print("Đã xóa source clone:", REPO_DIR if removed else "đã được xóa trước đó")
+else:
+    print("Bỏ qua dọn source clone vì runtime không phải Kaggle.")

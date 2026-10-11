@@ -9,4 +9,7 @@ wheels/
 
 # Virtual environments
 .venv
-outputs/
+.output/
+outputs/kaggle_vimd_adalora/
+outputs/vimd_local_experiment/
+models/qwen_pissa_small/vimd_qwen_pissa_full_2epoch/training_checkpoints/

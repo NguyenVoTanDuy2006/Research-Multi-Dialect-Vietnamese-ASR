@@ -1,0 +1,38 @@
+[
+  {
+    "dataset_id": "vimd",
+    "sample_id": "test_0000543",
+    "split": "test",
+    "filename": "30_0309.wav",
+    "exported_audio": "/run/media/fernir/Data/Documents/HCMUS/Research/outputs/extracted_audio/test_test_0000543_30_0309.wav",
+    "duration_seconds": 16.86501133786848,
+    "transcript": "Khi thời tiết thuận lợi như thế này thì rất là dễ, nhưng nếu mà khi mưa, bọn mình phải đảm bảo an toàn về điện cho du khách và đảm bảo được cái hiệu ứng chiếu sáng nó vẫn phải là hoàn hảo nhất. Còn thời tiết không thuận lợi thì bọn mình vẫn duy trì sáu kỹ thuật để quản lý toàn bộ cái hạ tầng điện đóm của chương trình tour đêm.",
+    "region": "North",
+    "province_name": "HaNoi",
+    "speaker_id": "spk_30_0187"
+  },
+  {
+    "dataset_id": "vimd",
+    "sample_id": "test_0000871",
+    "split": "test",
+    "filename": "59_0313.wav",
+    "exported_audio": "/run/media/fernir/Data/Documents/HCMUS/Research/outputs/extracted_audio/test_test_0000871_59_0313.wav",
+    "duration_seconds": 15.479002267573696,
+    "transcript": "Khi mà tôi bắt đầu di chuyển thì tôi cũng thường hay để mở bản đồ này lên xem rằng là xung quanh nơi tôi có ca nhiễm nào hay không hoặc là có đường nào bị cách ly hay không với lại nơi tôi cần đến có tình trạng nào đáng nghi hay không thì để tôi có thể biết được để tôi sắp xếp cho mình một cái quãng đường di chuyển hợp lý nhất.",
+    "region": "South",
+    "province_name": "HoChiMinh",
+    "speaker_id": "spk_59_0273"
+  },
+  {
+    "dataset_id": "vimd",
+    "sample_id": "test_0000653",
+    "split": "test",
+    "filename": "37_0338.wav",
+    "exported_audio": "/run/media/fernir/Data/Documents/HCMUS/Research/outputs/extracted_audio/test_test_0000653_37_0338.wav",
+    "duration_seconds": 17.4,
+    "transcript": "Dự kiến tháng sáu năm hai không hai hai, các đô thị vệ tinh sẽ được thông qua phương án quy hoạch lấy ý kiến cộng đồng của Dân Cư. Sẽ cố gắng phê duyệt các đồ án quy hoạch vệ tinh vào cuối năm hai nghìn không trăm hai hai.",
+    "region": "Central",
+    "province_name": "NgheAn",
+    "speaker_id": "spk_37_0256"
+  }
+]
