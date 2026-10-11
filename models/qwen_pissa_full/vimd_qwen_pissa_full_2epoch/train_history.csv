@@ -1,0 +1,3 @@
+﻿epoch,train_loss,mean_loss_across_ranks,attempted_steps,successful_steps,skipped_steps,valid_n_samples,valid_wer_errors,valid_reference_words,valid_wer,valid_cer_errors,valid_reference_chars,valid_cer,valid_epoch,valid_optimizer_steps
+1,0.2944606432502584,0.2944606432502584,939,938,1,1900,11793,125305,0.0941143609592594,29743,414291,0.07179253230217407,1,938
+2,0.24922823484252327,0.24922823484252327,1878,1877,1,1900,11617,125305,0.09270978811699453,29419,414291,0.07101047331465081,2,1877
