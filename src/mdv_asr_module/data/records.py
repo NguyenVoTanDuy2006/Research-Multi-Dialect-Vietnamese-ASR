@@ -12,17 +12,14 @@ class AudioLocator:
     kind: str
     path: str
     row_index: int | None = None
-    member: str | None = None
 
     def validate(self) -> None:
-        if self.kind not in {"arrow", "parquet", "zip", "file"}:
+        if self.kind not in {"arrow", "parquet", "file"}:
             raise ValueError(f"Unsupported audio locator kind: {self.kind}")
         if not self.path:
             raise ValueError("Audio locator path is required")
         if self.kind in {"arrow", "parquet"} and self.row_index is None:
             raise ValueError(f"{self.kind} locator requires row_index")
-        if self.kind == "zip" and not self.member:
-            raise ValueError("ZIP locator requires a member path")
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

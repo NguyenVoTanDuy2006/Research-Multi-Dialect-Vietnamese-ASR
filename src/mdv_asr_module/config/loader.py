@@ -59,7 +59,10 @@ class ConfigLoader:
             ModelSpec, PiSSASettings, TrainConfig,
         )
 
-        allowed = {"dataset", "model", "decode", "train", "benchmark", "output_dir", "run_id"}
+        allowed = {
+            "dataset", "platform", "model", "decode", "train", "benchmark",
+            "output_dir", "run_id",
+        }
         unknown = set(data) - allowed
         if unknown:
             raise ValueError(f"Unknown ExperimentConfig fields: {sorted(unknown)}")
@@ -79,6 +82,7 @@ class ConfigLoader:
             )
         return ExperimentConfig(
             dataset=_construct(DatasetConfig, data.get("dataset", {})),
+            platform=data.get("platform", "auto"),
             model=_construct(ModelSpec, data["model"]) if data.get("model") is not None else None,
             decode=_construct(DecodeConfig, data.get("decode", {})),
             train=_construct(TrainConfig, train_data) if train_data is not None else None,

@@ -1,12 +1,13 @@
 {
   "dataset": {
-    "kind": "auto",
-    "root": null,
-    "handle": "thanhlamdev/vimd-dataset",
+    "kind": "arrow",
+    "root": "/kaggle/input/datasets/thanhlamdev/vimd-dataset/0.0.0/c89c5d04a2d1025e3aab24345dbe4f23d2cfb666",
+    "handle": null,
     "dataset_id": "vimd",
     "cache_dir": "outputs/cache",
-    "allow_download": true
+    "allow_download": false
   },
-  "output_dir": "outputs/vimd_inspection",
+  "platform": "kaggle",
+  "output_dir": "/kaggle/working/outputs/vimd_inspection",
   "run_id": "vimd_full"
 }

@@ -12,7 +12,7 @@ from mdv_asr_module.evaluation.normalization import TextNormalizer
 
 def test_config_loader_round_trip_and_unknown_field(tmp_path):
     config_data = {
-        "dataset": {"kind": "package", "root": str(tmp_path), "dataset_id": "unit"},
+        "dataset": {"kind": "auto", "root": str(tmp_path), "dataset_id": "unit"},
         "model": {"key": "qwen", "backend": "qwen3_asr", "model_id": "Qwen/test"},
         "train": {"epochs": 2, "adalora": {"target_modules": ["q_proj", "v_proj"]}},
         "output_dir": str(tmp_path / "run"),

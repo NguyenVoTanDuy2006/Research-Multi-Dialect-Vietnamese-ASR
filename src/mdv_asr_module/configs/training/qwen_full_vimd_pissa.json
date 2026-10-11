@@ -1,12 +1,13 @@
 {
   "dataset": {
-    "kind": "auto",
-    "root": null,
-    "handle": "thanhlamdev/vimd-dataset",
+    "kind": "arrow",
+    "root": "/kaggle/input/datasets/thanhlamdev/vimd-dataset/0.0.0/c89c5d04a2d1025e3aab24345dbe4f23d2cfb666",
+    "handle": null,
     "dataset_id": "vimd",
     "cache_dir": "outputs/cache",
     "allow_download": false
   },
+  "platform": "kaggle",
   "model": {
     "key": "qwen_full_vimd_pissa",
     "backend": "qwen3_asr",
@@ -36,6 +37,6 @@
       "init_seed": 24127159
     }
   },
-  "output_dir": "outputs/fine-tuning/vimd_qwen_pissa_full_2epoch",
+  "output_dir": "/kaggle/working/outputs/fine-tuning/vimd_qwen_pissa_full_2epoch",
   "run_id": "qwen_full_vimd_pissa_2epoch"
 }

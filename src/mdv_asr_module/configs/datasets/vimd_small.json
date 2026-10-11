@@ -1,12 +1,13 @@
 {
   "dataset": {
-    "kind": "package",
-    "root": "outputs/kaggle_vimd_adalora",
+    "kind": "arrow",
+    "root": "/kaggle/input/datasets/nvtd1796/small-vimd",
     "handle": null,
     "dataset_id": "vimd_small",
     "cache_dir": "outputs/cache",
     "allow_download": false
   },
-  "output_dir": "outputs/vimd_small_inspection",
+  "platform": "kaggle",
+  "output_dir": "/kaggle/working/outputs/vimd_small_inspection",
   "run_id": "vimd_small"
 }

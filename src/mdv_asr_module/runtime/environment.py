@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import shutil
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Iterable
 
@@ -89,6 +89,60 @@ class RuntimeEnvironment:
         if create:
             destination.mkdir(parents=True, exist_ok=True)
         return destination
+
+    def resolve_config_paths(self, config, *, create_output: bool = False):
+        """Return a config with dataset/output paths resolved for its runtime.
+
+        Relative ``dataset.root`` paths use ``/kaggle/input`` on Kaggle and the
+        project root elsewhere. Relative ``dataset.cache_dir`` and ``output_dir``
+        paths use ``/kaggle/working`` on Kaggle and the runtime working directory
+        elsewhere. Absolute paths are preserved. This resolves paths only; it does
+        not check that the dataset exists or inspect its contents.
+        """
+        configured_platform = config.platform
+        if (self.platform_override != "auto" and configured_platform != "auto"
+                and self.platform_override != configured_platform):
+            raise ValueError(
+                f"Runtime platform {self.platform_override!r} does not match config "
+                f"platform {configured_platform!r}"
+            )
+        platform = configured_platform if configured_platform != "auto" else self.platform
+
+        if platform == "kaggle":
+            default_dataset_base = Path("/kaggle/input")
+            default_output_base = Path(
+                os.environ.get("KAGGLE_WORKING_DIR", "/kaggle/working")
+            ).expanduser()
+        else:
+            default_dataset_base = self.project_root
+            default_output_base = self.working_dir
+
+        dataset_base = default_dataset_base.resolve()
+        output_base = default_output_base.resolve()
+        dataset_root = self._resolve_config_path(config.dataset.root, dataset_base)
+        cache_dir = self._resolve_config_path(config.dataset.cache_dir, output_base)
+        output_dir = self._resolve_config_path(config.output_dir, output_base)
+        if create_output:
+            output_dir.mkdir(parents=True, exist_ok=True)
+
+        return replace(
+            config,
+            dataset=replace(
+                config.dataset,
+                root=str(dataset_root) if dataset_root else None,
+                cache_dir=str(cache_dir) if cache_dir else None,
+            ),
+            output_dir=str(output_dir),
+        )
+
+    @staticmethod
+    def _resolve_config_path(value: str | Path | None, base: Path) -> Path | None:
+        if value is None:
+            return None
+        path = Path(value).expanduser()
+        if not path.is_absolute():
+            path = base / path
+        return path.resolve()
 
     def detect(self) -> RuntimeDescription:
         try:

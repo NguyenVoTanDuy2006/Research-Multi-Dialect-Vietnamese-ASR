@@ -5,13 +5,12 @@ from .sources import (
     ArrowDatasetSource,
     DatasetSource,
     DatasetSourceFactory,
-    PackagedDatasetSource,
     ParquetDatasetSource,
 )
 
 __all__ = [
     "ArrowDatasetSource", "AudioLocator", "AudioPreview", "AudioReader", "AudioSample",
-    "DatasetIndex", "DatasetSource", "DatasetSourceFactory", "PackagedDatasetSource",
-    "ParquetDatasetSource", "SampleRecord",
+    "DatasetIndex", "DatasetSource", "DatasetSourceFactory", "ParquetDatasetSource",
+    "SampleRecord",
 ]
 

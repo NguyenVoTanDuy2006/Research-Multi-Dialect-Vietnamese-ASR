@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import hashlib
 import io
-import json
-import zipfile
 from abc import ABC, abstractmethod
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable
@@ -16,7 +14,7 @@ from .records import AudioLocator, SampleRecord
 
 
 class DatasetSource(ABC):
-    """Common lazy-read contract for Arrow, Parquet and packaged datasets."""
+    """Common lazy-read contract for Arrow and Parquet datasets."""
 
     def __init__(self, dataset_id: str):
         self.dataset_id = dataset_id
@@ -245,151 +243,6 @@ def _group_split_files(files: Iterable[Path]) -> dict[str, list[Path]]:
     return result
 
 
-class PackagedDatasetSource(DatasetSource):
-    def __init__(self, root: str | Path, dataset_id: str):
-        super().__init__(dataset_id)
-        self.root = Path(root).expanduser().resolve()
-        if not self.root.is_dir():
-            raise FileNotFoundError(f"Package root does not exist: {self.root}")
-        self.manifest_path = self._find_manifest()
-        self._zip_handles: dict[str, zipfile.ZipFile] = {}
-
-    def _find_manifest(self) -> Path:
-        candidates = [self.root / "sample_metadata.json", self.root / "manifest.json"]
-        candidates.extend(sorted(self.root.glob("**/sample_metadata.json")))
-        candidates.extend(sorted(self.root.glob("**/manifest.json")))
-        unique = list(dict.fromkeys(path.resolve() for path in candidates if path.is_file()))
-        if len(unique) != 1:
-            raise DatasetIntegrityError(f"Expected one package manifest under {self.root}, found {unique}")
-        return unique[0]
-
-    def _rows(self) -> list[dict[str, Any]]:
-        payload = json.loads(self.manifest_path.read_text(encoding="utf-8"))
-        if isinstance(payload, dict):
-            payload = payload.get("records", payload.get("samples", []))
-        if not isinstance(payload, list):
-            raise DatasetIntegrityError("Package manifest must contain a record list")
-        return payload
-
-    def build_index(self) -> DatasetIndex:
-        if self._index is not None:
-            return self._index
-        records = []
-        for index, row in enumerate(self._rows()):
-            split = str(row.get("split") or "test")
-            audio_ref = row.get("audio_path") or row.get("audio_file") or row.get("filename")
-            if not audio_ref:
-                raise DatasetIntegrityError(f"Package record {index} has no audio reference")
-            archive_ref = row.get("audio_archive")
-            member_ref = row.get("audio_member")
-            if "::" in str(audio_ref):
-                archive_part, member_part = str(audio_ref).split("::", 1)
-                archive_ref = archive_ref or archive_part
-                member_ref = member_ref or member_part
-            if archive_ref:
-                archive_path = Path(str(archive_ref))
-                if not archive_path.is_absolute():
-                    archive_path = self.root / archive_path
-                if not archive_path.is_file():
-                    archive_path = self.manifest_path.parent / str(archive_ref)
-                if not archive_path.is_file():
-                    raise FileNotFoundError(f"Package archive does not exist: {archive_path}")
-                if not member_ref:
-                    member_ref = self._find_zip_member(archive_path, str(audio_ref), split, row)
-                locator = AudioLocator("zip", str(archive_path.resolve()), member=str(member_ref))
-                payload = self.read_bytes(locator)
-                audio_ref = str(row.get("filename") or Path(str(member_ref)).name)
-                file_candidate = None
-            else:
-                file_candidate = None
-            audio_path = Path(str(audio_ref))
-            if archive_ref is None:
-                if audio_path.is_absolute():
-                    candidates = [audio_path]
-                else:
-                    candidates = [self.manifest_path.parent / audio_path, self.root / audio_path]
-                    if audio_path.parts and audio_path.parts[0] == split:
-                        candidates.extend([self.root / Path(*audio_path.parts[1:]),
-                                           self.root / f"{split}.zip"])
-                    candidates.extend(self.root.glob(f"{split}.zip"))
-                file_candidate = next((path.resolve() for path in candidates if path.is_file()), None)
-                if file_candidate and file_candidate.suffix.casefold() == ".zip":
-                    member = self._find_zip_member(file_candidate, str(audio_ref), split, row)
-                    locator = AudioLocator("zip", str(file_candidate), member=member)
-                    payload = self.read_bytes(locator)
-                elif file_candidate:
-                    locator = AudioLocator("file", str(file_candidate))
-                    payload = file_candidate.read_bytes()
-                else:
-                    matches = list(self.root.rglob(Path(str(audio_ref)).name))
-                    if len(matches) != 1:
-                        raise FileNotFoundError(f"Could not resolve package audio {audio_ref!r}: {matches}")
-                    locator = AudioLocator("file", str(matches[0].resolve()))
-                    payload = matches[0].read_bytes()
-            import soundfile as sf
-
-            info = sf.info(io.BytesIO(payload))
-            records.append(self._record(
-                row, dataset_id=self.dataset_id, split=split,
-                sample_id=str(row.get("sample_id") or f"{split}_{index:07d}"),
-                locator=locator, duration=float(row.get("duration_seconds") or info.duration),
-                fallback_name=f"{split}_{index:07d}.wav",
-            ))
-        self._index = DatasetIndex(records, source_fingerprint=self.fingerprint())
-        return self._index
-
-    @staticmethod
-    def _find_zip_member(archive: Path, audio_ref: str, split: str, row: dict[str, Any]) -> str:
-        requested = [str(row.get("audio_member") or ""), audio_ref]
-        basename = Path(audio_ref).name
-        candidates = {Path(value).as_posix().lstrip("/") for value in requested if value}
-        candidates.update({f"audio/{basename}", f"{split}/audio/{basename}", basename})
-        with zipfile.ZipFile(archive) as zf:
-            names = set(zf.namelist())
-            exact = sorted(candidates & names)
-            if len(exact) == 1:
-                return exact[0]
-            suffix_matches = [name for name in names if name.endswith("/" + basename) or name == basename]
-            if len(suffix_matches) != 1:
-                raise DatasetIntegrityError(f"Ambiguous/missing {basename} in {archive}: {suffix_matches}")
-            return suffix_matches[0]
-
-    def read_bytes(self, locator: AudioLocator) -> bytes:
-        locator.validate()
-        if locator.kind == "zip":
-            archive_path = Path(locator.path)
-            if not archive_path.is_absolute():
-                archive_path = self.root / archive_path
-            key = str(archive_path.resolve())
-            if key not in self._zip_handles:
-                self._zip_handles[key] = zipfile.ZipFile(key, "r")
-            return self._zip_handles[key].read(str(locator.member))
-        if locator.kind == "file":
-            path = Path(locator.path)
-            if not path.is_absolute():
-                path = self.root / path
-            return path.read_bytes()
-        raise ValueError(f"Unsupported package locator: {locator.kind}")
-
-    def fingerprint(self) -> str:
-        digest = hashlib.sha256()
-        digest.update(str(self.manifest_path).encode())
-        digest.update(self.manifest_path.read_bytes())
-        for path in sorted(self.root.rglob("*.zip")):
-            stat = path.stat()
-            digest.update(f"{path}:{stat.st_size}:{stat.st_mtime_ns}".encode())
-        for path in sorted(self.root.rglob("*.wav")):
-            stat = path.stat()
-            digest.update(f"{path}:{stat.st_size}:{stat.st_mtime_ns}".encode())
-        return digest.hexdigest()
-
-    def close(self) -> None:
-        for archive in self._zip_handles.values():
-            archive.close()
-        self._zip_handles.clear()
-        super().close()
-
-
 class DatasetSourceFactory:
     @classmethod
     def create(cls, config: DatasetConfig) -> DatasetSource:
@@ -402,11 +255,12 @@ class DatasetSourceFactory:
             elif list(root.rglob("*.parquet")):
                 kind = "parquet"
             else:
-                kind = "package"
+                raise FileNotFoundError(
+                    f"No Arrow or Parquet shards found under configured dataset root: {root}"
+                )
         source_type = {
             "arrow": ArrowDatasetSource,
             "parquet": ParquetDatasetSource,
-            "package": PackagedDatasetSource,
         }[kind]
         return source_type(root, config.dataset_id)
 

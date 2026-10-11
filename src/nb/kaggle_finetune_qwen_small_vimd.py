@@ -2,18 +2,18 @@
 # # Qwen3-ASR 1.7B + AdaLoRA — ViMD small, Kaggle T4 x2
 #
 # Notebook được lưu dạng Python script với cell markers. Chạy từ trên xuống
-# trong Kaggle sau khi attach dataset package `vimd_small` vào Input và bật 2 GPU.
-# Dataset đang dùng là package 31.25 giờ: train/valid/test cùng metadata và ZIP.
+# trong Kaggle sau khi attach dataset `small-vimd` dạng Arrow và bật 2 GPU.
+# Dataset được đọc trực tiếp từ các Arrow shard, không cần manifest/ZIP riêng.
 # Audio là input, transcript là target. Tỉnh/vùng chỉ phục vụ kiểm tra metadata.
 # Train 3 epoch; chọn adapter theo valid CER; cuối notebook so sánh base và
-# adapter trên test. Kết quả được ghi dưới `/kaggle/working/vimd_qwen_adalora_small_3epoch`.
+# adapter trên test. Kết quả được ghi dưới
+# `/kaggle/working/outputs/fine-tuning/vimd_qwen_adalora_small_3epoch`.
 
 # %% [code]
 from pathlib import Path
 import json
 import subprocess
 import sys
-import zipfile
 
 # Repo GitHub hiện tại; Kaggle clone branch source_code.
 REPO_URL = "https://github.com/NguyenVoTanDuy2006/Research-Multi-Dialect-Vietnamese-ASR.git"
@@ -47,87 +47,34 @@ runtime = RuntimeEnvironment(platform="kaggle", project_root=REPO_DIR)
 print("HF_TOKEN available:", bool(runtime.get_hf_token()))
 
 # %% [code]
-# Để None cho notebook tự tìm sample_metadata.json trong /kaggle/input.
-# Nếu attach nhiều package có cùng tên manifest, đặt Path root cụ thể.
-DATASET_ROOT = None
-EXPECTED_SPLIT_COUNTS = {"train": 4676, "valid": 485, "test": 484}
-
-if DATASET_ROOT is None:
-    manifests = sorted(Path("/kaggle/input").rglob("sample_metadata.json"))
-    package_roots = [p.parent.resolve() for p in manifests
-                     if all((p.parent / name).is_file() for name in ("train.zip", "valid.zip", "test.zip"))]
-    package_roots = sorted(set(package_roots))
-    if len(package_roots) != 1:
-        raise RuntimeError(
-            f"Cần đúng một package ViMD small có sample_metadata.json + 3 ZIP; "
-            f"tìm thấy {package_roots}. Nếu có nhiều package, điền DATASET_ROOT."
-        )
-    DATASET_ROOT = package_roots[0]
-else:
-    DATASET_ROOT = Path(DATASET_ROOT).expanduser().resolve()
-
-for required in ("sample_metadata.json", "train.zip", "valid.zip", "test.zip"):
-    if not (DATASET_ROOT / required).is_file():
-        raise FileNotFoundError(f"Thiếu {required} trong {DATASET_ROOT}")
-print("ViMD small package:", DATASET_ROOT)
-
-# %% [markdown]
-# ## Đọc metadata và dựng manifest nhẹ
-#
-# Không giải nén audio và không đọc toàn bộ nội dung 3 ZIP. Dùng metadata đã có
-# duration/transcript/audio member để tạo manifest cho worker; kiểm tra số mẫu,
-# speaker và sự tồn tại của từng đường dẫn bên trong ZIP.
-
-# %% [code]
-from collections import Counter
+# Nạp config để dataset/output root được resolve theo platform top-level.
 from mdv_asr_module.config import ConfigLoader
-from mdv_asr_module.data.index import DatasetIndex
+from mdv_asr_module.data.sources import DatasetSourceFactory
 from mdv_asr_module.data.manifest import ManifestRepository
-from mdv_asr_module.data.records import AudioLocator, SampleRecord
-
-metadata_path = DATASET_ROOT / "sample_metadata.json"
-package = json.loads(metadata_path.read_text(encoding="utf-8"))
-rows = package.get("records", package.get("samples", []))
-if not isinstance(rows, list) or not rows:
-    raise ValueError("sample_metadata.json không có records hợp lệ.")
-
-counts = Counter(str(row.get("split", "")) for row in rows)
-if dict(counts) != EXPECTED_SPLIT_COUNTS:
-    raise ValueError(f"Số mẫu không đúng package ViMD small dự kiến: {dict(counts)}")
-
-zip_members = {}
-records = []
-for row in rows:
-    split = str(row["split"])
-    archive_name = str(row.get("archive") or f"{split}.zip")
-    archive_path = (DATASET_ROOT / archive_name).resolve()
-    if archive_name not in zip_members:
-        with zipfile.ZipFile(archive_path) as archive:
-            zip_members[archive_name] = set(archive.namelist())
-    member = str(row.get("audio_path") or row.get("audio_member") or "")
-    if not member or member not in zip_members[archive_name]:
-        raise FileNotFoundError(f"Không tìm thấy audio member {member!r} trong {archive_name}")
-    records.append(SampleRecord(
-        dataset_id="vimd_small", sample_id=str(row["sample_id"]), split=split,
-        filename=str(row.get("filename") or Path(member).name), text=str(row.get("text") or ""),
-        duration_seconds=float(row["duration_seconds"]),
-        audio_locator=AudioLocator(kind="zip", path=str(archive_path), member=member),
-        region=row.get("region"), province_name=row.get("province_name"),
-        province_code=row.get("province_code"), speaker_id=row.get("speakerID"),
-        gender=str(row.get("gender") or "unknown"), source_gender=str(row.get("gender") or "unknown"),
-        metadata={"archive": archive_name, "sample_rate": row.get("sample_rate"),
-                  "channels": row.get("channels")},
-    ))
-
-index = DatasetIndex(records)
-OUTPUT_DIR = Path("/kaggle/working/vimd_qwen_adalora_small_3epoch")
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+config_loader = ConfigLoader()
+config = config_loader.load(
+    REPO_DIR / "src/mdv_asr_module/configs/training/qwen_small_vimd_adalora.json"
+)
+config = runtime.resolve_config_paths(config, create_output=True)
+DATASET_ROOT = Path(config.dataset.root)
+OUTPUT_DIR = Path(config.output_dir)
 MANIFEST_PATH = OUTPUT_DIR / "source_manifest.json"
-ManifestRepository().save(index, MANIFEST_PATH, metadata={
-    "source_dataset": package.get("source_dataset"),
-    "source_license": package.get("source_license"),
-    "package_root": str(DATASET_ROOT),
-})
+repository = ManifestRepository()
+source = DatasetSourceFactory.create(config.dataset)
+try:
+    source_fingerprint = source.fingerprint()
+    if repository.is_reusable(MANIFEST_PATH, source_fingerprint):
+        index = repository.load(MANIFEST_PATH)
+        print("Tái sử dụng manifest:", MANIFEST_PATH)
+    else:
+        index = source.build_index()
+        repository.save(index, MANIFEST_PATH, metadata={
+            "source_dataset": config.dataset.dataset_id,
+            "source_format": config.dataset.kind,
+            "dataset_root": str(DATASET_ROOT),
+        })
+finally:
+    source.close()
 
 for split in ("train", "valid", "test"):
     split_rows = index.for_split(split)
@@ -135,26 +82,15 @@ for split in ("train", "valid", "test"):
     speakers = len({row.speaker_id for row in split_rows if row.speaker_id})
     print(f"{split}: {len(split_rows):,} clips | {hours:.2f} h | {speakers:,} speakers")
 print("Manifest:", MANIFEST_PATH)
-print("ZIP paths checked:", sum(len(value) for value in zip_members.values()), "members")
 
 # %% [code]
 # Dùng config nhỏ đã nằm trong source repo: AdaLoRA, 3 epoch, batch 1/GPU,
 # accumulation 8, q_proj/v_proj ở audio encoder và language decoder.
-config_loader = ConfigLoader()
-config = config_loader.load(
-    REPO_DIR / "src/mdv_asr_module/configs/training/qwen_small_vimd_3epoch.json"
-)
-config_data = config.to_dict()
-config_data["dataset"]["root"] = str(DATASET_ROOT)
-config_data["output_dir"] = str(OUTPUT_DIR)
-config_data["train"]["world_size"] = 2
-config_data["train"]["method"] = "adalora"
-config_path = config_loader.save_resolved(
-    config_loader.from_dict(config_data), OUTPUT_DIR / "resolved_config.json")
+config_path = config_loader.save_resolved(config, OUTPUT_DIR / "resolved_config.json")
 print("Config:", config_path)
-print("Method:", config_data["train"].get("method", "adalora"),
-      "| epochs:", config_data["train"]["epochs"],
-      "| lr:", config_data["train"]["learning_rate"])
+print("Method:", config.train.method,
+      "| epochs:", config.train.epochs,
+      "| lr:", config.train.learning_rate)
 
 # %% [markdown]
 # ## Smoke test
@@ -197,7 +133,7 @@ print("Resume checkpoints:", sorted(path.name for path in (OUTPUT_DIR / "trainin
 # %% [markdown]
 # ## So sánh trên test: Qwen gốc và AdaLoRA
 #
-# Chạy hai model trên cùng 484 mẫu test; lưu prediction, CER/WER tổng thể,
+# Chạy hai model trên cùng split test; lưu prediction, CER/WER tổng thể,
 # so sánh paired và báo cáo theo tỉnh/vùng trong OUTPUT_DIR.
 
 # %% [code]

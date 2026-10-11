@@ -1,12 +1,13 @@
 {
   "dataset": {
-    "kind": "package",
-    "root": "outputs/kaggle_vimd_adalora",
+    "kind": "arrow",
+    "root": "/kaggle/input/datasets/nvtd1796/small-vimd",
     "handle": null,
     "dataset_id": "vimd_small",
     "cache_dir": "outputs/cache",
     "allow_download": false
   },
+  "platform": "kaggle",
   "model": {
     "key": "qwen_small_vimd_pissa",
     "backend": "qwen3_asr",
@@ -41,6 +42,6 @@
       "init_seed": 24127159
     }
   },
-  "output_dir": "outputs/fine-tuning/vimd_qwen_pissa_small_3epoch",
+  "output_dir": "/kaggle/working/outputs/fine-tuning/vimd_qwen_pissa_small_3epoch",
   "run_id": "qwen_small_vimd_pissa_3epoch"
 }

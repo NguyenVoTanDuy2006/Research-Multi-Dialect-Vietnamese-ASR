@@ -23,7 +23,7 @@ class DatasetConfig(ValidatedConfig):
     allow_download: bool = False
 
     def validate(self) -> None:
-        if self.kind not in {"auto", "arrow", "parquet", "package"}:
+        if self.kind not in {"auto", "arrow", "parquet"}:
             raise ValueError(f"Unsupported dataset source kind: {self.kind}")
         if self.root is not None and not str(self.root).strip():
             raise ValueError("Dataset root cannot be an empty string")
@@ -162,6 +162,7 @@ class BenchmarkConfig(ValidatedConfig):
 @dataclass(frozen=True)
 class ExperimentConfig(ValidatedConfig):
     dataset: DatasetConfig = field(default_factory=DatasetConfig)
+    platform: str = "auto"
     model: ModelSpec | None = None
     decode: DecodeConfig = field(default_factory=DecodeConfig)
     train: TrainConfig | None = None
@@ -171,6 +172,8 @@ class ExperimentConfig(ValidatedConfig):
 
     def validate(self) -> None:
         self.dataset.validate()
+        if self.platform not in {"auto", "local", "kaggle", "colab"}:
+            raise ValueError(f"Unsupported runtime platform: {self.platform}")
         self.decode.validate()
         if self.train is not None and self.model is None:
             raise ValueError("Training configuration requires a model section")
