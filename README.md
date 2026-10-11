@@ -94,6 +94,86 @@ Artifacts have distinct purposes:
 Both methods share the optimizer-step lifecycle and checkpoint interface.
 Existing AdaLoRA JSON configs continue to work without `train.method`.
 
+## Semantic metrics (optional, after ASR inference)
+
+Install with `python -m pip install -e ".[semantic]"`. This extra adds
+`bert-score==0.3.13` and the metric encoder dependencies; ordinary WER/CER
+imports do not load Torch, Transformers, or any pretrained model. The first
+nonempty `score`/`score_batch` call loads metric weights from HF or cache.
+On Kaggle, enable Internet for that initial download or pass a local model
+snapshot directory. No ASR checkpoint or audio is needed to score saved texts.
+
+The public metric API is grouped in `evaluation/metrics/`:
+
+- `metric.py` defines the abstract `Metric` interface. `error_metrics.py`
+  contains WER/CER and corpus aggregation; `similarity_metrics.py` contains
+  both semantic metrics and their result types.
+- `similarity_metrics.py`: `SemSimE5`, symmetric cosine similarity with
+  `intfloat/multilingual-e5-base`, `query: ` on both texts, attention-masked
+  mean pooling and L2 normalization. Returns `SemSimE5Result(similarity,
+  distance)` where distance is `1 - similarity`, not independent evidence.
+  This is **SemSim-E5**, not the original English SemScore configuration.
+- The same `similarity_metrics.py` contains `BERTScoreMetric`, the official
+  BERTScore implementation with `FacebookAI/xlm-roberta-large`, layer 17, fast tokenizer,
+  `idf=False`, `rescale_with_baseline=False`. Returns
+  `BERTScoreResult(precision, recall, f1)`. Layer 17 follows the upstream
+  XLM-R-large setting; it has not been optimized on ViMD test data.
+
+Both classes expose `score(reference, prediction)`,
+`score_batch(references, predictions)`, `aggregate(scores)` and `metadata()`.
+Keep one instance of each encoder across pretrained, small-AdaLoRA and
+full-AdaLoRA predictions. Group by model before aggregating; use the **same
+sample IDs and references**, and do not silently discard inference errors.
+`PredictionRecord` objects from the benchmark can be used directly:
+
+```python
+from mdv_asr_module.evaluation.metrics import SemSimE5, BERTScoreMetric
+
+e5 = SemSimE5(device="cuda", batch_size=16)
+bert = BERTScoreMetric(device="cuda", batch_size=8)
+
+# model_predictions: successful PredictionRecord rows for ONE ASR model.
+if any(row.error for row in model_predictions):
+    raise ValueError("Resolve inference errors before semantic evaluation")
+references = [row.reference for row in model_predictions]
+hypotheses = [row.prediction for row in model_predictions]
+e5_scores = e5.score_batch(references, hypotheses)
+bert_scores = bert.score_batch(references, hypotheses)
+summary = {**e5.aggregate(e5_scores), **bert.aggregate(bert_scores)}
+per_sample = [
+    {**row.to_dict(), "SemSim_E5": a.similarity, "SemDist_E5": a.distance,
+     "BERTScore_precision": b.precision, "BERTScore_recall": b.recall,
+     "BERTScore_F1": b.f1}
+    for row, a, b in zip(model_predictions, e5_scores, bert_scores)
+]
+# Save these alongside results, especially encoder revision/hash and versions.
+metric_config = {"e5": e5.metadata(), "bert_score": bert.metadata()}
+```
+
+Summaries use an **unweighted sentence mean**, median and 5th percentile;
+they are not corpus edit-error rates or percentages of semantic correctness.
+Subset the scored rows to aggregate by region/province without re-encoding.
+Preprocessing is NFC plus whitespace normalization only: accents, case,
+punctuation, numbers, negation, dialect vocabulary and English are preserved.
+Empty references and non-string inputs (including CSV NaN) raise; an empty
+hypothesis is assigned E5 similarity 0/distance 1 and BERTScore P/R/F1 0 by
+explicit policy and remains in the denominator. Empty aggregate metrics are
+`None`, not zero. Convert genuinely empty CSV hypothesis cells to `""` when
+reading; do not stringify NaN as `"nan"`.
+
+The default token ceiling is 512 **including special tokens and E5 prefixes**,
+or the tokenizer's lower limit. Overlong text raises instead of silently
+truncating; decide a consistent long-utterance policy before benchmarking.
+Use `revision=` with E5 or immutable local snapshots for either metric to pin
+weights. Store `metadata()` **after** scoring; a local snapshot may not expose
+an HF commit hash, so also record the snapshot provenance in your run config.
+Semantic similarity can miss negation/name/number errors; keep WER/CER and
+human review. The existing training/benchmark workflows do not automatically
+run these optional metrics or change checkpoint selection.
+
+Implementation references: [E5 model card](https://huggingface.co/intfloat/multilingual-e5-base),
+[BERTScore](https://github.com/Tiiiger/bert_score).
+
 ## Benchmarks and tests
 
 Before running `configs/benchmark/vimd_three_models.json`, set both adapter paths
@@ -102,3 +182,6 @@ weights and datasets are deliberately not stored in this code repository. Use
 `python -m pytest` to run the unit tests when the `dev` and `train` extras are
 installed. Tests use tiny random models on CPU without downloading pretrained
 weights or running ViMD training; Kaggle's two-GPU smoke is still required.
+Semantic metric tests additionally require the `semantic` extra and use a
+tiny locally generated encoder with the real BERTScore backend, not downloaded
+E5/XLM-R weights. They verify implementation behavior, not quality on ViMD.

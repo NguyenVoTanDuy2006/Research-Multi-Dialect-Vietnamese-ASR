@@ -1,0 +1,3 @@
+﻿model,level,group,n_samples,cer_errors,reference_chars,CER,wer_errors,reference_words,WER,delta_CER_vs_base,delta_WER_vs_base
+adalora,overall,all,2026,31271,436648,0.07161603854821275,12402,132471,0.09362049052245397,-0.010624118282918968,-0.015429792180930171
+base,overall,all,2026,35910,436648,0.08224015683113171,14446,132471,0.10905028270338414,,
