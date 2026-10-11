@@ -47,7 +47,9 @@ DATASET_ROOT = runtime.resolve_dataset_root(
 )
 OUTPUT_DIR = Path("/kaggle/working/vimd_qwen_pissa_full_2epoch")
 config_loader = ConfigLoader()
-config = config_loader.load(REPO_DIR / "configs/training/qwen_full_vimd_pissa_2epoch.json")
+config = config_loader.load(
+    REPO_DIR / "src/mdv_asr_module/configs/training/qwen_full_vimd_pissa_2epoch.json"
+)
 config = replace(config, dataset=replace(config.dataset, root=str(DATASET_ROOT), allow_download=False),
                  output_dir=str(OUTPUT_DIR))
 CONFIG_PATH = config_loader.save_resolved(config, OUTPUT_DIR / "resolved_config.json")
@@ -116,3 +118,20 @@ print("Benchmark adapters:", sorted(OUTPUT_DIR.glob("epoch_*_adapter")))
 # Để so sánh với base/AdaLoRA, dùng config benchmark có cùng split test và
 # adapter_path = epoch_N_adapter của PiSSA; loader vẫn là PeftModel như AdaLoRA.
 launcher.evaluate(**LAUNCH)
+
+# %% [markdown]
+# ## Dọn source clone khỏi output Kaggle
+#
+# Cell cuối chỉ chạy sau khi train và benchmark hoàn tất. Kết quả trong
+# OUTPUT_DIR nằm ngoài source clone nên vẫn được giữ để tải xuống.
+
+# %%
+from mdv_asr_module.runtime.cleanup import NotebookOutputCleaner
+
+if runtime.platform == "kaggle":
+    removed = NotebookOutputCleaner(working_dir=runtime.working_dir).remove_source_checkout(
+        REPO_DIR, preserve_paths=[OUTPUT_DIR]
+    )
+    print("Đã xóa source clone:", REPO_DIR if removed else "đã được xóa trước đó")
+else:
+    print("Bỏ qua dọn source clone vì runtime không phải Kaggle.")
