@@ -1,7 +1,7 @@
-PWD /run/media/fernir/Data/Documents/HCMUS/Research/report/6.10.2026
+PWD /run/media/fernir/Data/Documents/HCMUS/Research/report/latex-draft
 INPUT /usr/share/texmf-dist/web2c/texmf.cnf
 INPUT /var/lib/texmf/web2c/pdftex/pdflatex.fmt
-INPUT /run/media/fernir/Data/Documents/HCMUS/Research/report/6.10.2026/main.tex
+INPUT /run/media/fernir/Data/Documents/HCMUS/Research/report/latex-draft/main.tex
 OUTPUT .output/main.log
 INPUT /usr/share/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/share/texmf-dist/tex/latex/base/article.cls
