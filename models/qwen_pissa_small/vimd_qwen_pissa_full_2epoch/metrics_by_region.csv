@@ -1,4 +1,0 @@
-﻿model,region,n_samples,wer_errors,reference_words,WER,cer_errors,reference_chars,CER
-qwen_full_vimd_pissa,Central,147,1316,11459,0.1148442272449603,3216,37603,0.08552509108315826
-qwen_full_vimd_pissa,North,189,1057,15064,0.07016728624535316,2744,49947,0.05493823452860032
-qwen_full_vimd_pissa,South,148,965,11656,0.08278997940974606,2457,38142,0.06441717791411043

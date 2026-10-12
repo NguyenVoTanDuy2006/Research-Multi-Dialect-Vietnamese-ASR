@@ -1,14 +1,15 @@
 {
   "dataset": {
-    "kind": "auto",
+    "kind": "arrow",
     "root": "/kaggle/input/datasets/nvtd1796/small-vimd",
-    "handle": "thanhlamdev/vimd-dataset",
-    "dataset_id": "vimd",
-    "cache_dir": "outputs/cache",
+    "handle": null,
+    "dataset_id": "vimd_small",
+    "cache_dir": "/kaggle/working/outputs/cache",
     "allow_download": false
   },
+  "platform": "kaggle",
   "model": {
-    "key": "qwen_full_vimd_pissa",
+    "key": "qwen_small_vimd_pissa",
     "backend": "qwen3_asr",
     "model_id": "Qwen/Qwen3-ASR-1.7B-hf",
     "revision": null,
@@ -24,7 +25,7 @@
     "num_beams": 1
   },
   "train": {
-    "epochs": 2,
+    "epochs": 3,
     "per_device_batch_size": 1,
     "gradient_accumulation_steps": 8,
     "learning_rate": 0.0001,
@@ -63,6 +64,6 @@
     }
   },
   "benchmark": null,
-  "output_dir": "/kaggle/working/vimd_qwen_pissa_full_2epoch",
-  "run_id": "qwen_full_vimd_pissa_2epoch"
+  "output_dir": "/kaggle/working/outputs/fine-tuning/vimd_qwen_pissa_small_3epoch",
+  "run_id": "qwen_small_vimd_pissa_3epoch"
 }

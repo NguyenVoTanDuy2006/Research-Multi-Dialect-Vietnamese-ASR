@@ -1,0 +1,15 @@
+{
+  "epoch": 2,
+  "metrics": {
+    "n_samples": 485,
+    "wer_errors": 3411,
+    "reference_words": 39095,
+    "WER": 0.08724900882465789,
+    "cer_errors": 8709,
+    "reference_chars": 129617,
+    "CER": 0.0671902605368123,
+    "epoch": 2,
+    "optimizer_steps": 585
+  },
+  "adapter_path": "/kaggle/working/outputs/fine-tuning/vimd_qwen_pissa_small_3epoch/epoch_2_adapter"
+}

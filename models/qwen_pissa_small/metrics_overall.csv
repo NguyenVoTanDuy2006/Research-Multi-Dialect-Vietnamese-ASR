@@ -1,0 +1,2 @@
+﻿model,n_samples,wer_errors,reference_words,WER,cer_errors,reference_chars,CER
+qwen_small_vimd_pissa,484,3388,38179,0.0887398831818539,8652,125692,0.06883492982846959
