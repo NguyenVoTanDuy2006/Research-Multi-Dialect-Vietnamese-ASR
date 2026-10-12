@@ -68,7 +68,9 @@ class ASRBenchmarkWorkflow:
         run_config = {"dataset_fingerprint": index.source_fingerprint,
                       "models": [model.to_dict() for model in self.config.benchmark.models],
                       "decode": self.config.decode.to_dict(), "split": self.config.benchmark.split}
-        store = PredictionStore(prediction_path, self.config.benchmark.flush_every)
+        store = PredictionStore(
+            prediction_path, flush_every=self.config.benchmark.flush_every
+        )
         store.open(run_config, resume=self.config.benchmark.resume)
         runner = BenchmarkRunner(
             self.config.benchmark, self.dataset_workflow.source,
