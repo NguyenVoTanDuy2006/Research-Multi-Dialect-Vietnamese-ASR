@@ -46,10 +46,10 @@ def test_adapter_configs_use_the_attached_kaggle_model_paths():
     repo_root = Path(__file__).resolve().parents[2]
     configs_dir = repo_root / "src/mdv_asr_module/configs/models"
     expected_paths = {
-        "qwen_vimd_adalora_small": "/kaggle/input/models/nvtd1796/qwen3-asr-vimd-adapters/pytorch/adalora-small/V1",
-        "qwen_vimd_adalora_full": "/kaggle/input/models/nvtd1796/qwen3-asr-vimd-adapters/pytorch/adalora-full/V1",
-        "qwen_vimd_pissa_small": "/kaggle/input/models/nvtd1796/qwen3-asr-vimd-adapters/pytorch/pissa-small/V1",
-        "qwen_vimd_pissa_full": "/kaggle/input/models/nvtd1796/qwen3-asr-vimd-adapters/pytorch/pissa-full/V1",
+        "qwen_vimd_adalora_small": "/kaggle/input/models/nvtd1796/qwen3-asr-vimd-adapters/pytorch/adalora-small/1",
+        "qwen_vimd_adalora_full": "/kaggle/input/models/nvtd1796/qwen3-asr-vimd-adapters/pytorch/adalora-full/1",
+        "qwen_vimd_pissa_small": "/kaggle/input/models/nvtd1796/qwen3-asr-vimd-adapters/pytorch/pissa-small/1",
+        "qwen_vimd_pissa_full": "/kaggle/input/models/nvtd1796/qwen3-asr-vimd-adapters/pytorch/pissa-full/1",
     }
 
     loader = ConfigLoader()
