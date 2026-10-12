@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import importlib
 
-from mdv_asr_module.config.types import ModelSpec
+from mdv_asr_module.configs.types import ModelSpec
 
 
 class ASRBackendFactory:

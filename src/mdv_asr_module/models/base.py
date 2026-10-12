@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 import time
 from typing import Any
 
-from mdv_asr_module.config.types import DecodeConfig, ModelSpec
+from mdv_asr_module.configs.types import DecodeConfig, ModelSpec
 from mdv_asr_module.data.records import AudioSample
 
 

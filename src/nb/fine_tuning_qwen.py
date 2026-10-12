@@ -38,7 +38,7 @@ sys.path.insert(0, str(REPO_DIR / "src"))
 # %%
 import torch
 
-from mdv_asr_module.config import ConfigLoader
+from mdv_asr_module.configs import ConfigLoader
 from mdv_asr_module.runtime.environment import RuntimeEnvironment
 
 runtime = RuntimeEnvironment(project_root=REPO_DIR)

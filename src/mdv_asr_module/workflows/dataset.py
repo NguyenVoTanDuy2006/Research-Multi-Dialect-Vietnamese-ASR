@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from mdv_asr_module.config.types import DatasetConfig
+from mdv_asr_module.configs.types import DatasetConfig
 from mdv_asr_module.data.audio import AudioPreview, AudioReader
 from mdv_asr_module.data.manifest import ManifestRepository
 from mdv_asr_module.data.sources import DatasetSourceFactory

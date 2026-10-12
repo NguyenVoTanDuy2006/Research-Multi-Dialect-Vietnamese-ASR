@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import time
 
-from mdv_asr_module.config.types import DecodeConfig
+from mdv_asr_module.configs.types import DecodeConfig
 from mdv_asr_module.data.records import AudioSample
 
 from .base import ModelBundle, TransformersBackendBase, TranscriptionResult, extract_text

@@ -8,7 +8,7 @@ import os
 import shutil
 import tempfile
 
-from mdv_asr_module.config.types import PiSSASettings
+from mdv_asr_module.configs.types import PiSSASettings
 from .base import FineTuningMethod
 
 

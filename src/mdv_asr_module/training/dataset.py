@@ -5,7 +5,7 @@ from typing import Iterable
 
 from torch.utils.data import DataLoader, Dataset, DistributedSampler
 
-from mdv_asr_module.config.types import DatasetConfig, TrainConfig
+from mdv_asr_module.configs.types import DatasetConfig, TrainConfig
 from mdv_asr_module.data.audio import AudioReader
 from mdv_asr_module.data.records import SampleRecord
 from mdv_asr_module.data.sources import DatasetSourceFactory

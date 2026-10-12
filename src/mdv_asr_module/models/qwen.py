@@ -6,7 +6,7 @@ from typing import Any
 
 import numpy as np
 
-from mdv_asr_module.config.types import DecodeConfig, ModelSpec
+from mdv_asr_module.configs.types import DecodeConfig, ModelSpec
 from mdv_asr_module.data.records import AudioSample
 
 from .base import ASRBackend, ModelBundle

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from mdv_asr_module.config.types import BenchmarkConfig, DecodeConfig
+from mdv_asr_module.configs.types import BenchmarkConfig, DecodeConfig
 from mdv_asr_module.core.errors import IncompleteEvaluationError
 from mdv_asr_module.models.factory import ASRBackendFactory
 from mdv_asr_module.data.records import SampleRecord

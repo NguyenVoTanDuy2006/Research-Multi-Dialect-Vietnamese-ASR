@@ -2,7 +2,7 @@ from __future__ import annotations
 from copy import deepcopy
 from pathlib import Path
 
-from mdv_asr_module.config.types import AdaLoraSettings
+from mdv_asr_module.configs.types import AdaLoraSettings
 from .base import FineTuningMethod
 
 

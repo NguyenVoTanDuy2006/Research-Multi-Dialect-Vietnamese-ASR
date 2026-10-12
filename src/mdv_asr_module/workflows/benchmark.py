@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from mdv_asr_module.config.types import BenchmarkConfig, DecodeConfig
+from mdv_asr_module.configs.types import BenchmarkConfig, DecodeConfig
 from mdv_asr_module.data.audio import AudioReader
 from mdv_asr_module.data.records import SampleRecord
 from mdv_asr_module.data.sources import DatasetSource, DatasetSourceFactory

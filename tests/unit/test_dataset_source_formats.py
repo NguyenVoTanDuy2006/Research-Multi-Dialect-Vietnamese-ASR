@@ -5,8 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from mdv_asr_module.config.loader import ConfigLoader
-from mdv_asr_module.config.types import DatasetConfig
+from mdv_asr_module.configs.loader import ConfigLoader
+from mdv_asr_module.configs.types import DatasetConfig
 from mdv_asr_module.data.sources import (
     ArrowDatasetSource,
     DatasetSourceFactory,
@@ -84,13 +84,11 @@ class DatasetSourceFormatTests(unittest.TestCase):
 
     def test_small_training_script_uses_shared_shard_source(self):
         root = Path(__file__).resolve().parents[2]
-        script = (root / "src/nb/kaggle_finetune_qwen_small_vimd.py").read_text(
-            encoding="utf-8"
-        )
+        script = (root / "src/nb/fine_tuning_qwen.py").read_text(encoding="utf-8")
 
         self.assertIn("DatasetSourceFactory.create(config.dataset)", script)
         self.assertIn("source.build_index()", script)
-        self.assertIn("qwen_small_vimd_adalora.json", script)
+        self.assertIn("qwen_small_vimd_pissa.json", script)
         self.assertNotIn("zipfile", script)
         self.assertNotIn("sample_metadata.json", script)
 

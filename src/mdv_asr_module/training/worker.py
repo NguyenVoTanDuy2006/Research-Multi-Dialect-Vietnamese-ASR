@@ -5,7 +5,7 @@ import json
 from dataclasses import replace
 from pathlib import Path
 
-from mdv_asr_module.config.loader import ConfigLoader
+from mdv_asr_module.configs.loader import ConfigLoader
 from mdv_asr_module.core.artifacts import hash_payload
 from mdv_asr_module.data.manifest import ManifestRepository
 from mdv_asr_module.data.sources import DatasetSourceFactory
@@ -70,7 +70,7 @@ def main(argv=None):
                     raise FileNotFoundError("Training evaluation needs best_checkpoint.json")
                 best = json.loads(best_path.read_text(encoding="utf-8"))
                 selected_model = replace(config.model, adapter_path=best["adapter_path"])
-                from mdv_asr_module.config.types import BenchmarkConfig
+                from mdv_asr_module.configs.types import BenchmarkConfig
 
                 benchmark_config = BenchmarkConfig(models=(selected_model,), split="test")
             if benchmark_config is None:

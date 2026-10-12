@@ -56,7 +56,7 @@ class ASRTrainingWorkflow:
         return CheckpointManager(self.config.output_dir).get_best_adapter()
 
     def _write_config(self):
-        from mdv_asr_module.config.loader import ConfigLoader
+        from mdv_asr_module.configs.loader import ConfigLoader
 
         path = Path(self.config.output_dir) / "resolved_config.json"
         return ConfigLoader().save_resolved(self.config, path)

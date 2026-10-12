@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import json
 
-from mdv_asr_module.config.loader import ConfigLoader
-from mdv_asr_module.config.types import BenchmarkConfig, ModelSpec
+from mdv_asr_module.configs.loader import ConfigLoader
+from mdv_asr_module.configs.types import BenchmarkConfig, ModelSpec
 from mdv_asr_module.evaluation.alignment import WordAligner
 from mdv_asr_module.evaluation.metrics import ErrorCounter, MetricAggregator
 from mdv_asr_module.evaluation.records import PredictionRecord

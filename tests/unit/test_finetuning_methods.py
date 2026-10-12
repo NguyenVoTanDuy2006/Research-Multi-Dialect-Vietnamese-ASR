@@ -11,7 +11,7 @@ from transformers import PretrainedConfig
 from transformers.modeling_outputs import CausalLMOutput
 from peft import PeftModel
 
-from mdv_asr_module.config import ConfigLoader, PiSSASettings, AdaLoraSettings
+from mdv_asr_module.configs import ConfigLoader, PiSSASettings, AdaLoraSettings
 from mdv_asr_module.runtime.distributed import DistributedContext
 from mdv_asr_module.training.methods import PiSSAMethod, AdaLoRAMethod, ModuleTargetSelector
 from mdv_asr_module.training.optimization import OptimizerStepController, TrainProgress

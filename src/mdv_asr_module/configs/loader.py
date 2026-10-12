@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import json
-from dataclasses import fields, is_dataclass
+from dataclasses import fields, is_dataclass, replace
 from pathlib import Path
-from typing import Any, TypeVar, get_origin, get_type_hints
+from typing import Any, Iterable, TypeVar, get_origin, get_type_hints
 
-from .types import ExperimentConfig
+from .types import BenchmarkConfig, ExperimentConfig
 
 T = TypeVar("T")
 
@@ -50,6 +50,47 @@ class ConfigLoader:
         if missing:
             raise KeyError(f"Config sections not found in {path}: {sorted(missing)}")
         config = self.from_dict({key: data[key] for key in sections})
+        config.validate()
+        return config
+
+    def load_benchmark_configs(
+        self,
+        dataset_config_path: str | Path,
+        model_config_paths: Iterable[str | Path],
+        *,
+        output_dir: str | Path,
+        split: str = "test",
+        resume: bool = True,
+        flush_every: int = 10,
+    ) -> ExperimentConfig:
+        """Combine one dataset config and separate model configs for benchmarking."""
+        dataset_data = json.loads(Path(dataset_config_path).read_text(encoding="utf-8"))
+        if not isinstance(dataset_data, dict) or "dataset" not in dataset_data:
+            raise ValueError(f"Dataset config must contain a dataset section: {dataset_config_path}")
+        dataset_config = self.from_dict({
+            key: dataset_data[key]
+            for key in ("dataset", "platform", "decode")
+            if key in dataset_data
+        })
+        dataset_config.validate()
+        model_specs = []
+        for path in model_config_paths:
+            model_config = self.load_sections(path, ("model",))
+            if model_config.model is None:
+                raise ValueError(f"Model config has no model section: {path}")
+            model_specs.append(model_config.model)
+        if not model_specs:
+            raise ValueError("Benchmark requires at least one model config path")
+
+        config = replace(
+            dataset_config,
+            benchmark=BenchmarkConfig(
+                models=tuple(model_specs), split=split, resume=resume,
+                flush_every=flush_every,
+            ),
+            output_dir=str(output_dir),
+            run_id=f"{dataset_config.dataset.dataset_id}_benchmark",
+        )
         config.validate()
         return config
 

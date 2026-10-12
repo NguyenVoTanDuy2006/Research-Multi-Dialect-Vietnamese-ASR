@@ -4,7 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
-from mdv_asr_module.config.loader import ConfigLoader
+from mdv_asr_module.configs.loader import ConfigLoader
 
 
 def _parser() -> argparse.ArgumentParser:

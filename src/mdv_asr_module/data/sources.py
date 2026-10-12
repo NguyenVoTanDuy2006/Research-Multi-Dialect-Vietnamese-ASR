@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable
 
-from mdv_asr_module.config.types import DatasetConfig
+from mdv_asr_module.configs.types import DatasetConfig
 from mdv_asr_module.core.errors import DatasetIntegrityError
 
 from .index import DatasetIndex

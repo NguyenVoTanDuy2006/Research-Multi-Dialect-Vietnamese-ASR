@@ -8,7 +8,7 @@ import torch
 from torch.nn.parallel import DistributedDataParallel
 from transformers import get_linear_schedule_with_warmup
 
-from mdv_asr_module.config.types import DecodeConfig, ModelSpec, TrainConfig
+from mdv_asr_module.configs.types import DecodeConfig, ModelSpec, TrainConfig
 from mdv_asr_module.core.artifacts import hash_payload
 from mdv_asr_module.data.sources import DatasetSourceFactory
 from mdv_asr_module.evaluation.evaluator import ASREvaluator
