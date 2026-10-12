@@ -9,6 +9,7 @@
 from pathlib import Path
 import importlib
 import importlib.util
+import shutil
 import subprocess
 import sys
 
@@ -16,14 +17,15 @@ REPO_URL = "https://github.com/NguyenVoTanDuy2006/Research-Multi-Dialect-Vietnam
 REPO_BRANCH = "source_code"
 REPO_DIR = Path("/kaggle/working/mdv_asr_source")
 
-if not REPO_DIR.is_dir():
-    subprocess.run(
-        ["git", "clone", "--depth", "1", "--branch", REPO_BRANCH,
-         REPO_URL, str(REPO_DIR)],
-        check=True,
-    )
-else:
-    print("Dùng source clone hiện có:", REPO_DIR)
+if REPO_DIR.exists():
+    shutil.rmtree(REPO_DIR)
+    print("Đã xóa source clone cũ:", REPO_DIR)
+
+subprocess.run(
+    ["git", "clone", "--depth", "1", "--branch", REPO_BRANCH,
+     REPO_URL, str(REPO_DIR)],
+    check=True,
+)
 
 subprocess.run(
     [sys.executable, "-m", "pip", "install", "-q", "-r",
