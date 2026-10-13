@@ -26,7 +26,7 @@ def _as_float_list(values) -> list[float]:
 
 def _content_token_ids(tokenizer, text: str) -> list[int]:
     return list(tokenizer.encode(
-        text, add_special_tokens=False, truncation=False
+        text, add_special_tokens=False, truncation=False, verbose=False
     ))
 
 
@@ -53,15 +53,73 @@ def _split_content_tokens(token_ids: list[int], *, max_length: int,
 
 def _prepare_token_batch(tokenizer, sequences: list[list[int]], *,
                          include_special_mask: bool = False):
-    features = [
-        tokenizer.prepare_for_model(
-            sequence, add_special_tokens=True, truncation=False,
-            return_attention_mask=True,
-            return_special_tokens_mask=include_special_mask,
+    prepare_for_model = getattr(tokenizer, "prepare_for_model", None)
+    if callable(prepare_for_model):
+        features = [
+            prepare_for_model(
+                sequence, add_special_tokens=True, truncation=False,
+                return_attention_mask=True,
+                return_special_tokens_mask=include_special_mask,
+            )
+            for sequence in sequences
+        ]
+        batch = dict(tokenizer.pad(features, padding=True, return_tensors="pt"))
+    else:
+        # Transformers 5's TokenizersBackend no longer exposes prepare_for_model.
+        # Infer the single-sequence special-token wrapper from one probe encoding,
+        # then retain each chunk's original IDs exactly and pad the batch ourselves.
+        probe_text = "mdv asr metric probe"
+        probe_ids = tokenizer.encode(
+            probe_text, add_special_tokens=False, truncation=False, verbose=False
         )
-        for sequence in sequences
-    ]
-    batch = dict(tokenizer.pad(features, padding=True, return_tensors="pt"))
+        wrapped_probe = tokenizer.encode(
+            probe_text, add_special_tokens=True, truncation=False, verbose=False
+        )
+        if not probe_ids:
+            raise ValueError("Tokenizer could not encode the special-token probe text.")
+        content_start = next((
+            index for index in range(len(wrapped_probe) - len(probe_ids) + 1)
+            if wrapped_probe[index:index + len(probe_ids)] == probe_ids
+        ), None)
+        if content_start is None:
+            raise ValueError(
+                "Cannot infer tokenizer special-token prefix/suffix for chunked inputs."
+            )
+        prefix_ids = wrapped_probe[:content_start]
+        suffix_ids = wrapped_probe[content_start + len(probe_ids):]
+        if len(prefix_ids) + len(suffix_ids) != _special_token_count(tokenizer):
+            raise ValueError(
+                "Chunked inputs require special tokens to wrap a single contiguous content sequence."
+            )
+
+        rows = [prefix_ids + list(sequence) + suffix_ids for sequence in sequences]
+        width = max(map(len, rows))
+        pad_id = getattr(tokenizer, "pad_token_id", None)
+        padding_side = getattr(tokenizer, "padding_side", "right")
+        if width > min(map(len, rows)) and pad_id is None:
+            raise ValueError("Tokenizer needs a pad_token_id to batch chunked inputs.")
+
+        input_ids, attention_masks, special_masks = [], [], []
+        for row, sequence in zip(rows, sequences):
+            padding = [pad_id] * (width - len(row))
+            attention = [1] * len(row)
+            special = [1] * len(prefix_ids) + [0] * len(sequence) + [1] * len(suffix_ids)
+            if padding_side == "left":
+                input_ids.append(padding + row)
+                attention_masks.append([0] * len(padding) + attention)
+                special_masks.append([0] * len(padding) + special)
+            else:
+                input_ids.append(row + padding)
+                attention_masks.append(attention + [0] * len(padding))
+                special_masks.append(special + [0] * len(padding))
+
+        import torch
+        batch = {
+            "input_ids": torch.tensor(input_ids, dtype=torch.long),
+            "attention_mask": torch.tensor(attention_masks, dtype=torch.long),
+        }
+        if include_special_mask:
+            batch["special_tokens_mask"] = torch.tensor(special_masks, dtype=torch.long)
     special_mask = batch.pop("special_tokens_mask", None)
     return batch, special_mask
 
@@ -152,7 +210,8 @@ class SemSimE5(Metric[SemSimE5Result]):
         import torch.nn.functional as functional
 
         encoded = self._tokenizer(
-            texts, padding=False, truncation=False, add_special_tokens=True
+            texts, padding=False, truncation=False, add_special_tokens=True,
+            verbose=False,
         )["input_ids"]
         limit = self._effective_max_length()
         lengths = [len(row) for row in encoded]
@@ -165,7 +224,7 @@ class SemSimE5(Metric[SemSimE5Result]):
 
         batch = self._tokenizer(
             texts, padding=True, truncation=False, return_tensors="pt",
-            add_special_tokens=True,
+            add_special_tokens=True, verbose=False,
         )
         batch = {key: value.to(self.device) for key, value in batch.items()}
         with torch.inference_mode():
@@ -187,7 +246,7 @@ class SemSimE5(Metric[SemSimE5Result]):
     def _is_overlong(self, text: str) -> bool:
         prepared = self._tokenizer(
             [f"query: {text}"], padding=False, truncation=False,
-            add_special_tokens=True,
+            add_special_tokens=True, verbose=False,
         )["input_ids"][0]
         return len(prepared) > self._effective_max_length()
 
@@ -361,7 +420,9 @@ class BERTScoreMetric(Metric[BERTScoreResult]):
             return
         limit = self._effective_max_length()
         for text in texts:
-            ids = tokenizer.encode(text, add_special_tokens=True, truncation=False)
+            ids = tokenizer.encode(
+                text, add_special_tokens=True, truncation=False, verbose=False
+            )
             if len(ids) > limit:
                 raise ValueError(
                     f"BERTScore input has {len(ids)} tokens including special tokens; "
@@ -370,7 +431,9 @@ class BERTScoreMetric(Metric[BERTScoreResult]):
 
     def _is_overlong(self, text: str) -> bool:
         tokenizer = self._scorer._tokenizer
-        ids = tokenizer.encode(text, add_special_tokens=True, truncation=False)
+        ids = tokenizer.encode(
+            text, add_special_tokens=True, truncation=False, verbose=False
+        )
         return len(ids) > self._effective_max_length()
 
     def _encode_content_tokens(self, text: str):

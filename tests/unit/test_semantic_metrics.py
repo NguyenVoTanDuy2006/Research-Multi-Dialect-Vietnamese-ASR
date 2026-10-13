@@ -11,6 +11,7 @@ from mdv_asr_module.evaluation.similarity_metrics import (
     BERTScoreResult,
     SemSimE5,
     SemSimE5Result,
+    _prepare_token_batch,
 )
 
 
@@ -21,8 +22,9 @@ class TinyTokenizer:
         del pair
         return 2
 
-    def encode(self, text, add_special_tokens=True, truncation=False):
+    def encode(self, text, add_special_tokens=True, truncation=False, verbose=True):
         del truncation
+        del verbose
         ids = [ord(token[0]) % 31 + 3 for token in text.split()]
         return [1, *ids, 2] if add_special_tokens else ids
 
@@ -55,17 +57,67 @@ class TinyTokenizer:
         return values
 
     def __call__(self, texts, padding=False, truncation=False,
-                 return_tensors=None, add_special_tokens=True):
+                 return_tensors=None, add_special_tokens=True,
+                 return_attention_mask=True, return_special_tokens_mask=False,
+                 verbose=True):
         del truncation
+        del return_attention_mask
+        del verbose
         rows = [self.encode(text, add_special_tokens=add_special_tokens) for text in texts]
+        special_rows = [
+            ([1, *([0] * (len(row) - 2)), 1] if add_special_tokens else [0] * len(row))
+            for row in rows
+        ]
         if not padding:
-            return {"input_ids": rows}
+            result = {"input_ids": rows}
+            if return_special_tokens_mask:
+                result["special_tokens_mask"] = special_rows
+            return result
         width = max(map(len, rows))
         ids = [row + [0] * (width - len(row)) for row in rows]
         masks = [[1] * len(row) + [0] * (width - len(row)) for row in rows]
+        special_masks = [
+            row + [0] * (width - len(row))
+            for row, ids_row in zip(special_rows, rows)
+        ]
         if return_tensors == "pt":
-            return {"input_ids": torch.tensor(ids), "attention_mask": torch.tensor(masks)}
-        return {"input_ids": ids, "attention_mask": masks}
+            result = {"input_ids": torch.tensor(ids), "attention_mask": torch.tensor(masks)}
+            if return_special_tokens_mask:
+                result["special_tokens_mask"] = torch.tensor(special_masks)
+            return result
+        result = {"input_ids": ids, "attention_mask": masks}
+        if return_special_tokens_mask:
+            result["special_tokens_mask"] = special_masks
+        return result
+
+
+class Transformers5TinyTokenizer:
+    """Tokenizer facade matching Transformers 5's tokenizer API (no prepare_for_model)."""
+
+    def __init__(self):
+        self.delegate = TinyTokenizer()
+
+    def __getattr__(self, name):
+        if name == "prepare_for_model":
+            raise AttributeError(name)
+        return getattr(self.delegate, name)
+
+    def decode(self, token_ids, skip_special_tokens=False,
+               clean_up_tokenization_spaces=False):
+        del clean_up_tokenization_spaces
+        id_to_char = {ord(char) % 31 + 3: char for char in "abcdefghijklmnopqrstuvwxyz"}
+        pieces = []
+        for token_id in token_ids:
+            token_id = int(token_id)
+            if token_id in {1, 2}:
+                if not skip_special_tokens:
+                    pieces.append("<s>" if token_id == 1 else "</s>")
+            else:
+                pieces.append(id_to_char[token_id])
+        return " ".join(pieces)
+
+    def __call__(self, *args, **kwargs):
+        return self.delegate(*args, **kwargs)
 
 
 class TinyEncoder(torch.nn.Module):
@@ -194,6 +246,48 @@ class SemanticMetricTests(unittest.TestCase):
         self.assertAlmostEqual(changed_tail.f1, 0.75, places=6)
         self.assertIn(32, scorer._model.seen_ids)  # The final "z" token was encoded.
         self.assertEqual(metric.metadata()["long_text_policy"], "chunk")
+
+    def test_long_text_chunking_supports_transformers_5_tokenizer_api(self):
+        from transformers.models.xlm_roberta.tokenization_xlm_roberta import XLMRobertaTokenizer
+
+        xlm_vocab = [
+            ("<s>", 0.0), ("<pad>", 0.0), ("</s>", 0.0),
+            ("<unk>", 0.0), ("<mask>", 0.0),
+            ("▁mdv", 0.0), ("▁asr", 0.0), ("▁metric", 0.0),
+            ("▁probe", 0.0), ("▁hello", 0.0), ("▁world", 0.0),
+        ]
+        xlm_tokenizer = XLMRobertaTokenizer(vocab=xlm_vocab)
+        self.assertFalse(hasattr(xlm_tokenizer, "prepare_for_model"))
+        xlm_ids = xlm_tokenizer.encode(
+            "hello world", add_special_tokens=False, verbose=False
+        )
+        xlm_batch, xlm_special_mask = _prepare_token_batch(
+            xlm_tokenizer, [xlm_ids, xlm_ids[:1]], include_special_mask=True
+        )
+        self.assertEqual(xlm_batch["input_ids"].tolist(), [
+            [0, *xlm_ids, 2], [0, xlm_ids[0], 2, 1],
+        ])
+        self.assertEqual(xlm_special_mask.tolist(), [
+            [1, 0, 0, 1], [1, 0, 1, 0],
+        ])
+
+        modern_tokenizer = Transformers5TinyTokenizer()
+        e5 = SemSimE5(
+            tokenizer=modern_tokenizer, encoder=TinyEncoder(), device="cpu",
+            max_length=5, long_text_policy="chunk",
+        )
+        e5_score = e5.score("a b c d", "a b c d")
+        self.assertTrue(e5_score.chunked)
+        self.assertAlmostEqual(e5_score.similarity, 1.0, places=6)
+
+        scorer = TinyBERTScorer()
+        scorer._tokenizer = modern_tokenizer
+        bert = BERTScoreMetric(
+            scorer=scorer, device="cpu", max_length=4, long_text_policy="chunk",
+        )
+        bert_score = bert.score("a b c d", "a b c d")
+        self.assertTrue(bert_score.chunked)
+        self.assertAlmostEqual(bert_score.f1, 1.0, places=6)
 
     def test_empty_hypothesis_does_not_load_semantic_models(self):
         e5 = SemSimE5()
