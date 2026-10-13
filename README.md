@@ -94,6 +94,45 @@ Artifacts have distinct purposes:
 Both methods share the optimizer-step lifecycle and checkpoint interface.
 Existing AdaLoRA JSON configs continue to work without `train.method`.
 
+## Optional semantic metrics
+
+WER/CER stay in `evaluation/error_metrics.py`. Semantic metrics are separate in
+`evaluation/similarity_metrics.py`; both groups implement the abstract
+`evaluation/metric.py` API. Install the optional encoder dependencies with:
+
+```bash
+python -m pip install -e ".[semantic]"
+```
+
+`SemSimE5` uses `intfloat/multilingual-e5-base`, symmetric `query: ` prefixes,
+attention-masked mean pooling and cosine similarity. `BERTScoreMetric` wraps
+the official BERTScore implementation with `FacebookAI/xlm-roberta-large`,
+layer 17, IDF and baseline rescaling disabled. Both lazily load and reuse one
+model instance; they accept text pairs or aligned batches and summarize
+sentence-level mean, median and 5th percentile. Their scores are similarity
+indicators, not percentages of semantic correctness, and do not replace WER/CER
+or manual checks for negation, names and numbers.
+
+```python
+from mdv_asr_module.evaluation.similarity_metrics import BERTScoreMetric, SemSimE5
+
+e5 = SemSimE5(device="cuda", batch_size=16)
+bert = BERTScoreMetric(device="cuda", batch_size=8)
+e5_scores = e5.score_batch(references, hypotheses)
+bert_scores = bert.score_batch(references, hypotheses)
+summary = {**e5.aggregate(e5_scores), **bert.aggregate(bert_scores)}
+metric_config = {"e5": e5.metadata(), "bert_score": bert.metadata()}
+```
+
+Input rows must have a non-empty string reference and string hypothesis. Empty
+hypotheses remain included with similarity/distance `0/1` for E5 and
+precision/recall/F1 `0` for BERTScore. Inputs exceeding the 512-token limit
+(including prefixes/special tokens) raise instead of being silently truncated.
+For repeatable comparisons, use an immutable local model snapshot for
+BERTScore and pin `revision=` for E5. Run the metrics separately on each model's
+paired references/sample IDs; the benchmark workflow does not run them
+automatically.
+
 ## Benchmarks and tests
 
 Before running `configs/benchmark/vimd_three_models.json`, set both adapter paths

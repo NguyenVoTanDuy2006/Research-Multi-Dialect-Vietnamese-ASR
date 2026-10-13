@@ -5,7 +5,7 @@ from pathlib import Path
 from mdv_asr_module.core.artifacts import ArtifactStore
 from mdv_asr_module.core.errors import DatasetIntegrityError
 
-from .metrics import MetricAggregator
+from .error_metrics import MetricAggregator
 from .records import EvaluationResult
 
 

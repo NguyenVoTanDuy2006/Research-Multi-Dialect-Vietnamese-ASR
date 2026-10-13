@@ -1,26 +1,17 @@
+"""WER/CER sentence counters and corpus-level error aggregation."""
+
 from __future__ import annotations
 
 from collections import defaultdict
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import Iterable
+from typing import Any
 
 from mdv_asr_module.core.errors import DatasetIntegrityError
 
-from .normalization import TextNormalizer
+from .helper import TextNormalizer, distribution_summary, edit_distance, validate_text_pair
+from .metric import Metric
 from .records import ErrorCounts, PredictionRecord
-
-
-def edit_distance(reference, prediction) -> int:
-    if len(reference) < len(prediction):
-        reference, prediction = prediction, reference
-    previous = list(range(len(prediction) + 1))
-    for i, left in enumerate(reference, 1):
-        current = [i]
-        for j, right in enumerate(prediction, 1):
-            current.append(min(current[-1] + 1, previous[j] + 1,
-                               previous[j - 1] + (left != right)))
-        previous = current
-    return previous[-1]
 
 
 @dataclass(frozen=True)
@@ -63,6 +54,64 @@ class CERCounter:
         return MetricCount(edit_distance(reference_chars, prediction_chars), len(reference_chars))
 
 
+class WERMetric(Metric[MetricCount]):
+    """Sentence-level WER score plus macro distribution and corpus aggregation."""
+
+    name = "WER"
+
+    def __init__(self, counter: WERCounter | None = None):
+        self.counter = counter or WERCounter()
+
+    def score(self, reference: str, prediction: str) -> MetricCount:
+        reference, prediction = validate_text_pair(reference, prediction)
+        return self.counter.count(reference, prediction)
+
+    def aggregate(self, scores: Sequence[MetricCount]) -> dict[str, Any]:
+        scores = list(scores)
+        distribution = distribution_summary(score.rate for score in scores)
+        errors = sum(score.errors for score in scores)
+        units = sum(score.reference_units for score in scores)
+        return {
+            "n_samples": len(scores), "wer_errors": errors, "reference_words": units,
+            "WER": errors / units if units else None,
+            "WER_sentence_mean": distribution["mean"],
+            "WER_sentence_median": distribution["median"],
+            "WER_sentence_p05": distribution["p05"],
+        }
+
+    def metadata(self) -> dict[str, Any]:
+        return {"name": self.name, "normalization": self.counter.normalizer.version}
+
+
+class CERMetric(Metric[MetricCount]):
+    """Sentence-level CER score plus macro distribution and corpus aggregation."""
+
+    name = "CER"
+
+    def __init__(self, counter: CERCounter | None = None):
+        self.counter = counter or CERCounter()
+
+    def score(self, reference: str, prediction: str) -> MetricCount:
+        reference, prediction = validate_text_pair(reference, prediction)
+        return self.counter.count(reference, prediction)
+
+    def aggregate(self, scores: Sequence[MetricCount]) -> dict[str, Any]:
+        scores = list(scores)
+        distribution = distribution_summary(score.rate for score in scores)
+        errors = sum(score.errors for score in scores)
+        units = sum(score.reference_units for score in scores)
+        return {
+            "n_samples": len(scores), "cer_errors": errors, "reference_chars": units,
+            "CER": errors / units if units else None,
+            "CER_sentence_mean": distribution["mean"],
+            "CER_sentence_median": distribution["median"],
+            "CER_sentence_p05": distribution["p05"],
+        }
+
+    def metadata(self) -> dict[str, Any]:
+        return {"name": self.name, "normalization": self.counter.normalizer.version}
+
+
 class ErrorCounter:
     """Compatibility facade that combines separate WER and CER counters."""
 
@@ -88,6 +137,8 @@ class ErrorCounter:
 
 
 class MetricAggregator:
+    """Compatibility corpus aggregator used by existing reports/workflows."""
+
     def __init__(self, counter: ErrorCounter | None = None):
         self.counter = counter or ErrorCounter()
 
@@ -157,5 +208,3 @@ class MetricAggregator:
         return {"n_samples": len(rows),
                 "macro_wer": sum(value.rate for value in wer_counts) / len(wer_counts) if wer_counts else 0.0,
                 "macro_cer": sum(value.rate for value in cer_counts) / len(cer_counts) if cer_counts else 0.0}
-
-

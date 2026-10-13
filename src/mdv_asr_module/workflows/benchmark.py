@@ -94,7 +94,7 @@ class ASRBenchmarkWorkflow:
 
     def report(self):
         rows = PredictionStore(self.output_dir / "predictions.jsonl").load_all()
-        from mdv_asr_module.evaluation.metrics import MetricAggregator
+        from mdv_asr_module.evaluation.error_metrics import MetricAggregator
 
         aggregator = MetricAggregator()
         return {model: aggregator.overall(

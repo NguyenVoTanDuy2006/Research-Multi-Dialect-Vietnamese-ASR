@@ -12,7 +12,7 @@ from mdv_asr_module.configs.types import DecodeConfig, ModelSpec, TrainConfig
 from mdv_asr_module.core.artifacts import hash_payload
 from mdv_asr_module.data.sources import DatasetSourceFactory
 from mdv_asr_module.evaluation.evaluator import ASREvaluator
-from mdv_asr_module.evaluation.metrics import MetricAggregator
+from mdv_asr_module.evaluation.error_metrics import MetricAggregator
 from mdv_asr_module.models.base import ModelBundle
 from mdv_asr_module.models.qwen import QwenASRBackend, QwenModelLoader
 from mdv_asr_module.runtime.distributed import DistributedContext

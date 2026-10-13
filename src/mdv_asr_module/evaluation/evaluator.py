@@ -8,7 +8,7 @@ from mdv_asr_module.data.records import SampleRecord
 from mdv_asr_module.data.sources import DatasetSource
 from mdv_asr_module.runtime.distributed import DistributedContext
 
-from .metrics import ErrorCounter
+from .error_metrics import ErrorCounter
 from .records import EvaluationResult, PredictionRecord
 
 

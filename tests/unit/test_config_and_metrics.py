@@ -4,10 +4,9 @@ import json
 
 from mdv_asr_module.configs.loader import ConfigLoader
 from mdv_asr_module.configs.types import BenchmarkConfig, ModelSpec
-from mdv_asr_module.evaluation.alignment import WordAligner
-from mdv_asr_module.evaluation.metrics import ErrorCounter, MetricAggregator
+from mdv_asr_module.evaluation.error_metrics import ErrorCounter, MetricAggregator
+from mdv_asr_module.evaluation.helper import TextNormalizer, WordAligner
 from mdv_asr_module.evaluation.records import PredictionRecord
-from mdv_asr_module.evaluation.normalization import TextNormalizer
 
 
 def test_config_loader_round_trip_and_unknown_field(tmp_path):
