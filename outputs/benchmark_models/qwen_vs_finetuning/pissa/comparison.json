@@ -1,0 +1,20 @@
+{
+  "qwen_vimd_pissa_small": {
+    "n_samples": 2026,
+    "wer_errors": 12536,
+    "reference_words": 132471,
+    "WER": 0.09463203267130164,
+    "cer_errors": 32152,
+    "reference_chars": 436648,
+    "CER": 0.0736336820505304
+  },
+  "qwen_vimd_pissa_full": {
+    "n_samples": 2026,
+    "wer_errors": 11269,
+    "reference_words": 132471,
+    "WER": 0.0850676751892867,
+    "cer_errors": 28395,
+    "reference_chars": 436648,
+    "CER": 0.06502949744416556
+  }
+}
