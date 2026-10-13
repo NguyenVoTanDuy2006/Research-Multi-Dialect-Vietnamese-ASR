@@ -371,12 +371,130 @@ def score_unique_pairs(metric, label: str):
     return results, elapsed
 
 
+def smoke_test_e5_chunking(metric):
+    """Exercise short and chunked E5 paths on real prediction pairs before full scoring."""
+    if semantic_pairs.empty:
+        print("SemSim-E5 smoke test skipped: there are no non-empty prediction pairs.", flush=True)
+        return
+    if not hasattr(metric, "_tokenizer") or not hasattr(metric, "_effective_max_length"):
+        # Keeps the notebook's lightweight end-to-end test double independent of HF internals.
+        smoke_results = metric.score_batch(
+            semantic_pairs["reference"].iloc[:1].tolist(),
+            semantic_pairs["prediction"].iloc[:1].tolist(),
+        )
+        if len(smoke_results) != 1 or not -1.0 <= float(smoke_results[0].similarity) <= 1.0:
+            raise RuntimeError("SemSim-E5 basic smoke test returned an invalid score.")
+        print("SemSim-E5 smoke test passed (test double; chunk path not available).", flush=True)
+        return
+
+    metric._load()
+    tokenizer = metric._tokenizer
+    token_limit = metric._effective_max_length()
+    short_pair = None
+    chunked_pair = None
+    mixed_pair = None
+    pair_batch_size = 128
+
+    def measure_pair_batch(start, end):
+        nonlocal short_pair, chunked_pair, mixed_pair
+        end = min(end, len(semantic_pairs))
+        pair_batch = semantic_pairs.iloc[start:end]
+        texts = [
+            f"query: {text}"
+            for row in pair_batch.itertuples(index=False)
+            for text in (row.reference, row.prediction)
+        ]
+        encoded = tokenizer(
+            texts, padding=False, truncation=False, add_special_tokens=True, verbose=False
+        )["input_ids"]
+        lengths = [len(ids) for ids in encoded]
+        candidates = []
+        for offset, row in enumerate(pair_batch.itertuples(index=False)):
+            index = start + offset
+            ref_length, pred_length = lengths[offset * 2:offset * 2 + 2]
+            ref_long, pred_long = ref_length > token_limit, pred_length > token_limit
+            candidate = (index, row.reference, row.prediction, ref_length, pred_length)
+            candidates.append(candidate)
+            if not ref_long and not pred_long and short_pair is None:
+                short_pair = candidate
+            if ref_long or pred_long:
+                if chunked_pair is None:
+                    chunked_pair = candidate
+                if ref_long != pred_long and mixed_pair is None:
+                    mixed_pair = candidate
+        return candidates
+
+    selected = None
+    # The Kaggle traceback showed 6,872/8,508 completed with batch size 8;
+    # isolate the next exact batch first, then fall back if this input differs.
+    failed_batch_start = 6_872
+    if failed_batch_start < len(semantic_pairs):
+        failed_batch = measure_pair_batch(
+            failed_batch_start,
+            min(failed_batch_start + SEMANTIC_BATCH_SIZE, len(semantic_pairs)),
+        )
+        has_mixed_pair = any(
+            (pair[3] > token_limit) != (pair[4] > token_limit)
+            for pair in failed_batch
+        )
+        if has_mixed_pair:
+            selected = failed_batch
+            label = f"exact batch after traceback progress {failed_batch_start:,}"
+
+    if selected is None:
+        for start in range(0, len(semantic_pairs), pair_batch_size):
+            measure_pair_batch(start, start + pair_batch_size)
+            if mixed_pair is not None or (short_pair is not None and chunked_pair is not None):
+                break
+        if mixed_pair is not None:
+            selected = [mixed_pair]
+            label = "one real pair with one short and one chunked transcript"
+        elif short_pair is not None and chunked_pair is not None:
+            selected = [short_pair, chunked_pair]
+            label = "one short-only and one chunked real pair"
+        elif chunked_pair is not None:
+            selected = [chunked_pair]
+            label = "one chunked real pair (no short-only pair found)"
+        elif short_pair is not None:
+            selected = [short_pair]
+            label = "one short real pair (no overlength transcript exists in this input)"
+        else:
+            print("SemSim-E5 smoke test skipped: there are no non-empty prediction pairs.", flush=True)
+            return
+
+    old_batch_size = metric.batch_size
+    metric.batch_size = max(old_batch_size, len(selected))
+    try:
+        results = metric.score_batch(
+            [pair[1] for pair in selected], [pair[2] for pair in selected]
+        )
+    finally:
+        metric.batch_size = old_batch_size
+
+    if len(results) != len(selected):
+        raise RuntimeError(
+            f"SemSim-E5 smoke returned {len(results)} results for {len(selected)} pairs."
+        )
+    if any(not (-1.0 <= float(result.similarity) <= 1.0) for result in results):
+        raise RuntimeError("SemSim-E5 smoke test returned a non-finite/invalid similarity.")
+    if chunked_pair is not None and not any(result.chunked for result in results):
+        raise RuntimeError("SemSim-E5 smoke did not mark its overlength sample as chunked.")
+
+    print(
+        "SemSim-E5 smoke test passed before full scoring:", label,
+        "| sample lengths:", [(pair[3], pair[4]) for pair in selected],
+        "| scores:", [round(float(result.similarity), 5) for result in results],
+        flush=True,
+    )
+
+
 e5_metric = SemSimE5(
     device=DEVICE,
     batch_size=SEMANTIC_BATCH_SIZE,
     max_length=E5_MAX_LENGTH,
     long_text_policy=LONG_TEXT_POLICY,
 )
+smoke_test_e5_chunking(e5_metric)
 e5_results, e5_seconds = score_unique_pairs(e5_metric, "SemSim-E5")
 e5_metadata = e5_metric.metadata()
 e5_by_pair = {

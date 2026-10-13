@@ -15,6 +15,8 @@ from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import pandas as pd
+
 
 SCRIPT_PATH = (
     Path(__file__).resolve().parents[2] / "src/nb/metrics_predictions.py"
@@ -162,7 +164,7 @@ class MetricsPredictionPathTests(unittest.TestCase):
                 writer.writeheader()
                 writer.writerow({
                     "sample_id": "sample-1", "region": "South", "province_name": "An Giang",
-                    "speaker_gender": "female", "reference": "xin chào",
+                    "speaker_gender": "female", "reference": "xin chào đây là một câu dài",
                     "base": "xin chào", "ada-lora_small": "xin chào",
                     "ada-lora_full": "xin chao", "pissa_small": "xin chào",
                     "pissa_full": "xin chào",
@@ -170,15 +172,26 @@ class MetricsPredictionPathTests(unittest.TestCase):
 
             class FakeSemanticMetric:
                 def __init__(self, **kwargs):
+                    self.batch_size = kwargs.get("batch_size", 1)
                     self._encoder = None
-                    self._tokenizer = None
+                    self._tokenizer = lambda texts, **options: {
+                        "input_ids": [str(text).split() for text in texts]
+                    }
                     self._scorer = None
+
+                def _load(self):
+                    return None
+
+                def _effective_max_length(self):
+                    return 4
 
                 def score_batch(self, references, predictions):
                     return [SimpleNamespace(
-                        similarity=0.9, distance=0.1, chunked=False,
+                        similarity=0.9, distance=0.1,
+                        chunked=(len(str(reference).split()) > 4
+                                 or len(str(prediction).split()) > 4),
                         precision=0.9, recall=0.9, f1=0.9,
-                    ) for _ in references]
+                    ) for reference, prediction in zip(references, predictions)]
 
                 def metadata(self):
                     return {"model": "test-double"}
@@ -199,8 +212,9 @@ class MetricsPredictionPathTests(unittest.TestCase):
                     "sys": sys,
                 }
                 config_overrides_set = False
+                notebook_output = io.StringIO()
                 # Don't clone a repository or install packages in this isolated run.
-                with patch("importlib.util.find_spec", return_value=object()), redirect_stdout(io.StringIO()):
+                with patch("importlib.util.find_spec", return_value=object()), redirect_stdout(notebook_output):
                     for cell_index, code in enumerate(code_cells):
                         if cell_index == 0:
                             continue
@@ -215,6 +229,13 @@ class MetricsPredictionPathTests(unittest.TestCase):
             finally:
                 sys.path[:] = old_sys_path
 
+            output_text = notebook_output.getvalue()
+            smoke_message = "SemSim-E5 smoke test passed before full scoring:"
+            self.assertIn(smoke_message, output_text)
+            smoke_end = output_text.index(smoke_message) + len(smoke_message)
+            full_progress = output_text.index("SemSim-E5: ", smoke_end)
+            self.assertLess(output_text.index(smoke_message), full_progress)
+
             with (output / "metrics_per_sample.csv").open(encoding="utf-8-sig") as stream:
                 per_sample = list(csv.DictReader(stream))
             with (output / "metrics_overall.csv").open(encoding="utf-8-sig") as stream:
@@ -226,6 +247,54 @@ class MetricsPredictionPathTests(unittest.TestCase):
             })
             self.assertTrue((output / "metrics_by_province.csv").is_file())
             self.assertTrue((output / "metrics_config.json").is_file())
+
+    def test_e5_smoke_runs_batch_after_reported_kaggle_failure_progress(self):
+        source = SCRIPT_PATH.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        smoke_function = next(
+            node for node in tree.body
+            if isinstance(node, ast.FunctionDef) and node.name == "smoke_test_e5_chunking"
+        )
+        namespace = {
+            "semantic_pairs": pd.DataFrame({
+                "reference": ["short"] * 6_880,
+                "prediction": ["short"] * 6_880,
+            }),
+            "SEMANTIC_BATCH_SIZE": 8,
+            "print": print,
+        }
+        namespace["semantic_pairs"].loc[6_872, "reference"] = "one two three four five six"
+
+        class SmokeMetric:
+            def __init__(self):
+                self.batch_size = 8
+                self.scored_pairs = None
+                self._tokenizer = lambda texts, **options: {
+                    "input_ids": [str(text).split() for text in texts]
+                }
+
+            def _load(self):
+                return None
+
+            def _effective_max_length(self):
+                return 5
+
+            def score_batch(self, references, predictions):
+                self.scored_pairs = list(zip(references, predictions))
+                return [SimpleNamespace(
+                    similarity=0.9, chunked=(len(ref.split()) > 5 or len(pred.split()) > 5)
+                ) for ref, pred in self.scored_pairs]
+
+        exec(compile(ast.Module(body=[smoke_function], type_ignores=[]),
+                     str(SCRIPT_PATH), "exec"), namespace)
+        metric = SmokeMetric()
+        output = io.StringIO()
+        with redirect_stdout(output):
+            namespace["smoke_test_e5_chunking"](metric)
+
+        self.assertEqual(len(metric.scored_pairs), 8)
+        self.assertEqual(metric.scored_pairs[0], ("one two three four five six", "short"))
+        self.assertIn("exact batch after traceback progress 6,872", output.getvalue())
 
 
 if __name__ == "__main__":

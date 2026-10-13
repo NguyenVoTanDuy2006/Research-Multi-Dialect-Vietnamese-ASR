@@ -125,12 +125,15 @@ def _prepare_token_batch(tokenizer, sequences: list[list[int]], *,
 
 
 def _model_hidden_states(model, batch, device):
+    import torch
+
     batch = {
         key: value.to(device)
         for key, value in batch.items()
         if key in {"input_ids", "attention_mask"}
     }
-    output = model(**batch)
+    with torch.no_grad():
+        output = model(**batch)
     hidden = getattr(output, "last_hidden_state", None)
     if hidden is None:
         hidden = output[0]
@@ -227,7 +230,7 @@ class SemSimE5(Metric[SemSimE5Result]):
             add_special_tokens=True, verbose=False,
         )
         batch = {key: value.to(self.device) for key, value in batch.items()}
-        with torch.inference_mode():
+        with torch.no_grad():
             output = self._encoder(**batch)
             hidden = output.last_hidden_state
             mask = batch["attention_mask"].unsqueeze(-1).to(hidden.dtype)

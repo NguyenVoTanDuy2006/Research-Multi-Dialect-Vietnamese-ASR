@@ -134,6 +134,17 @@ class TinyEncoder(torch.nn.Module):
         return type("Output", (), {"last_hidden_state": self.vectors[input_ids]})()
 
 
+class TrainableTinyEncoder(TinyEncoder):
+    def __init__(self):
+        super().__init__()
+        self.scale = torch.nn.Parameter(torch.ones(()))
+
+    def forward(self, input_ids, attention_mask):
+        output = super().forward(input_ids, attention_mask)
+        output.last_hidden_state = output.last_hidden_state * self.scale
+        return output
+
+
 class TinyBERTScorer:
     def __init__(self):
         self._tokenizer = TinyTokenizer()
@@ -229,6 +240,22 @@ class SemanticMetricTests(unittest.TestCase):
         self.assertLess(changed_tail.similarity, identical.similarity)
         self.assertIn(32, encoder.seen_ids)  # The final "z" token was encoded.
         self.assertEqual(metric.metadata()["long_text_policy"], "chunk")
+
+    def test_e5_mixed_short_and_chunked_pairs_do_not_build_autograd_graphs(self):
+        metric = SemSimE5(
+            tokenizer=TinyTokenizer(), encoder=TrainableTinyEncoder(), device="cpu",
+            batch_size=2, max_length=5, long_text_policy="chunk",
+        )
+
+        scores = metric.score_batch(
+            ["a", "a b c d"],
+            ["a b c d", "a"],
+        )
+
+        self.assertEqual(len(scores), 2)
+        self.assertTrue(scores[0].chunked)
+        self.assertTrue(scores[1].chunked)
+        self.assertTrue(all(-1.0 <= score.similarity <= 1.0 for score in scores))
 
     def test_bertscore_chunk_policy_matches_all_content_tokens(self):
         scorer = TinyBERTScorer()
