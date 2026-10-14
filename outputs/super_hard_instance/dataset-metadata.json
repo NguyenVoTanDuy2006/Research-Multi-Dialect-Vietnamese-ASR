@@ -1,0 +1,11 @@
+{
+  "id": "nvtd1796/super-hard-audio",
+  "title": "super_hard_audio",
+  "licenses": [
+    {
+      "name": "unknown"
+    }
+  ],
+  "description": "One external-video Vietnamese ASR test sample stored as a Parquet shard. Redistribution rights for the source recording are unverified.",
+  "keywords": ["audio", "vietnamese"]
+}

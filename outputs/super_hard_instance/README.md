@@ -1,5 +1,5 @@
-# Super hard — one ASR test instance
+# Super-hard audio — one ASR test instance
 
-`audio/super_hard.wav` is the extracted mono 16 kHz PCM16 audio. `test.zip` contains the same WAV at the `audio_path` recorded in `sample_metadata.json`/`.csv`. The supplied transcript is copied verbatim, without spelling or whitespace normalization.
+The test split is stored in `test-00000-of-00001.parquet`, a single-row Hugging Face-compatible shard. Its `audio` field contains both the relative path and embedded WAV bytes, so readers can load the audio directly from the shard. `super_hard.wav` is retained as a standalone copy for convenient inspection. The transcript is copied verbatim, without spelling or whitespace normalization.
 
-This video is an external source, **not a ViMD record**. Province, region, speaker, gender, and license are unknown; verify rights before redistribution. Keep this package separate from the ViMD train/valid/test set unless you intentionally merge it.
+`sample_metadata.json` and `sample_metadata.csv` describe the sample and point to its shard/row. This is an external-video example, **not a ViMD record**. Province, region, speaker, gender, and license are unknown; verify redistribution rights before using this package publicly. Keep it separate from the ViMD train/valid/test data unless you intentionally merge it.

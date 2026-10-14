@@ -1,0 +1,53 @@
+[{"stream_name":"stderr","time":11.137188059,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":11.137246711,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":11.137253574,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":11.137257859,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":11.937603842,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":11.93765098,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":11.937663754,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":11.937668272,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":13.387055778,"data":"Cloning into '/kaggle/working/mdv_asr_source'...\n"}
+,{"stream_name":"stderr","time":13.589207512,"data":"Cloning into '/kaggle/working/mdv_asr_source'...\n"}
+,{"stream_name":"stderr","time":13.589251772,"data":"\n"}
+,{"stream_name":"stderr","time":13.589257228,"data":"Cloning into '/kaggle/working/mdv_asr_source'...\n"}
+,{"stream_name":"stdout","time":18.819237943,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.3/12.3 MB 102.6 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":18.861451966,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 835.4/835.4 kB 32.8 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":18.898969506,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 394.3/394.3 kB 18.9 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":19.021517246,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.3/12.3 MB 102.6 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":19.021549153,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 835.4/835.4 kB 32.8 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":19.021554569,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 394.3/394.3 kB 18.9 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":60.519195445,"data":"Platform: kaggle | GPUs: ('Tesla T4', 'Tesla T4')\n"}
+,{"stream_name":"stdout","time":60.519234736,"data":"HF_TOKEN available: True\n"}
+,{"stream_name":"stdout","time":60.546508339,"data":"Tồn tại: True\n"}
+,{"stream_name":"stdout","time":60.546532455,"data":"Có adapter_config: True\n"}
+,{"stream_name":"stdout","time":60.570384871,"data":"Dataset config: /kaggle/working/mdv_asr_source/src/mdv_asr_module/configs/datasets/vimd_full.json\n"}
+,{"stream_name":"stdout","time":60.570415951,"data":"Dataset root: /kaggle/input/datasets/thanhlamdev/vimd-dataset/0.0.0/c89c5d04a2d1025e3aab24345dbe4f23d2cfb666\n"}
+,{"stream_name":"stdout","time":60.570422109,"data":"Split: test\n"}
+,{"stream_name":"stdout","time":60.570426401,"data":"Models:\n"}
+,{"stream_name":"stdout","time":60.570431048,"data":"- Qwen3-ASR 1.7B · PiSSA · small ViMD · best epoch 2 | qwen_vimd_pissa_small\n"}
+,{"stream_name":"stdout","time":60.570435884,"data":"- Qwen3-ASR 1.7B · PiSSA · full ViMD · best epoch 2 | qwen_vimd_pissa_full\n"}
+,{"stream_name":"stdout","time":60.570450659,"data":"Output: /kaggle/working/outputs/benchmark/qwen_four_models\n"}
+,{"stream_name":"stdout","time":1142.944603153,"data":"Manifest: 18949 records | test: 2026 clips\n"}
+,{"stream_name":"stdout","time":1143.880182389,"data":"Found existing installation: torchao 0.10.0\n"}
+,{"stream_name":"stdout","time":1144.029042437,"data":"Uninstalling torchao-0.10.0:\n"}
+,{"stream_name":"stdout","time":1144.082592877,"data":"Found existing installation: torchao 0.10.0\n"}
+,{"stream_name":"stdout","time":1144.08262198,"data":"Uninstalling torchao-0.10.0:\n"}
+,{"stream_name":"stdout","time":1144.813177045,"data":"  Successfully uninstalled torchao-0.10.0\n"}
+,{"stream_name":"stdout","time":1144.894913271,"data":"  Successfully uninstalled torchao-0.10.0\n"}
+,{"stream_name":"stdout","time":1144.894947912,"data":"Đã gỡ TorchAO không tương thích.\n"}
+,{"stream_name":"stdout","time":18186.907170751,"data":"predictions.csv -\u003e /kaggle/working/outputs/benchmark/qwen_four_models/predictions.csv\n"}
+,{"stream_name":"stdout","time":18186.907245767,"data":"metrics_overall.csv -\u003e /kaggle/working/outputs/benchmark/qwen_four_models/metrics_overall.csv\n"}
+,{"stream_name":"stdout","time":18186.907255005,"data":"metrics_by_region.csv -\u003e /kaggle/working/outputs/benchmark/qwen_four_models/metrics_by_region.csv\n"}
+,{"stream_name":"stdout","time":18186.907260556,"data":"metrics_by_province.csv -\u003e /kaggle/working/outputs/benchmark/qwen_four_models/metrics_by_province.csv\n"}
+,{"stream_name":"stdout","time":18186.907265701,"data":"coverage.json -\u003e /kaggle/working/outputs/benchmark/qwen_four_models/coverage.json\n"}
+,{"stream_name":"stdout","time":18186.907270636,"data":"comparison.json -\u003e /kaggle/working/outputs/benchmark/qwen_four_models/comparison.json\n"}
+,{"stream_name":"stdout","time":18186.943438698,"data":"Đã dọn source clone: /kaggle/working/mdv_asr_source\n"}
+,{"stream_name":"stderr","time":18193.996226586,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":18193.996304172,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":18194.275466036,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":18194.275504555,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":18195.303308295,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":18195.408846797,"data":"[NbConvertApp] Writing 151473 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":18197.990544228,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":18198.62613638,"data":"[NbConvertApp] Writing 408200 bytes to __results__.html\n"}
+]
