@@ -97,12 +97,12 @@ class ConfigLoader:
     def from_dict(self, data: dict[str, Any]) -> ExperimentConfig:
         from .types import (
             AdaLoraSettings, BenchmarkConfig, DatasetConfig, DecodeConfig,
-            ModelSpec, PiSSASettings, TrainConfig,
+            ModelSpec, PiSSASettings, SemanticMetricsConfig, TrainConfig,
         )
 
         allowed = {
             "dataset", "platform", "model", "decode", "train", "benchmark",
-            "output_dir", "run_id",
+            "semantic_metrics", "output_dir", "run_id",
         }
         unknown = set(data) - allowed
         if unknown:
@@ -121,6 +121,7 @@ class ConfigLoader:
             benchmark_data["models"] = tuple(
                 _construct(ModelSpec, model) for model in benchmark_data.get("models", ())
             )
+        semantic_metrics_data = data.get("semantic_metrics", {})
         return ExperimentConfig(
             dataset=_construct(DatasetConfig, data.get("dataset", {})),
             platform=data.get("platform", "auto"),
@@ -128,6 +129,7 @@ class ConfigLoader:
             decode=_construct(DecodeConfig, data.get("decode", {})),
             train=_construct(TrainConfig, train_data) if train_data is not None else None,
             benchmark=_construct(BenchmarkConfig, benchmark_data) if benchmark_data is not None else None,
+            semantic_metrics=_construct(SemanticMetricsConfig, semantic_metrics_data),
             output_dir=data.get("output_dir", "outputs/runs/default"),
             run_id=data.get("run_id", "default"),
         )

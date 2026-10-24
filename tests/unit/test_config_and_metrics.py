@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 
 from mdv_asr_module.configs.loader import ConfigLoader
-from mdv_asr_module.configs.types import BenchmarkConfig, ModelSpec
+from mdv_asr_module.configs.types import BenchmarkConfig, ExperimentConfig, ModelSpec
 from mdv_asr_module.evaluation.error_metrics import ErrorCounter, MetricAggregator
 from mdv_asr_module.evaluation.helper import TextNormalizer, WordAligner
 from mdv_asr_module.evaluation.records import PredictionRecord
@@ -67,3 +67,65 @@ def test_model_comparison_requires_paired_successes():
     compared = MetricAggregator().compare_models(rows, "base")
     assert compared["base"]["CER"] == 0
     assert compared["adapted"]["WER"] == 0.5
+
+
+def test_semantic_metrics_config_defaults_disabled():
+    config = ExperimentConfig()
+    config.validate()
+
+    assert config.semantic_metrics.enabled is False
+    assert config.semantic_metrics.metrics == ("semsim_e5", "bertscore")
+    assert config.semantic_metrics.device is None
+    assert config.semantic_metrics.batch_size == 8
+    assert config.semantic_metrics.max_length == 512
+    assert config.semantic_metrics.long_text_policy == "chunk"
+    assert config.semantic_metrics.cache_path == "semantic_score_cache.jsonl"
+
+
+def test_semantic_metrics_config_loads_and_round_trips_nested_settings(tmp_path):
+    loader = ConfigLoader()
+    config = loader.from_dict({
+        "semantic_metrics": {
+            "enabled": True,
+            "metrics": ["bertscore"],
+            "device": "cpu",
+            "batch_size": 3,
+            "max_length": 256,
+            "long_text_policy": "error",
+            "cache_path": str(tmp_path / "scores.jsonl"),
+        }
+    })
+    config.validate()
+
+    assert config.semantic_metrics.metrics == ("bertscore",)
+    assert config.semantic_metrics.device == "cpu"
+    assert loader.with_overrides(config, {"semantic_metrics": {
+        **config.semantic_metrics.to_dict(), "enabled": False,
+    }}).semantic_metrics.enabled is False
+
+
+def test_semantic_metrics_config_rejects_unknown_metric():
+    config = ConfigLoader().from_dict({"semantic_metrics": {"metrics": ["rouge"]}})
+    try:
+        config.validate()
+    except ValueError as exc:
+        assert "metric" in str(exc).lower()
+    else:
+        raise AssertionError("Unknown semantic metric was accepted")
+
+
+def test_semantic_metrics_config_rejects_invalid_batch_token_limit_and_policy():
+    loader = ConfigLoader()
+    invalid_settings = [
+        {"batch_size": 0},
+        {"max_length": 513},
+        {"max_length": 0},
+        {"long_text_policy": "truncate"},
+    ]
+    for settings in invalid_settings:
+        config = loader.from_dict({"semantic_metrics": settings})
+        try:
+            config.validate()
+        except ValueError:
+            continue
+        raise AssertionError(f"Invalid semantic metric settings were accepted: {settings}")

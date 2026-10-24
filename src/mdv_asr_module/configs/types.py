@@ -160,6 +160,35 @@ class BenchmarkConfig(ValidatedConfig):
 
 
 @dataclass(frozen=True)
+class SemanticMetricsConfig(ValidatedConfig):
+    enabled: bool = False
+    metrics: tuple[str, ...] = ("semsim_e5", "bertscore")
+    device: str | None = None
+    batch_size: int = 8
+    max_length: int = 512
+    long_text_policy: str = "chunk"
+    cache_path: str = "semantic_score_cache.jsonl"
+
+    def validate(self) -> None:
+        supported_metrics = {"semsim_e5", "bertscore"}
+        if not self.metrics or len(self.metrics) != len(set(self.metrics)):
+            raise ValueError("Semantic metrics must contain unique metric names")
+        unknown = set(self.metrics) - supported_metrics
+        if unknown:
+            raise ValueError(f"Unsupported semantic metric(s): {sorted(unknown)}")
+        if self.batch_size < 1:
+            raise ValueError("Semantic metrics batch_size must be positive")
+        if not 1 <= self.max_length <= 512:
+            raise ValueError("Semantic metrics max_length must be between 1 and 512")
+        if self.long_text_policy not in {"error", "chunk"}:
+            raise ValueError("Semantic long_text_policy must be 'error' or 'chunk'")
+        if self.device is not None and not self.device.strip():
+            raise ValueError("Semantic metrics device cannot be empty")
+        if not self.cache_path.strip():
+            raise ValueError("Semantic metrics cache_path cannot be empty")
+
+
+@dataclass(frozen=True)
 class ExperimentConfig(ValidatedConfig):
     dataset: DatasetConfig = field(default_factory=DatasetConfig)
     platform: str = "auto"
@@ -167,6 +196,7 @@ class ExperimentConfig(ValidatedConfig):
     decode: DecodeConfig = field(default_factory=DecodeConfig)
     train: TrainConfig | None = None
     benchmark: BenchmarkConfig | None = None
+    semantic_metrics: SemanticMetricsConfig = field(default_factory=SemanticMetricsConfig)
     output_dir: str = "outputs/runs/default"
     run_id: str = "default"
 
@@ -185,6 +215,7 @@ class ExperimentConfig(ValidatedConfig):
             self.train.validate()
         if self.benchmark:
             self.benchmark.validate()
+        self.semantic_metrics.validate()
         if not self.run_id.strip() or not str(Path(self.output_dir)):
             raise ValueError("run_id and output_dir are required")
 
