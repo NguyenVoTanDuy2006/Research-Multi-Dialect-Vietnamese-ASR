@@ -1,0 +1,13 @@
+{
+  "dataset": {
+    "kind": "parquet",
+    "root": "/kaggle/input/datasets/nvtd1796/super-hard-audio",
+    "handle": null,
+    "dataset_id": "super_hard_audio",
+    "cache_dir": "outputs/cache",
+    "allow_download": false
+  },
+  "platform": "kaggle",
+  "output_dir": "/kaggle/working/outputs/super_hard_inspection",
+  "run_id": "super_hard"
+}
