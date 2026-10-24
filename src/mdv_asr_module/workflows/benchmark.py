@@ -10,6 +10,7 @@ from mdv_asr_module.evaluation.benchmark import BenchmarkRunner
 from mdv_asr_module.evaluation.evaluator import ASREvaluator
 from mdv_asr_module.evaluation.records import PredictionRecord
 from mdv_asr_module.evaluation.reports import BenchmarkReporter
+from mdv_asr_module.evaluation.semantic_report import SemanticBenchmarkReporter
 from mdv_asr_module.evaluation.store import PredictionStore
 from mdv_asr_module.models.audit import AdapterAuditor
 from mdv_asr_module.models.factory import ASRBackendFactory
@@ -80,6 +81,17 @@ class ASRBenchmarkWorkflow:
         BenchmarkReporter(self.output_dir).write_all(
             results, baseline_key=self.config.benchmark.models[0].key
         )
+        if self.config.semantic_metrics.enabled:
+            predictions = [
+                prediction
+                for result in results
+                for prediction in result.predictions
+            ]
+            SemanticBenchmarkReporter(
+                self.output_dir,
+                self.config.semantic_metrics,
+                resume=self.config.benchmark.resume,
+            ).write_all(predictions)
         # Keep predictions/coverage artifacts even when an inference error leaves
         # models with different paired sample sets.
         runner.validate_comparison()
