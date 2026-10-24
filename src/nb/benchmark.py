@@ -123,9 +123,9 @@ for model in config.benchmark.models:
 print("Output:", OUTPUT_DIR)
 
 
-def ensure_bert_score_available(enabled):
+def ensure_bert_score_available(enabled, metrics):
     """Install the optional BERTScore package only when semantic scoring needs it."""
-    if not enabled:
+    if not enabled or "bertscore" not in metrics:
         return False
     if importlib.util.find_spec("bert_score") is not None:
         print("BERTScore package is available.")
@@ -159,7 +159,9 @@ def print_artifact_paths(output_dir, artifact_names):
             print(name, "->", path)
 
 
-ensure_bert_score_available(config.semantic_metrics.enabled)
+ensure_bert_score_available(
+    config.semantic_metrics.enabled, config.semantic_metrics.metrics
+)
 
 # %% [markdown]
 # ## Chuẩn bị dữ liệu

@@ -87,7 +87,9 @@ def test_benchmark_notebook_enables_semantic_config_and_optional_bert_score():
         "sys": SimpleNamespace(executable="python"),
     }
     exec(compile(ast.Module(body=[function_node], type_ignores=[]), str(notebook_path), "exec"), namespace)
-    assert namespace["ensure_bert_score_available"](True) is True
+    assert namespace["ensure_bert_score_available"](
+        True, ("semsim_e5", "bertscore")
+    ) is True
     assert calls == [["python", "-m", "pip", "install", "bert-score==0.3.13"]]
 
 
@@ -109,7 +111,7 @@ def test_benchmark_notebook_does_not_install_optional_dependency_when_disabled()
         "sys": SimpleNamespace(executable="python"),
     }
     exec(compile(ast.Module(body=[function_node], type_ignores=[]), str(notebook_path), "exec"), namespace)
-    assert namespace["ensure_bert_score_available"](False) is False
+    assert namespace["ensure_bert_score_available"](False, ("bertscore",)) is False
     assert calls == []
 
 
@@ -142,12 +144,35 @@ def test_benchmark_notebook_reuses_installed_bert_score_and_reports_semantic_pat
         "sys": SimpleNamespace(executable="python"),
     }
     exec(compile(ast.Module(body=function_nodes, type_ignores=[]), str(notebook_path), "exec"), namespace)
-    assert namespace["ensure_bert_score_available"](True) is True
+    assert namespace["ensure_bert_score_available"](True, ("semsim_e5", "bertscore")) is True
     assert pip_calls == []
     namespace["print_artifact_paths"](tmp_path, settings_ns["ARTIFACT_NAMES"])
     output = capsys.readouterr().out
     assert "semantic_metrics_overall.csv" in settings_ns["ARTIFACT_NAMES"]
     assert "semantic_metrics_overall.csv ->" in output
+
+
+def test_e5_only_benchmark_does_not_probe_or_install_bert_score():
+    repo_root = Path(__file__).resolve().parents[2]
+    notebook_path = repo_root / "src/nb/benchmark.py"
+    notebook = ast.parse(notebook_path.read_text(encoding="utf-8"))
+    function_node = next(
+        node for node in notebook.body
+        if isinstance(node, ast.FunctionDef) and node.name == "ensure_bert_score_available"
+    )
+    calls = []
+    namespace = {
+        "importlib": SimpleNamespace(
+            util=SimpleNamespace(find_spec=lambda name: calls.append(("find_spec", name))),
+            invalidate_caches=lambda: None,
+        ),
+        "subprocess": SimpleNamespace(run=lambda *args, **kwargs: calls.append((args, kwargs))),
+        "sys": SimpleNamespace(executable="python"),
+    }
+    exec(compile(ast.Module(body=[function_node], type_ignores=[]), str(notebook_path), "exec"), namespace)
+
+    assert namespace["ensure_bert_score_available"](True, ("semsim_e5",)) is False
+    assert calls == []
 
 
 def test_adapter_configs_use_the_attached_kaggle_model_paths():

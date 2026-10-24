@@ -14,8 +14,21 @@ class SemanticScoreStore:
 
     def __init__(self, path: str | Path):
         self.path = Path(path)
+        self._validated_for_append = False
 
-    def _read_batches(self, *, repair_trailing_record: bool = False) -> list[dict[str, Any]]:
+    @staticmethod
+    def _validate_record(record: Any, label: str) -> dict[str, Any]:
+        if not isinstance(record, dict) or not isinstance(record.get("metric_fingerprint"), str):
+            raise ValueError(f"Invalid semantic score cache record on {label}")
+        scores = record.get("scores")
+        if not isinstance(scores, dict) or any(
+            not isinstance(pair_hash, str) or not isinstance(score, dict)
+            for pair_hash, score in scores.items()
+        ):
+            raise ValueError(f"Invalid semantic scores on {label}")
+        return record
+
+    def _read_batches(self) -> list[dict[str, Any]]:
         if not self.path.is_file():
             return []
 
@@ -24,11 +37,7 @@ class SemanticScoreStore:
         nonempty = [index for index, line in enumerate(lines) if line.strip()]
         last_nonempty = nonempty[-1] if nonempty else None
         batches: list[dict[str, Any]] = []
-        offset = 0
-
         for line_number, line in enumerate(lines, start=1):
-            record_start = offset
-            offset += len(line)
             payload = line.rstrip(b"\r\n")
             if not payload.strip():
                 continue
@@ -36,26 +45,60 @@ class SemanticScoreStore:
                 record = json.loads(payload)
             except (json.JSONDecodeError, UnicodeDecodeError) as exc:
                 if line_number - 1 == last_nonempty:
-                    if repair_trailing_record:
-                        with self.path.open("r+b") as stream:
-                            stream.truncate(record_start)
-                            stream.flush()
-                            os.fsync(stream.fileno())
                     return batches
                 raise ValueError(
                     f"Malformed semantic score cache JSON on line {line_number}"
                 ) from exc
 
-            if not isinstance(record, dict) or not isinstance(record.get("metric_fingerprint"), str):
-                raise ValueError(f"Invalid semantic score cache record on line {line_number}")
-            scores = record.get("scores")
-            if not isinstance(scores, dict) or any(
-                not isinstance(pair_hash, str) or not isinstance(score, dict)
-                for pair_hash, score in scores.items()
-            ):
-                raise ValueError(f"Invalid semantic scores on line {line_number}")
-            batches.append(record)
+            batches.append(self._validate_record(record, f"line {line_number}"))
         return batches
+
+    def _repair_trailing_record(self) -> None:
+        """Inspect only the final nonblank JSONL row and truncate it if partial."""
+        if not self.path.is_file():
+            return
+        with self.path.open("r+b") as stream:
+            stream.seek(0, os.SEEK_END)
+            cursor = stream.tell()
+            if cursor == 0:
+                return
+
+            reverse_line = bytearray()
+            tail_record = None
+            while cursor:
+                block_start = max(0, cursor - 8192)
+                stream.seek(block_start)
+                block = stream.read(cursor - block_start)
+                for index in range(len(block) - 1, -1, -1):
+                    byte = block[index]
+                    if byte == ord("\n"):
+                        if reverse_line.strip():
+                            tail_record = (
+                                block_start + index + 1,
+                                bytes(reversed(reverse_line)).rstrip(b"\r"),
+                            )
+                            break
+                        reverse_line.clear()
+                    else:
+                        reverse_line.append(byte)
+                if tail_record is not None:
+                    break
+                cursor = block_start
+
+            if tail_record is None and reverse_line.strip():
+                tail_record = (0, bytes(reversed(reverse_line)).rstrip(b"\r"))
+            if tail_record is None:
+                return
+
+            record_start, payload = tail_record
+            try:
+                record = json.loads(payload)
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                stream.truncate(record_start)
+                stream.flush()
+                os.fsync(stream.fileno())
+                return
+            self._validate_record(record, "final row")
 
     def load(self, metric_fingerprint: str) -> dict[str, dict[str, object]]:
         if not metric_fingerprint.strip():
@@ -64,6 +107,7 @@ class SemanticScoreStore:
         for batch in self._read_batches():
             if batch["metric_fingerprint"] == metric_fingerprint:
                 scores.update(batch["scores"])
+        self._validated_for_append = True
         return scores
 
     def append_batch(
@@ -86,7 +130,10 @@ class SemanticScoreStore:
             return
 
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self._read_batches(repair_trailing_record=True)
+        if not self._validated_for_append:
+            self._read_batches()
+            self._validated_for_append = True
+        self._repair_trailing_record()
         record = {
             "metric_fingerprint": metric_fingerprint,
             "scores": {key: normalized[key] for key in sorted(normalized)},
