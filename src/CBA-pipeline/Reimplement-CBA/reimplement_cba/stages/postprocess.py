@@ -1,7 +1,12 @@
+from __future__ import annotations
+
+import unicodedata
+
+
 class VietnamesePostprocessor:
-    """Vietnamese-safe final transcript postprocessing boundary."""
+    """Normalize display text while preserving the decoded spoken content."""
 
     def process(self, transcript: str) -> str:
-        raise NotImplementedError(
-            "TODO: add repetition cleanup and Vietnamese normalization without stripping diacritics"
-        )
+        if not isinstance(transcript, str):
+            raise TypeError(f"Transcript must be a string, got {type(transcript).__name__}")
+        return " ".join(unicodedata.normalize("NFC", transcript).split())

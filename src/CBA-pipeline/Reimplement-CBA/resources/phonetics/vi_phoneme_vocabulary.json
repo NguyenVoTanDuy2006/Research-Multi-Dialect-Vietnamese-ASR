@@ -1,0 +1,115 @@
+{
+  "schema_version": "1.0",
+  "language": "vi",
+  "name": "Vietnamese phoneme and orthography vocabulary",
+  "unit_of_conversion": "syllable",
+  "text_normalization": "Unicode NFC; preserve Vietnamese tone and vowel quality marks",
+  "source": {
+    "title": "Phonetic Modeling of Dialectal Variation in Vietnamese Speech",
+    "file": "../../../../../docs/2605.24451v1.pdf",
+    "sections": ["Appendix B", "Appendix F", "Figure 6", "Figure 9"],
+    "printed_pages": [12, 13, 14, 20],
+    "notes": [
+      "The appendix says there are 22 onsets, 15 vowel nuclei, 10 codas, and 6 tones. Appendix B gives writing forms for the onsets but omits h from that list; h is included here because Figure 6 analyzes hoàng as h + glide + vowel + final + tone.",
+      "The article's main decoder vocabulary counts (27 initials and 240 rhymes) are token-vocabulary sizes and are not the same kind of count as the phoneme inventories in Appendix B.",
+      "Some IPA glyphs in the PDF are malformed in text extraction. The spelling-to-unit mappings below follow the visible appendix tables; ambiguous symbols are separately marked instead of silently normalized."
+    ]
+  },
+  "syllable_structure": ["onset?", "glide?", "nucleus", "coda?", "tone"],
+  "inventories": {
+    "onsets": {
+      "count_claimed_by_appendix": 22,
+      "items": [
+        {"id": "onset_b", "ipa": "b", "spellings": ["b"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_t", "ipa": "t", "spellings": ["t"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_th", "ipa": "tʰ", "spellings": ["th"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_k", "ipa": "k", "spellings": ["k", "c", "q"], "paper_status": "explicit_appendix_mapping", "context_rule": "See orthography_rules onset_k_spelling."},
+        {"id": "onset_ph", "ipa": "f", "spellings": ["ph"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_d_stroke", "ipa": "d", "spellings": ["đ"], "paper_status": "explicit_appendix_mapping", "note": "Uses the paper's IPA symbol; do not substitute another transcription convention without a deliberate schema change."},
+        {"id": "onset_g", "ipa": "ɣ", "spellings": ["g", "gh"], "paper_status": "explicit_appendix_mapping", "context_rule": "See orthography_rules onset_g_spelling."},
+        {"id": "onset_gi", "ipa": "z", "spellings": ["gi"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_d", "ipa": "j", "spellings": ["d"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_x", "ipa": "s", "spellings": ["x"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_s", "ipa": "ʂ", "spellings": ["s"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_ch", "ipa": "c͡ɕ", "spellings": ["ch"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_tr", "ipa": "t͡s", "spellings": ["tr"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_ng", "ipa": "ŋ", "spellings": ["ng", "ngh"], "paper_status": "explicit_appendix_mapping", "context_rule": "See orthography_rules onset_ng_spelling."},
+        {"id": "onset_nh", "ipa": "ɲ", "spellings": ["nh"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_l", "ipa": "l", "spellings": ["l"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_r", "ipa": "r", "spellings": ["r"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_kh", "ipa": "x", "spellings": ["kh"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_v", "ipa": "v", "spellings": ["v"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_m", "ipa": "m", "spellings": ["m"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_n", "ipa": "n", "spellings": ["n"], "paper_status": "explicit_appendix_mapping"},
+        {"id": "onset_h", "ipa": "h", "spellings": ["h"], "paper_status": "shown_in_figure_only", "evidence": "Figure 6 decomposes hoàng with onset /h/; the onset spelling list does not include h."}
+      ]
+    },
+    "glides": [
+      {"id": "glide_u", "ipa": "u̯", "spellings": ["u", "o"], "position": "between onset and nucleus", "paper_status": "explicit_appendix_mapping", "note": "Orthographic u/o here is the glide, not the nucleus."}
+    ],
+    "vowel_nuclei": {
+      "count_claimed_by_appendix": 15,
+      "monophthongs": [
+        {"id": "vowel_a", "ipa": "a", "spellings": ["a"]},
+        {"id": "vowel_breve_a", "ipa": "ă", "spellings": ["ă", "a"], "condition": "a is used in the orthographic context described by orthography_rules vowel_breve_a_spelling."},
+        {"id": "vowel_circumflex_a", "ipa": "ə̆", "spellings": ["â"]},
+        {"id": "vowel_i", "ipa": "i", "spellings": ["i", "y"], "condition": "See orthography_rules vowel_i_spelling."},
+        {"id": "vowel_circumflex_e", "ipa": "e", "spellings": ["ê"]},
+        {"id": "vowel_e", "ipa": "ɛ", "spellings": ["e"]},
+        {"id": "vowel_u", "ipa": "u", "spellings": ["u"]},
+        {"id": "vowel_u_bar", "ipa": "ɯ", "spellings": ["ư"]},
+        {"id": "vowel_o", "ipa": "ɔ", "spellings": ["o"]},
+        {"id": "vowel_oo", "ipa": "ɔː", "spellings": ["oo"], "note": "Rare spelling; Appendix B gives xoong as its example."},
+        {"id": "vowel_circumflex_o", "ipa": "o", "spellings": ["ô"]},
+        {"id": "vowel_hook_o", "ipa": "ə", "spellings": ["ơ"]}
+      ],
+      "diphthongs": [
+        {"id": "diphthong_iə", "ipa": "iə", "paper_symbol": "ie", "spellings": ["iê", "yê", "ia", "ya"], "condition": "See orthography_rules diphthong_iə_spelling."},
+        {"id": "diphthong_uə", "ipa": "uə", "paper_symbol": "uo", "spellings": ["uô", "ua"], "condition": "See orthography_rules diphthong_uə_spelling."},
+        {"id": "diphthong_ɯə", "ipa": "ɯə", "paper_symbol": "uə", "spellings": ["ươ", "ưa"], "condition": "See orthography_rules diphthong_ɯə_spelling."}
+      ]
+    },
+    "codas": {
+      "count_claimed_by_appendix": 10,
+      "items": [
+        {"id": "coda_i_glide", "ipa": "i̯", "spellings": ["i", "y"], "paper_status": "explicit_appendix_mapping", "condition": "See orthography_rules coda_i_glide_spelling."},
+        {"id": "coda_m", "ipa": "m", "spellings": ["m"]},
+        {"id": "coda_n", "ipa": "n", "spellings": ["n"]},
+        {"id": "coda_ng", "ipa": "ŋ", "spellings": ["ng"]},
+        {"id": "coda_nh", "ipa": "ɲ", "spellings": ["nh"], "note": "Preserves the paper's coda inventory distinction; validate against the converter implementation before treating it as a universal IPA transcription."},
+        {"id": "coda_p", "ipa": "p", "spellings": ["p"]},
+        {"id": "coda_t", "ipa": "t", "spellings": ["t"]},
+        {"id": "coda_k", "ipa": "k", "spellings": ["c"]},
+        {"id": "coda_c", "ipa": "c", "spellings": ["ch"], "note": "Paper-specific symbol for the final in ch; keep distinct from the onset symbol unless the chosen phonetic convention explicitly merges them."},
+        {"id": "coda_u_glide", "ipa": "u̯", "spellings": ["u", "o"]}
+      ]
+    },
+    "tones": [
+      {"id": "tone_ngang", "name_vi": "ngang", "contour_label": "flat", "diacritic": "", "example": "ba", "paper_status": "explicit_appendix_mapping"},
+      {"id": "tone_huyen", "name_vi": "huyền", "contour_label": "low_falling", "diacritic": "grave", "example": "bà", "paper_status": "explicit_appendix_mapping"},
+      {"id": "tone_sac", "name_vi": "sắc", "contour_label": "mid_rising", "diacritic": "acute", "example": "bá", "paper_status": "explicit_appendix_mapping"},
+      {"id": "tone_hoi", "name_vi": "hỏi", "contour_label": "mid_falling", "diacritic": "hook_above", "example": "bả", "paper_status": "explicit_appendix_mapping"},
+      {"id": "tone_nga", "name_vi": "ngã", "contour_label": "mid_glottalized_falling", "diacritic": "tilde", "example": "bã", "paper_status": "explicit_appendix_mapping"},
+      {"id": "tone_nang", "name_vi": "nặng", "contour_label": "mid_glottalized_rising", "diacritic": "dot_below", "example": "bạ", "paper_status": "explicit_appendix_mapping"}
+    ]
+  },
+  "orthography_rules": [
+    {"id": "onset_k_spelling", "component": "onset", "spellings": ["k", "c", "q"], "phone": "k", "conditions": ["k before the vowel spellings listed by the paper: i, y, ê, e, iê, ie", "q before u functioning as the glide", "c otherwise"], "examples": ["kíp", "kiểu", "kêm", "quê", "quà", "cách", "củng"], "source_page": 14},
+    {"id": "onset_g_spelling", "component": "onset", "spellings": ["g", "gh"], "phone": "ɣ", "conditions": ["gh before i, y, ê, e, iê, ie", "g otherwise"], "examples": ["ghế", "ghi", "ghép", "ghe", "gà", "gánh"], "source_page": 14},
+    {"id": "onset_ng_spelling", "component": "onset", "spellings": ["ng", "ngh"], "phone": "ŋ", "conditions": ["ngh before i, y, ê, e, iê, ie", "ng otherwise"], "examples": ["nghe", "nghiêng", "nghệ", "ngành", "ngỗng"], "source_page": 14},
+    {"id": "vowel_breve_a_spelling", "component": "nucleus", "spellings": ["ă", "a"], "phone": "ă", "conditions": ["a when followed by y; ă otherwise"], "examples": ["máy", "cay", "tay", "bắt", "bằng"], "source_page": 14},
+    {"id": "vowel_i_spelling", "component": "nucleus", "spellings": ["i", "y"], "phone": "i", "conditions": ["i when the rhyme has a coda; y when it has no coda"], "examples": ["líu rít", "kỷ luật", "lý do"], "source_page": 14},
+    {"id": "diphthong_iə_spelling", "component": "nucleus", "spellings": ["iê", "yê", "ia", "ya"], "phone": "iə", "conditions": ["iê with a coda and no glide", "yê with a coda and the glide written u", "ya with no coda and the glide written u", "ia with no coda and no glide"], "examples": ["kiếm", "khuyên", "đêm khuya", "bìa", "chia"], "source_page": 14},
+    {"id": "diphthong_uə_spelling", "component": "nucleus", "spellings": ["uô", "ua"], "phone": "uə", "conditions": ["uô with a coda", "ua without a coda"], "examples": ["buồn", "muôn", "chùa", "múa"], "source_page": 14},
+    {"id": "diphthong_ɯə_spelling", "component": "nucleus", "spellings": ["ươ", "ưa"], "phone": "ɯə", "conditions": ["ươ with a coda", "ưa without a coda"], "examples": ["rượu", "hưởng", "dưa", "chừa"], "source_page": 14},
+    {"id": "coda_i_glide_spelling", "component": "coda", "spellings": ["i", "y"], "phone": "i̯", "conditions": ["i after the vowel classes listed by Appendix B; y after ă and the short central vowel shown there"], "examples": ["mãi", "mùi", "hỏi", "nuôi", "bay", "chạy"], "source_page": 14, "note": "The PDF's IPA glyphs for the vowel classes are partly malformed; use these examples as the reliable orthographic cases."},
+    {"id": "coda_u_glide_spelling", "component": "coda", "spellings": ["u", "o"], "phone": "u̯", "conditions": ["Use u or o for the final rounded glide according to Vietnamese spelling conventions"], "examples": ["trâu", "chuột", "chịu", "xoong", "xiêu"], "source_page": 13}
+  ],
+  "tokenization_contract": {
+    "input": "Vietnamese text in Quốc ngữ",
+    "segmentation": "Split on whitespace into syllables; do not require lexical word segmentation for the paper's base converter.",
+    "output_components": ["onset", "glide", "nucleus", "coda", "tone"],
+    "ipa_tokenization": "Keep each IPA phoneme or tone as one token; do not compare Unicode code points or strip diacritics.",
+    "unknown_grapheme_policy": "Return an explicit unknown/unsupported result; do not guess a phone."
+  }
+}

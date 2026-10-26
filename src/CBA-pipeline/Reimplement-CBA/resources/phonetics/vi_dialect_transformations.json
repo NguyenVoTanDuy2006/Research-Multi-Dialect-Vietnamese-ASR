@@ -1,0 +1,517 @@
+{
+  "schema_version": "1.0",
+  "language": "vi",
+  "name": "Quốc ngữ-to-dialect phonetic transformation vocabulary",
+  "input_representation": "Syllables parsed with vi_phoneme_vocabulary.json",
+  "output_representation": "A sequence of surface-phone tokens; preserve the underlying syllable and tone IDs alongside it.",
+  "source": {
+    "title": "Phonetic Modeling of Dialectal Variation in Vietnamese Speech",
+    "file": "../../../../../docs/2605.24451v1.pdf",
+    "sections": ["Appendix C.1", "Appendix C.2", "Appendix C.3", "Appendix F", "Figure 9"],
+    "printed_pages": [15, 16, 17, 18, 19, 20],
+    "notes": [
+      "Rules below are transcribed from the article's dialect descriptions, not extracted from the authors' unreleased converter implementation.",
+      "Where PDF IPA glyphs are malformed or an output depends on fine phonetic detail not encoded in the text, the rule records the articulatory operation and marks the surface transcription as requiring review.",
+      "Province lists are the article's lists, not a current administrative lookup. Use ViMD's region metadata directly when available; do not infer a dialect for an unlisted or ambiguous label."
+    ]
+  },
+  "application_order": [
+    "parse Quốc ngữ syllable into onset, glide, nucleus, coda, tone",
+    "apply the selected macro-dialect onset rules",
+    "apply the selected macro-dialect rhyme rules",
+    "apply the matching province/subdialect rules",
+    "apply tone merger as an equivalence relation, not as a guessed one-way rewrite"
+  ],
+  "dialect_profiles": {
+    "northern": {
+      "paper_regions": ["Thanh Hóa", "Hà Giang", "Cao Bằng", "Bắc Kạn", "Lạng Sơn", "Tuyên Quang", "Thái Nguyên", "Phú Thọ", "Bắc Giang", "Quảng Ninh", "Lào Cai", "Lai Châu", "Yên Bái", "Điện Biên", "Sơn La", "Hòa Bình", "Hà Nội", "Hà Nam", "Bắc Ninh", "Hải Dương", "Hải Phòng", "Hưng Yên", "Nam Định", "Ninh Bình", "Thái Bình", "Vĩnh Phúc"],
+      "special_l_n_merger_locations": ["Hà Nội", "Vĩnh Phúc", "Bắc Ninh", "Hà Đông", "Hưng Yên"]
+    },
+    "central": {
+      "paper_regions": ["Nghệ An", "Hà Tĩnh", "Quảng Bình", "Quảng Trị", "Huế"],
+      "subdialects": {
+        "nghe_tinh": ["Nghệ An", "Hà Tĩnh"],
+        "quang_tri": ["Quảng Trị"],
+        "quang_binh": ["Quảng Bình"],
+        "hue": ["Huế"]
+      }
+    },
+    "southern": {
+      "paper_extent": "From Đà Nẵng to the southern border of Vietnam.",
+      "paper_regions": ["Đà Nẵng", "Quảng Nam", "Quảng Ngãi", "Kon Tum", "Bình Định", "Gia Lai", "Phú Yên", "Đắk Lắk", "Khánh Hòa", "Lâm Đồng", "Ninh Thuận", "Bình Thuận", "Bình Phước", "Đồng Nai", "Bình Dương", "Bà Rịa - Vũng Tàu", "Hồ Chí Minh", "Long An", "Đồng Tháp", "Tiền Giang", "Bến Tre", "Vĩnh Long", "An Giang", "Trà Vinh", "Cần Thơ", "Sóc Trăng", "Kiên Giang", "Bạc Liêu", "Cà Mau"],
+      "subdialects": {
+        "quang_nam_quang_ngai": ["Quảng Nam", "Quảng Ngãi"],
+        "mekong_delta": ["Bình Dương", "Bình Phước", "Đồng Nai", "Bà Rịa - Vũng Tàu", "Tây Ninh", "Hồ Chí Minh", "Long An", "Tiền Giang", "Hậu Giang", "Bến Tre", "Đồng Tháp", "Vĩnh Long", "Trà Vinh", "Cần Thơ", "Sóc Trăng", "An Giang", "Kiên Giang", "Bạc Liêu", "Cà Mau"]
+      },
+      "tr_to_t_locations": ["Quảng Nam", "Quảng Ngãi", "Kon Tum", "Gia Lai", "Đắk Lắk", "Bình Định", "Phú Yên", "Khánh Hòa", "Ninh Thuận", "Bình Thuận", "Lâm Đồng"]
+    }
+  },
+  "rules": [
+    {
+      "id": "north_initial_x_s_merge",
+      "scope": "northern",
+      "component": "onset",
+      "input_ipa": ["s", "ʂ"],
+      "output_ipa": ["s"],
+      "operation": "merge_to_same_surface_phone",
+      "orthography_examples": [["x", "s"]],
+      "source_page": 15
+    },
+    {
+      "id": "north_initial_ch_tr_merge",
+      "scope": "northern",
+      "component": "onset",
+      "input_ipa": ["c͡ɕ", "t͡s"],
+      "output_ipa": ["c͡ɕ"],
+      "operation": "merge_to_same_surface_phone",
+      "orthography_examples": [["ch", "tr"]],
+      "source_page": 15
+    },
+    {
+      "id": "north_initial_gi_r_d_merge",
+      "scope": "northern",
+      "component": "onset",
+      "input_ipa": ["z", "r", "j"],
+      "output_ipa": ["z"],
+      "operation": "merge_to_same_surface_phone",
+      "orthography_examples": [["gi", "r", "d"]],
+      "source_page": 15
+    },
+    {
+      "id": "north_optional_l_n_merger",
+      "scope": "northern",
+      "locations": ["Hà Nội", "Vĩnh Phúc", "Bắc Ninh", "Hà Đông", "Hưng Yên"],
+      "component": "onset",
+      "input_ipa": ["l", "n"],
+      "output_ipa": null,
+      "operation": "mark_as_surface_equivalence_group",
+      "equivalence_group": ["l", "n"],
+      "direction": "not specified by paper",
+      "source_page": 15
+    },
+    {
+      "id": "north_glide_distribution",
+      "scope": "northern",
+      "component": "rhyme_constraint",
+      "conditions": [
+        "The glide /u̯/ does not follow the back vowels /u, o, ɔ/.",
+        "The offglide /i̯/ does not follow front vowels /i, e, ɛ/, except when the coda is velar."
+      ],
+      "operation": "constraint_only",
+      "source_page": 15
+    },
+    {
+      "id": "north_back_diphthong_centralization_before_u_glide",
+      "scope": "northern",
+      "component": "rhyme",
+      "input_ipa": ["uə + u̯", "ɯə + u̯"],
+      "output_description": "The back diphthong is realized as a central diphthong; the paper gives central targets [ɨ] and [ɨə].",
+      "operation": "centralize_diphthong_before_rounded_glide",
+      "orthographic_examples": [["con hươu", "con hiêu"], ["ly rượu", "ly riệu"], ["cấp cứu", "cấp kíu"], ["âm mưu", "âm miu"]],
+      "source_page": 15,
+      "surface_ipa_status": "approximate_source_transcription"
+    },
+    {
+      "id": "north_front_vowel_velar_coda_changes",
+      "scope": "northern",
+      "component": "rhyme",
+      "conditions": "Front vowel /i, e, ɛ/ followed by velar coda /ŋ/ or /k/.",
+      "rules": [
+        {"input_ipa": "iŋ", "output_ipa": "ɨjɲ"},
+        {"input_ipa": "eŋ", "output_ipa": "əjɲ"},
+        {"input_ipa": "ɛŋ", "output_ipa": "ɜjɲ"},
+        {"input_ipa": "ik", "output_ipa": "ɨjc"},
+        {"input_ipa": "ek", "output_ipa": "əjc"},
+        {"input_ipa": "ɛk", "output_ipa": "ɜjc"}
+      ],
+      "operation": "centralize_front_vowel_insert_j_glide_and_palatalize_velar_coda",
+      "orthography_examples": ["inh", "ênh", "anh", "ich", "êch", "ach"],
+      "source_page": 15,
+      "surface_ipa_status": "normalized_from_printed_allophones; verify before using as a strict acoustic target"
+    },
+    {
+      "id": "north_rounded_back_vowel_velar_coda_labialization",
+      "scope": "northern",
+      "component": "rhyme",
+      "conditions": "Rounded back vowel /u, o, ɔ/ followed by velar coda /ŋ/ or /k/.",
+      "operation": "shorten_or_centralize_the_vowel_and_labialize_the_velar_coda",
+      "output_features": ["vowel loses/reduces its initial labial rounding", "velar coda is labialized"],
+      "input_ipa_patterns": ["uŋ", "oŋ", "ɔŋ", "uk", "ok", "ɔk"],
+      "output_ipa": null,
+      "surface_ipa_status": "not normalized: exact superscript/diacritic sequence is not robustly recoverable from the PDF glyphs",
+      "orthography_examples": ["ung", "ông", "ong", "uc", "ôc", "oc"],
+      "source_page": 15
+    },
+    {
+      "id": "central_initial_gi_d_merge",
+      "scope": "central",
+      "component": "onset",
+      "input_ipa": ["j", "z"],
+      "output_ipa": ["z"],
+      "operation": "merge_to_same_surface_phone",
+      "orthography_examples": [["d", "gi"]],
+      "source_page": 16
+    },
+    {
+      "id": "central_initial_tr_to_t",
+      "scope": "central",
+      "component": "onset",
+      "input_ipa": ["t͡s"],
+      "output_ipa": ["t"],
+      "orthography_examples": ["tr"],
+      "source_page": 16
+    },
+    {
+      "id": "central_initial_ch_to_c",
+      "scope": "central",
+      "component": "onset",
+      "input_ipa": ["c͡ɕ"],
+      "output_ipa": ["c"],
+      "orthography_examples": ["ch"],
+      "source_page": 16
+    },
+    {
+      "id": "central_tone_merger_quang_binh_quang_tri_hue",
+      "scope": ["central.quang_binh", "central.quang_tri", "central.hue"],
+      "component": "tone",
+      "input_tone_ids": ["tone_hoi", "tone_nang"],
+      "operation": "mark_as_tone_equivalence_group",
+      "output_tone_id": null,
+      "equivalence_group": ["tone_hoi", "tone_nang"],
+      "source_page": 16,
+      "note": "The paper describes five tones and prints the merged contour pair with malformed IPA glyphs. Tone IDs here follow the contour labels in Appendix B; verify against native audio or the authors' implementation before collapsing labels in training data."
+    },
+    {
+      "id": "central_tone_merger_nghe_tinh",
+      "scope": "central.nghe_tinh",
+      "component": "tone",
+      "input_tone_ids": ["tone_nga", "tone_nang"],
+      "operation": "mark_as_tone_equivalence_group",
+      "output_tone_id": null,
+      "equivalence_group": ["tone_nga", "tone_nang"],
+      "source_page": 16,
+      "note": "The printed contour symbols are malformed in the PDF. Keep this as an equivalence set until the paper's tone labels are checked against a reliable source."
+    },
+    {
+      "id": "nghe_tinh_front_vowel_velar_coda",
+      "scope": "central.nghe_tinh",
+      "component": "rhyme",
+      "conditions": "Front vowel /i, e, ɛ/ followed by velar /ŋ, k/.",
+      "rules": [
+        {"input_ipa": "iŋ", "output_ipa": "iɲ"},
+        {"input_ipa": "eŋ", "output_ipa": "eɲ"},
+        {"input_ipa": "ɛŋ", "output_ipa": "ɛɲ"},
+        {"input_ipa": "ik", "output_ipa": "ic"},
+        {"input_ipa": "ek", "output_ipa": "ec"},
+        {"input_ipa": "ɛk", "output_ipa": "ɛc"}
+      ],
+      "operation": "palatalize_velar_coda_preserve_front_vowel",
+      "source_page": 16,
+      "surface_ipa_status": "normalized from printed allophones"
+    },
+    {
+      "id": "quang_tri_front_vowel_velar_coda_preservation",
+      "scope": "central.quang_tri",
+      "component": "rhyme",
+      "conditions": "Front vowel /i, e, ɛ/ followed by velar /ŋ, k/.",
+      "rules": [
+        {"input_ipa": "iŋ", "output_ipa": "iŋ"},
+        {"input_ipa": "eŋ", "output_ipa": "eŋ"},
+        {"input_ipa": "ɛŋ", "output_ipa": "ɛŋ"},
+        {"input_ipa": "ik", "output_ipa": "ik"},
+        {"input_ipa": "ek", "output_ipa": "ek"},
+        {"input_ipa": "ɛk", "output_ipa": "ɛk"}
+      ],
+      "operation": "preserve_vowel_and_velar_coda",
+      "source_page": 16
+    },
+    {
+      "id": "quang_binh_front_vowel_length_before_n_t",
+      "scope": "central.quang_binh",
+      "component": "rhyme",
+      "conditions": "Front vowel /i, e, ɛ/ before alveolar nasal or stop /n, t/.",
+      "rules": [
+        {"input_ipa": "in", "output_ipa": "iːn"},
+        {"input_ipa": "en", "output_ipa": "eːn"},
+        {"input_ipa": "ɛn", "output_ipa": "ɛːn"},
+        {"input_ipa": "it", "output_ipa": "iːt"},
+        {"input_ipa": "et", "output_ipa": "eːt"},
+        {"input_ipa": "ɛt", "output_ipa": "ɛːt"}
+      ],
+      "operation": "lengthen_front_vowel",
+      "source_page": 16
+    },
+    {
+      "id": "quang_binh_velar_to_alveolar_coda",
+      "scope": "central.quang_binh",
+      "component": "rhyme",
+      "conditions": "Front vowel /i, e, ɛ/ before velar /ŋ, k/; vowel remains short, contrasting with the lengthened /n, t/ forms.",
+      "rules": [
+        {"input_ipa": "iŋ", "output_ipa": "in"},
+        {"input_ipa": "eŋ", "output_ipa": "en"},
+        {"input_ipa": "ɛŋ", "output_ipa": "ɛn"},
+        {"input_ipa": "ik", "output_ipa": "it"},
+        {"input_ipa": "ek", "output_ipa": "et"},
+        {"input_ipa": "ɛk", "output_ipa": "ɛt"}
+      ],
+      "operation": "replace_velar_coda_with_alveolar_nasal_or_stop",
+      "source_page": 16
+    },
+    {
+      "id": "hue_front_vowel_centralization_before_velar",
+      "scope": "central.hue",
+      "component": "rhyme",
+      "conditions": "Front vowel /i, e, ɛ/ before velar /ŋ, k/.",
+      "rules": [
+        {"input_ipa": "iŋ", "output_ipa": "ɨn"},
+        {"input_ipa": "ik", "output_ipa": "ɨt"},
+        {"input_ipa": "eŋ", "output_ipa": "ən"},
+        {"input_ipa": "ek", "output_ipa": "ət"},
+        {"input_ipa": "ɛŋ", "output_ipa": "ɜn"},
+        {"input_ipa": "ɛk", "output_ipa": "ɜt"}
+      ],
+      "operation": "centralize_front_vowel_and_replace_velar_coda_with_n_or_t",
+      "source_page": 17,
+      "surface_ipa_status": "normalized from printed allophones"
+    },
+    {
+      "id": "hue_vowel_length_before_n_t",
+      "scope": "central.hue",
+      "component": "rhyme",
+      "conditions": "Centralized vowel /ɨ, ə, ɜ/ before /n, t/.",
+      "rules": [
+        {"input_ipa": "ɨn", "output_ipa": "ɨːn"},
+        {"input_ipa": "ɨt", "output_ipa": "ɨːt"},
+        {"input_ipa": "ən", "output_ipa": "əːn"},
+        {"input_ipa": "ət", "output_ipa": "əːt"},
+        {"input_ipa": "ɜn", "output_ipa": "ɜːn"},
+        {"input_ipa": "ɜt", "output_ipa": "ɜːt"}
+      ],
+      "operation": "lengthen_vowel",
+      "source_page": 17
+    },
+    {
+      "id": "south_tone_merger",
+      "scope": "southern",
+      "component": "tone",
+      "input_tone_ids": ["tone_hoi", "tone_nang"],
+      "operation": "mark_as_tone_equivalence_group",
+      "output_tone_id": null,
+      "equivalence_group": ["tone_hoi", "tone_nang"],
+      "source_page": 17,
+      "note": "The paper says the Southern dialect has five tones and prints the merged contour pair with malformed IPA glyphs; verify the mapping before collapsing training labels."
+    },
+    {
+      "id": "south_initial_gi_d_v_merge",
+      "scope": "southern",
+      "component": "onset",
+      "input_ipa": ["z", "j", "v"],
+      "output_ipa": ["j"],
+      "operation": "merge_to_same_surface_phone",
+      "orthography_examples": [["gi", "d", "v"]],
+      "source_page": 17
+    },
+    {
+      "id": "south_qu_to_w",
+      "scope": "southern",
+      "component": "onset_and_glide",
+      "input_ipa": "kw",
+      "output_ipa": "w",
+      "orthography_examples": ["qu"],
+      "operation": "realize_qu_as_labial_approximant",
+      "source_page": 17
+    },
+    {
+      "id": "south_front_vowel_velar_coda_palatalization",
+      "scope": "southern",
+      "component": "rhyme",
+      "conditions": "Front vowel /i, e, ɛ/ followed by velar /ŋ, k/.",
+      "rules": [
+        {"input_ipa": "iŋ", "output_ipa": "iɲ"},
+        {"input_ipa": "eŋ", "output_ipa": "eɲ"},
+        {"input_ipa": "ɛŋ", "output_ipa": "ɛɲ"},
+        {"input_ipa": "ik", "output_ipa": "ic"},
+        {"input_ipa": "ek", "output_ipa": "ec"},
+        {"input_ipa": "ɛk", "output_ipa": "ɛc"}
+      ],
+      "operation": "palatalize_velar_coda_preserve_front_vowel",
+      "source_page": 17
+    },
+    {
+      "id": "south_ch_s_x_tr_locations",
+      "scope": "southern",
+      "component": "onset",
+      "locations_with_tr_to_t": ["Quảng Nam", "Quảng Ngãi", "Kon Tum", "Gia Lai", "Đắk Lắk", "Bình Định", "Phú Yên", "Khánh Hòa", "Ninh Thuận", "Bình Thuận", "Lâm Đồng"],
+      "rules": [
+        {"orthography": "tr", "input_ipa": "t͡s", "output_ipa": "t", "condition": "Only locations_with_tr_to_t"},
+        {"orthography": "tr", "input_ipa": "t͡s", "output_ipa": "c", "condition": "Other Southern locations; the paper groups tr with ch here"},
+        {"orthography": "ch", "input_ipa": "c͡ɕ", "output_ipa": "c", "condition": "Other Southern locations"},
+        {"orthography": "s", "input_ipa": "ʂ", "output_ipa": "s", "condition": "Other Southern locations"},
+        {"orthography": "x", "input_ipa": "s", "output_ipa": "s", "condition": "Other Southern locations"}
+      ],
+      "source_page": 17
+    },
+    {
+      "id": "south_diphthong_reduction_before_i_or_labial_coda",
+      "scope": "southern",
+      "component": "rhyme",
+      "conditions": "Diphthongs /iə, ɯə/ followed by offglide /i̯/ or labial coda /m, p/; the paper also lists /u/ in its condition and examples.",
+      "rules": [
+        {"input_ipa": "iəp", "output_ipa": "ip"},
+        {"input_ipa": "ɯəp", "output_ipa": "ɯp"},
+        {"input_ipa": "iəm", "output_ipa": "im"},
+        {"input_ipa": "ɯəm", "output_ipa": "ɯm"},
+        {"input_ipa": "iəu̯", "output_ipa": "iu̯"},
+        {"input_ipa": "ɯəu̯", "output_ipa": "ɯu̯"}
+      ],
+      "operation": "reduce_diphthong_to_same_row_monophthong",
+      "orthography_examples": [["tiếp tục", "típ tục"], ["quả mướp", "quả mứp"], ["đánh chiếm", "đánh chím"], ["ươm mầm", "ưm mầm"], ["tình yêu", "tình iu"], ["con hươu", "con hưu"]],
+      "source_page": 17
+    },
+    {
+      "id": "quang_nam_quang_ngai_open_close_vowels",
+      "scope": "southern.quang_nam_quang_ngai",
+      "component": "nucleus",
+      "conditions": "Open syllables without coda.",
+      "rules": [
+        {"input_ipa": "i", "output_ipa": "ij"},
+        {"input_ipa": "u", "output_ipa": "uw"},
+        {"input_ipa": "ɯ", "output_ipa": "ɤw"}
+      ],
+      "operation": "diphthongize_close_monophthongs",
+      "source_page": 18,
+      "surface_ipa_status": "normalized from the paper's vowel-chart notation"
+    },
+    {
+      "id": "quang_nam_quang_ngai_diphthong_monophthongization",
+      "scope": "southern.quang_nam_quang_ngai",
+      "component": "rhyme",
+      "conditions": "Diphthongs followed by semivowel coda /i̯/ or /u̯/.",
+      "rules": [
+        {"input_ipa": "uəi̯", "output_ipa": "uː"},
+        {"input_ipa": "ɯəi̯", "output_ipa": "ɯː"},
+        {"input_ipa": "iəi̯", "output_ipa": "iː"},
+        {"input_ipa": "uəu̯", "output_ipa": "uː"},
+        {"input_ipa": "ɯəu̯", "output_ipa": "ɯː"},
+        {"input_ipa": "iəu̯", "output_ipa": "iː"}
+      ],
+      "operation": "reduce_diphthong_to_long_monophthong",
+      "source_page": 18
+    },
+    {
+      "id": "quang_nam_quang_ngai_oi_ai_changes",
+      "scope": "southern.quang_nam_quang_ngai",
+      "component": "rhyme",
+      "rules": [
+        {"input_ipa": "ɔi̯", "output_ipa": "uə"},
+        {"input_ipa": "ai̯", "output_ipa": "ae"}
+      ],
+      "orthography_examples": [["nói", "núa"], ["hai", "he"]],
+      "source_page": 18
+    },
+    {
+      "id": "quang_nam_quang_ngai_labial_context_vowels",
+      "scope": "southern.quang_nam_quang_ngai",
+      "component": "nucleus",
+      "conditions": "Rhyme with labial coda /m, p/ or rounded semivowel /u̯/ as described in Appendix C.3.1.",
+      "rules": [
+        {"input_ipa": "a", "output_ipa": "ɔ"},
+        {"input_ipa": "ɔ", "output_ipa": "o"},
+        {"input_ipa": "o", "output_ipa": "ɤ"},
+        {"input_ipa": "u", "output_ipa": "ʊ"},
+        {"input_ipa": "ă", "output_ipa": "a"},
+        {"input_ipa": "ə̆", "output_ipa": "a"},
+        {"input_ipa": "uə", "output_ipa": "ʊ", "condition": "When coda is /m/"}
+      ],
+      "source_page": 18,
+      "surface_ipa_status": "normalized from the paper's vowel-chart notation"
+    },
+    {
+      "id": "quang_nam_quang_ngai_velar_context_vowels",
+      "scope": "southern.quang_nam_quang_ngai",
+      "component": "nucleus",
+      "conditions": "Rhyme with velar coda /ŋ, k/; front vowels /i, e, ɛ/ remain unchanged.",
+      "rules": [
+        {"input_ipa": "a", "output_ipa": "ɑː"},
+        {"input_ipa": "ɔ", "output_ipa": "ɑ̃ː"},
+        {"input_ipa": "o", "output_ipa": "ʌ"},
+        {"input_ipa": "ə", "output_ipa": "a"},
+        {"input_ipa": "uə", "output_ipa": "uː"},
+        {"input_ipa": "iə", "output_ipa": "iː"},
+        {"input_ipa": "ɯə", "output_ipa": "ɯː"}
+      ],
+      "source_page": 18,
+      "surface_ipa_status": "normalized from the paper's vowel-chart notation; nasalization/length marks should be reviewed"
+    },
+    {
+      "id": "mekong_front_i_velar_to_alveolar",
+      "scope": "southern.mekong_delta",
+      "component": "rhyme",
+      "conditions": "Front vowel /i/ before velar /ŋ, k/; no vowel lengthening.",
+      "rules": [
+        {"input_ipa": "iŋ", "output_ipa": "in"},
+        {"input_ipa": "ik", "output_ipa": "it"}
+      ],
+      "operation": "replace_velar_coda_with_alveolar_coda",
+      "source_page": 19
+    },
+    {
+      "id": "mekong_front_e_velar_centralization_and_lengthening",
+      "scope": "southern.mekong_delta",
+      "component": "rhyme",
+      "conditions": "Front vowel /e/ before velar /ŋ, k/.",
+      "rules": [
+        {"input_ipa": "eŋ", "output_ipa": "əːn"},
+        {"input_ipa": "ek", "output_ipa": "əːt"}
+      ],
+      "operation": "centralize_and_lengthen_vowel_then_replace_velar_coda_with_n_or_t",
+      "source_page": 19
+    },
+    {
+      "id": "mekong_alveolar_coda_to_velar",
+      "scope": "southern.mekong_delta",
+      "component": "coda",
+      "conditions": "Alveolar coda /n, t/ after /a, ə, ɛ/.",
+      "rules": [
+        {"input_ipa": "an", "output_ipa": "aŋ"},
+        {"input_ipa": "at", "output_ipa": "ak"},
+        {"input_ipa": "ən", "output_ipa": "əŋ"},
+        {"input_ipa": "ət", "output_ipa": "ək"},
+        {"input_ipa": "ɛn", "output_ipa": "ɛŋ"},
+        {"input_ipa": "ɛt", "output_ipa": "ɛk"}
+      ],
+      "orthography_examples": [["buôn bán", "buôn báng"], ["ít ỏi", "ích ỏi"], ["ân cần", "âng cầng"], ["chen lấn", "cheng lấng"]],
+      "source_page": 19
+    },
+    {
+      "id": "mekong_rounded_vowel_length_before_n_t",
+      "scope": "southern.mekong_delta",
+      "component": "nucleus",
+      "conditions": "Rounded back vowel /u, o, ɔ/ before nasal /n/ or stop /t/.",
+      "rules": [
+        {"input_ipa": "u", "output_ipa": "uː"},
+        {"input_ipa": "o", "output_ipa": "oː"},
+        {"input_ipa": "ɔ", "output_ipa": "ɔː"}
+      ],
+      "source_page": 19
+    },
+    {
+      "id": "mekong_rounded_vowel_velar_coda_labialization",
+      "scope": "southern.mekong_delta",
+      "component": "rhyme",
+      "conditions": "Rounded back vowel /u, o, ɔ/ with velar coda /ŋ, k/, and corresponding alveolar-coda forms described by the paper.",
+      "operation": "reduce_or_unround_vowel_and_labialize_velar_coda; alveolar coda may be replaced by a velar-labialized phone",
+      "input_ipa_patterns": ["un", "uŋ", "ut", "uk", "ɔn", "ɔŋ", "ɔt", "ɔk"],
+      "output_ipa": null,
+      "surface_ipa_status": "not normalized: paper's superscript labialization and vowel symbols require source-code or native-speaker verification",
+      "source_page": 19
+    }
+  ],
+  "matching_policy": {
+    "region_source_priority": ["ViMD per-sample region/province metadata", "explicit paper profile name", "unknown"],
+    "unknown_region": "Do not apply dialect-specific rules; retain the canonical phoneme sequence and flag the sample.",
+    "overlapping_rules": "Apply macro-dialect rules before subdialect rules. Within one component, select only the most specific matching profile; do not apply conflicting alternatives sequentially.",
+    "mergers": "Keep equivalence groups for similarity scoring. Do not arbitrarily rewrite all members to one phone or tone unless the metric explicitly requires a canonical representative.",
+    "english_tokens": "This file does not implement transcript language filtering. Keep language filtering in the data-preprocessing stage."
+  }
+}

@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
+
+if TYPE_CHECKING:
+    from mdv_asr_module.data.records import AudioSample
 
 
 @dataclass(frozen=True)
@@ -39,8 +42,17 @@ class CheckpointMetrics:
 
 
 class Transcriber(Protocol):
-    def transcribe(self, audio: Any) -> str:
+    def load(self) -> None:
+        """Load the configured model and optional adapter."""
+
+    def transcribe(self, audio: AudioSample) -> str:
         """Return one transcript for an audio sample."""
+
+    def metadata(self) -> dict[str, Any]:
+        """Describe the loaded checkpoint and runtime settings."""
+
+    def close(self) -> None:
+        """Release model resources."""
 
 
 class PairScorer(Protocol):

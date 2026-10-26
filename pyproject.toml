@@ -17,6 +17,8 @@ dependencies = [
 [project.optional-dependencies]
 data = ["datasets>=3.0", "kagglehub>=0.3", "pandas>=2.0"]
 train = ["torch>=2.2", "transformers>=5.17", "peft>=0.21.1", "accelerate>=1.15", "datasets>=3.0"]
+inference = ["faster-whisper>=1.2.0", "ctranslate2>=4.5.0,<5"]
+whisperx = ["whisperx>=3.7.0,<4"]
 semantic = ["torch>=2.2", "transformers>=5.17", "bert-score==0.3.13"]
 all = ["datasets>=3.0", "kagglehub>=0.3", "pandas>=2.0", "torch>=2.2",
        "transformers>=5.17", "peft>=0.21.1", "accelerate>=1.15"]
