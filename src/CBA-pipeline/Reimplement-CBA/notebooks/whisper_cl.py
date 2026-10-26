@@ -6,37 +6,73 @@
 #
 # Script này dùng trực tiếp `reimplement_cba.workflow.run`: baseline PhoWhisper, fine-tune AdaLoRA, lọc curriculum, chọn checkpoint trên validation rồi đánh giá test. Mặc định chạy **1 vòng CL × 1 epoch** trên tối đa 3 mẫu mỗi split để kiểm tra pipeline; đổi biến số mẫu hoặc hai biến vòng/epoch ở ô cấu hình để mở rộng. Mỗi lần tạo cấu hình sẽ dùng một thư mục output mới.
 #
-# Mở file `.py` trong VS Code để chạy từng ô `# %%`, hoặc chạy cả file bằng Python 3.11. Từ thư mục gốc của workspace, cài các thư viện cần cho backend Transformers: `python -m pip install -e '.[data,train,semantic]'`. Dữ liệu ViMD small phải có sẵn trên máy; script không tải dữ liệu.
+# Mở file `.py` trong VS Code/Kaggle để chạy từng ô `# %%`, hoặc chạy cả file bằng Python 3.11. Trên Kaggle, ô đầu clone source và cài dependency; output được lưu riêng trong `/kaggle/working/outputs/cba_whisper`. Dữ liệu ViMD small phải được gắn dưới Kaggle Input; script không tải dữ liệu.
 
 # %% [markdown]
-# ## 0. Lấy project về Kaggle hoặc máy mới
+# ## 0. Clone source và cài thư viện
 #
-# Push nhánh `research-CBA-Whisper` từ máy phát triển lên GitHub trước. Trong Kaggle Notebook, chạy các lệnh sau ở một ô riêng rồi mở file script từ checkout vừa clone:
-#
-# ```python
-# !git clone --branch research-CBA-Whisper --single-branch https://github.com/NguyenVoTanDuy2006/Research-Multi-Dialect-Vietnamese-ASR.git /kaggle/working/Research-Multi-Dialect-Vietnamese-ASR
-# %cd /kaggle/working/Research-Multi-Dialect-Vietnamese-ASR
-# %pip install -e '.[data,train,semantic]'
-# ```
-#
-# Nếu chạy trực tiếp file `.py` sau khi clone, dùng `python src/CBA-pipeline/Reimplement-CBA/notebooks/run_vimd_small.py`. Không đặt token GitHub trong file này.
-
-# %% [markdown]
-# ## 1. Tìm project và kiểm tra thư viện
+# Ô này dùng checkout riêng `/kaggle/working/mdv_asr_source`, tương tự
+# `src/nb/benchmark.py`. Chạy lại ô sẽ clone lại source đã nhận diện là Git;
+# artifacts nằm ngoài checkout nên không bị xóa theo source.
 
 # %%
 from importlib.util import find_spec
 from pathlib import Path
+import importlib
+import shutil
+import subprocess
 import sys
 
-# Nếu chạy từng ô từ một thư mục khác workspace, có thể điền đường dẫn ở đây.
+REPO_URL = 'https://github.com/NguyenVoTanDuy2006/Research-Multi-Dialect-Vietnamese-ASR.git'
+REPO_BRANCH = 'research-CBA-Whisper'
+REPO_DIR = Path('/kaggle/working/mdv_asr_source')
+KAGGLE_WORKING = Path('/kaggle/working')
+PROJECT_RELATIVE = Path('src/CBA-pipeline/Reimplement-CBA')
 PROJECT_DIR_OVERRIDE = None
 
-if PROJECT_DIR_OVERRIDE:
+script_path = Path(__file__).resolve() if '__file__' in globals() else None
+running_from_clone = script_path is not None and REPO_DIR in script_path.parents
+if KAGGLE_WORKING.is_dir():
+    if not running_from_clone:
+        if REPO_DIR.is_symlink():
+            raise ValueError(f'Không xóa symlink source: {REPO_DIR}')
+        if REPO_DIR.exists():
+            if not REPO_DIR.is_dir() or not (REPO_DIR / '.git').is_dir():
+                raise ValueError(f'Checkout cũ không phải Git repo, kiểm tra thủ công: {REPO_DIR}')
+            legacy_outputs = (REPO_DIR / 'outputs', REPO_DIR / PROJECT_RELATIVE / 'outputs')
+            if any(path.exists() for path in legacy_outputs):
+                raise RuntimeError(
+                    f'Checkout cũ còn output bên trong; chuyển output ra ngoài trước khi clone lại: {REPO_DIR}'
+                )
+            changes = subprocess.run(
+                ['git', '-C', str(REPO_DIR), 'status', '--porcelain'],
+                check=True, capture_output=True, text=True,
+            )
+            if changes.stdout.strip():
+                raise RuntimeError(f'Checkout cũ có thay đổi chưa lưu, không xóa: {REPO_DIR}')
+            shutil.rmtree(REPO_DIR)
+            print('Đã xóa source clone cũ:', REPO_DIR)
+        subprocess.run(
+            ['git', 'clone', '--depth', '1', '--branch', REPO_BRANCH,
+             REPO_URL, str(REPO_DIR)],
+            check=True,
+        )
+    project_dir = REPO_DIR / PROJECT_RELATIVE
+    subprocess.run(
+        [sys.executable, '-m', 'pip', 'install', '-q', '-r',
+         str(REPO_DIR / 'requirements-kaggle.txt')],
+        check=True,
+    )
+    subprocess.run(
+        [sys.executable, '-m', 'pip', 'install', '-q', '-e',
+         f'{REPO_DIR}[semantic]'],
+        check=True,
+    )
+    importlib.invalidate_caches()
+elif PROJECT_DIR_OVERRIDE:
     project_dir = Path(PROJECT_DIR_OVERRIDE).expanduser().resolve()
 else:
-    script_path = globals().get('__file__')
-    locations = [Path(script_path).resolve().parents[1]] if script_path else []
+    locations = [script_path.parents[1]] if script_path else []
     locations += [Path.cwd().resolve(), *Path.cwd().resolve().parents]
     options = [location / 'src/CBA-pipeline/Reimplement-CBA' for location in locations]
     options += [location / 'CBA-pipeline/Reimplement-CBA' for location in locations]
@@ -69,6 +105,7 @@ print('CUDA:', torch.cuda.is_available())
 # %%
 from copy import deepcopy
 from datetime import datetime
+import json
 from uuid import uuid4
 from reimplement_cba.config import CBAConfig
 
@@ -87,12 +124,20 @@ values['training']['epochs'] = SMOKE_EPOCHS
 values['inference']['backend'] = 'transformers'
 run_label = datetime.now().strftime('%Y%m%d-%H%M%S') + '-' + uuid4().hex[:6]
 values['run_id'] = f'script-{Path(CONFIG_FILENAME).stem}-{run_label}'
-values['output_dir'] = str(project_dir / 'outputs' / values['run_id'])
+OUTPUT_ROOT = (KAGGLE_WORKING if KAGGLE_WORKING.is_dir() else workspace_dir) / 'outputs' / 'cba_whisper'
+values['output_dir'] = str(OUTPUT_ROOT / values['run_id'])
 config = CBAConfig(base_config.path, values)
 config.validate()
+OUTPUT_DIR = config.output_dir
+if REPO_DIR == OUTPUT_DIR or REPO_DIR in OUTPUT_DIR.parents:
+    raise ValueError(f'Output phải nằm ngoài source clone: {OUTPUT_DIR}')
+OUTPUT_DIR.mkdir(parents=True, exist_ok=False)
+(OUTPUT_DIR / 'resolved-config.json').write_text(
+    json.dumps(values, ensure_ascii=False, indent=2) + '\n', encoding='utf-8'
+)
 print('Dữ liệu:', config.dataset_config_path)
 print('Root override:', values['dataset']['root_override'])
-print('Output:', config.output_dir)
+print('Output:', OUTPUT_DIR)
 print('CL rounds:', SMOKE_ROUNDS, '| epochs/round:', SMOKE_EPOCHS)
 print('Số mẫu tối đa mỗi split:', SMOKE_SAMPLES_PER_SPLIT)
 
@@ -151,3 +196,27 @@ for round_report in report['rounds']:
           '| curriculum:', round_report['curriculum'])
 if 'final' in report:
     print('Final test:', report['final']['test'])
+
+# %% [markdown]
+# ## 6. Dọn source clone khỏi Kaggle Output
+#
+# Chạy sau khi workflow và phần xem báo cáo đã kết thúc. Chỉ xóa checkout
+# `/kaggle/working/mdv_asr_source`; giữ `OUTPUT_DIR` và các checkpoint trong
+# `/kaggle/working/outputs/cba_whisper/` để tải về từ Kaggle Output.
+
+# %%
+from mdv_asr_module.runtime.cleanup import NotebookOutputCleaner
+
+if KAGGLE_WORKING.is_dir():
+    legacy_outputs = (REPO_DIR / 'outputs', REPO_DIR / PROJECT_RELATIVE / 'outputs')
+    if any(path.exists() for path in legacy_outputs):
+        raise RuntimeError(
+            f'Source còn output bên trong; chuyển output ra ngoài trước khi dọn: {REPO_DIR}'
+        )
+    removed = NotebookOutputCleaner(working_dir=KAGGLE_WORKING).remove_source_checkout(
+        REPO_DIR, preserve_paths=[OUTPUT_DIR]
+    )
+    print('Đã dọn source clone:' if removed else 'Source đã được dọn trước đó:', REPO_DIR)
+    print('Artifacts được giữ tại:', OUTPUT_DIR)
+else:
+    print('Đang chạy ngoài Kaggle; giữ nguyên source tại:', workspace_dir)

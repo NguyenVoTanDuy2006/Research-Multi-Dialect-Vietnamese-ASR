@@ -10,16 +10,16 @@ From the workspace root on the development machine, publish this branch first:
 git push -u origin research-CBA-Whisper
 ```
 
-Then clone the branch on Kaggle or another machine:
+To clone the branch on another machine:
 
 ```bash
 git clone --branch research-CBA-Whisper --single-branch https://github.com/NguyenVoTanDuy2006/Research-Multi-Dialect-Vietnamese-ASR.git
 cd Research-Multi-Dialect-Vietnamese-ASR
 python -m pip install -e '.[data,train,semantic]'
-python src/CBA-pipeline/Reimplement-CBA/notebooks/run_vimd_small.py
+python src/CBA-pipeline/Reimplement-CBA/notebooks/whisper_cl.py
 ```
 
-The smoke script also shows the equivalent Kaggle Notebook commands. Set `VIMD_ROOT` if the ViMD small dataset is mounted at a different location. No GitHub token belongs in the script.
+On Kaggle, the first executable cell of `notebooks/whisper_cl.py` clones this branch into `/kaggle/working/mdv_asr_source` and installs the Kaggle requirements plus semantic metrics. Set `VIMD_ROOT` if the ViMD small dataset is mounted at a different location. No GitHub token belongs in the script.
 
 ## Validate and inspect the workflow
 
@@ -43,7 +43,7 @@ From this directory, after installing the dependencies and mounting ViMD small:
 PYTHONPATH=../../../src python -m reimplement_cba run --config configs/vimd_phowhisper_small.json
 ```
 
-For a smoke run, open [`notebooks/run_vimd_small.py`](notebooks/run_vimd_small.py) as a Python notebook in VS Code (`# %%` cells), or run it with `python notebooks/run_vimd_small.py`. It checks dependencies and dataset splits, then runs one CL round with one training epoch on the first three eligible train samples and the first three validation/test samples. Edit `VIMD_ROOT`, `SMOKE_SAMPLES_PER_SPLIT`, and the round/epoch settings in the script. The smoke metrics are for pipeline checking only.
+For a smoke run, open [`notebooks/whisper_cl.py`](notebooks/whisper_cl.py) as a Python notebook in VS Code or Kaggle (`# %%` cells), or run it with `python notebooks/whisper_cl.py`. On Kaggle, its first code cell clones the `research-CBA-Whisper` branch into `/kaggle/working/mdv_asr_source` and installs dependencies. It checks dataset splits, then runs one CL round with one training epoch on the first three eligible train samples and the first three validation/test samples. Edit `VIMD_ROOT`, `SMOKE_SAMPLES_PER_SPLIT`, and the round/epoch settings in the script. Artifacts are saved under `/kaggle/working/outputs/cba_whisper/`, outside the source checkout. Run the final cleanup cell after reporting to remove only the source checkout. The smoke metrics are for pipeline checking only.
 
 After a failed run, rerun the script's configuration cell to create a new output directory before retrying. The previous `run-summary.json` is not resumable.
 
