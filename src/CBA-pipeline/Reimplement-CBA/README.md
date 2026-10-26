@@ -19,7 +19,7 @@ python -m pip install -e '.[data,train,semantic]'
 python src/CBA-pipeline/Reimplement-CBA/notebooks/whisper_cl.py
 ```
 
-On Kaggle, the first executable cell of `notebooks/whisper_cl.py` clones this branch into `/kaggle/working/mdv_asr_source` and installs the Kaggle requirements plus semantic metrics. Set `VIMD_ROOT` if the ViMD small dataset is mounted at a different location. No GitHub token belongs in the script.
+On Kaggle, add a secret named `HF_TOKEN`, grant the notebook access to it, and enable Internet. The first executable cell of `notebooks/whisper_cl.py` checks that token, clones this branch into `/kaggle/working/mdv_asr_source`, installs the Kaggle requirements plus semantic metrics, and logs in to Hugging Face before any model download. Set `VIMD_ROOT` if the ViMD small dataset is mounted at a different location. No token belongs in the script or its printed output.
 
 ## Validate and inspect the workflow
 

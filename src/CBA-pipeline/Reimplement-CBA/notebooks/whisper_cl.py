@@ -11,14 +11,16 @@
 # %% [markdown]
 # ## 0. Clone source và cài thư viện
 #
-# Ô này dùng checkout riêng `/kaggle/working/mdv_asr_source`, tương tự
-# `src/nb/benchmark.py`. Chạy lại ô sẽ clone lại source đã nhận diện là Git;
+# Ô này kiểm tra `HF_TOKEN` từ biến môi trường hoặc Kaggle Secrets trước khi
+# tải model. Trên Kaggle, thêm secret tên `HF_TOKEN` và bật Internet. Checkout
+# nằm ở `/kaggle/working/mdv_asr_source`, tương tự `src/nb/benchmark.py`;
 # artifacts nằm ngoài checkout nên không bị xóa theo source.
 
 # %%
 from importlib.util import find_spec
 from pathlib import Path
 import importlib
+import os
 import shutil
 import subprocess
 import sys
@@ -29,6 +31,22 @@ REPO_DIR = Path('/kaggle/working/mdv_asr_source')
 KAGGLE_WORKING = Path('/kaggle/working')
 PROJECT_RELATIVE = Path('src/CBA-pipeline/Reimplement-CBA')
 PROJECT_DIR_OVERRIDE = None
+
+hf_token = os.environ.get('HF_TOKEN', '').strip()
+if not hf_token and KAGGLE_WORKING.is_dir():
+    try:
+        from kaggle_secrets import UserSecretsClient
+
+        hf_token = (UserSecretsClient().get_secret('HF_TOKEN') or '').strip()
+    except Exception:
+        hf_token = ''
+if not hf_token:
+    raise RuntimeError(
+        'Thiếu HF_TOKEN. Đặt biến môi trường HF_TOKEN hoặc thêm Kaggle Secret '
+        'tên HF_TOKEN trước khi chạy cell này.'
+    )
+os.environ['HF_TOKEN'] = hf_token
+print('HF_TOKEN available: True')
 
 script_path = Path(__file__).resolve() if '__file__' in globals() else None
 running_from_clone = script_path is not None and REPO_DIR in script_path.parents
@@ -85,7 +103,7 @@ for package_dir in (project_dir, workspace_dir / 'src'):
     if str(package_dir) not in sys.path:
         sys.path.insert(0, str(package_dir))
 
-required_modules = ('numpy', 'soundfile', 'datasets', 'torch', 'transformers', 'peft', 'accelerate', 'bert_score')
+required_modules = ('numpy', 'soundfile', 'datasets', 'torch', 'transformers', 'peft', 'accelerate', 'bert_score', 'huggingface_hub')
 missing = [name for name in required_modules if find_spec(name) is None]
 print('Project:', project_dir)
 print('Python:', sys.version.split()[0])
@@ -94,6 +112,11 @@ if missing:
     raise RuntimeError(
         f"Cài dependency từ {workspace_dir}: python -m pip install -e '.[data,train,semantic]'"
     )
+from huggingface_hub import login
+
+login(token=hf_token, add_to_git_credential=False)
+del hf_token
+print('Hugging Face authentication: OK')
 import torch
 print('CUDA:', torch.cuda.is_available())
 
