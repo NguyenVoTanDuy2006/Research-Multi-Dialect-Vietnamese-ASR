@@ -13,7 +13,7 @@
     "task": "transcribe",
     "device": "auto",
     "compute_type": "float16",
-    "max_new_tokens": 128,
+    "max_new_tokens": 256,
     "num_beams": 1
   },
   "inference": {
@@ -71,7 +71,7 @@
     },
     "nli": {
       "model": "MoritzLaurer/mDeBERTa-v3-base-mnli-xnli",
-      "max_length": 256
+      "max_length": 512
     },
     "bertscore": {
       "model": "FacebookAI/xlm-roberta-large",

@@ -45,6 +45,8 @@ PYTHONPATH=../../../src python -m reimplement_cba run --config configs/vimd_phow
 
 For a smoke run, open [`notebooks/run_vimd_small.py`](notebooks/run_vimd_small.py) as a Python notebook in VS Code (`# %%` cells), or run it with `python notebooks/run_vimd_small.py`. It checks dependencies and dataset splits, then runs one CL round with one training epoch on the first three eligible train samples and the first three validation/test samples. Edit `VIMD_ROOT`, `SMOKE_SAMPLES_PER_SPLIT`, and the round/epoch settings in the script. The smoke metrics are for pipeline checking only.
 
+After a failed run, rerun the script's configuration cell to create a new output directory before retrying. The previous `run-summary.json` is not resumable.
+
 To use PhoWhisper-large with the same ViMD small dataset, select [`configs/vimd_phowhisper_large.json`](configs/vimd_phowhisper_large.json). It uses training batch size 1 with gradient accumulation 6, and batch size 1 for inference and semantic metrics. Set `CONFIG_FILENAME = 'vimd_phowhisper_large.json'` in the smoke script, or run the full workflow with:
 
 ```bash
@@ -65,6 +67,7 @@ Results are written under `output_dir`: `run-summary.json`, initial exclusions i
 - Fine-tuning accepts audio from 0.5 to 30 seconds. Records outside this range are excluded from training and from the validation subset passed to `Seq2SeqTrainer`; each round writes their IDs, split, duration, and reason to `outputs/.../preprocess/round-N-rejected.jsonl`. Full validation and test records remain available for long-form inference and checkpoint metrics.
 - AdaLoRA starts at rank 12 and targets rank 4; two curriculum rounds resume the previous adapter.
 - Validation checkpoint ordering is SemScore descending, then WER ascending. Test is reserved for final reporting.
+- The sample configs allow up to 256 newly generated tokens for short-form ASR and 512 tokens per NLI reference/hypothesis pair. Transformers may warn that its model `max_length` and the configured `max_new_tokens` are both set; `max_new_tokens` takes precedence. An NLI pair longer than 512 tokens still raises an explicit error; long transcripts need a separate segmentation policy before full-dataset evaluation.
 
 ## PhoWhisper fine-tuning and inference backends
 
