@@ -6,10 +6,10 @@
 #
 # Script này dùng trực tiếp `reimplement_cba.workflow.run`: baseline PhoWhisper, fine-tune AdaLoRA, lọc curriculum, chọn checkpoint trên validation rồi đánh giá test. Mặc định chạy **1 vòng CL × 1 epoch** trên tối đa 3 mẫu mỗi split để kiểm tra pipeline; đổi biến số mẫu hoặc hai biến vòng/epoch ở ô cấu hình để mở rộng. Mỗi lần tạo cấu hình sẽ dùng một thư mục output mới.
 #
-# Mở file `.py` trong VS Code/Kaggle để chạy từng ô `# %%`, hoặc chạy cả file bằng Python 3.11. Trên Kaggle, ô đầu clone source và cài dependency; output được lưu riêng trong `/kaggle/working/outputs/cba_whisper`. Dữ liệu ViMD small phải được gắn dưới Kaggle Input; script không tải dữ liệu.
+# Mở file `.py` trong VS Code/Kaggle để chạy từng ô `# %%`, hoặc chạy cả file bằng Python 3.11. Trên Kaggle, ô đầu clone hoặc cập nhật source và cài dependency; output được lưu riêng trong `/kaggle/working/outputs/cba_whisper`. Dữ liệu ViMD small phải được gắn dưới Kaggle Input; script không tải dữ liệu.
 
 # %% [markdown]
-# ## 0. Clone source và cài thư viện
+# ## 0. Clone/cập nhật source và cài thư viện
 #
 # Ô này kiểm tra `HF_TOKEN` từ biến môi trường hoặc Kaggle Secrets trước khi
 # tải model. Trên Kaggle, thêm secret tên `HF_TOKEN` và bật Internet. Checkout
@@ -21,7 +21,6 @@ from importlib.util import find_spec
 from pathlib import Path
 import importlib
 import os
-import shutil
 import subprocess
 import sys
 
@@ -49,27 +48,32 @@ os.environ['HF_TOKEN'] = hf_token
 print('HF_TOKEN available: True')
 
 script_path = Path(__file__).resolve() if '__file__' in globals() else None
-running_from_clone = script_path is not None and REPO_DIR in script_path.parents
 if KAGGLE_WORKING.is_dir():
-    if not running_from_clone:
-        if REPO_DIR.is_symlink():
-            raise ValueError(f'Không xóa symlink source: {REPO_DIR}')
-        if REPO_DIR.exists():
-            if not REPO_DIR.is_dir() or not (REPO_DIR / '.git').is_dir():
-                raise ValueError(f'Checkout cũ không phải Git repo, kiểm tra thủ công: {REPO_DIR}')
-            legacy_outputs = (REPO_DIR / 'outputs', REPO_DIR / PROJECT_RELATIVE / 'outputs')
-            if any(path.exists() for path in legacy_outputs):
-                raise RuntimeError(
-                    f'Checkout cũ còn output bên trong; chuyển output ra ngoài trước khi clone lại: {REPO_DIR}'
-                )
-            changes = subprocess.run(
-                ['git', '-C', str(REPO_DIR), 'status', '--porcelain'],
-                check=True, capture_output=True, text=True,
+    if REPO_DIR.is_symlink():
+        raise ValueError(f'Không cập nhật symlink source: {REPO_DIR}')
+    if REPO_DIR.exists():
+        if not REPO_DIR.is_dir() or not (REPO_DIR / '.git').is_dir():
+            raise ValueError(f'Checkout cũ không phải Git repo, kiểm tra thủ công: {REPO_DIR}')
+        current_branch = subprocess.run(
+            ['git', '-C', str(REPO_DIR), 'branch', '--show-current'],
+            check=True, capture_output=True, text=True,
+        ).stdout.strip()
+        if current_branch != REPO_BRANCH:
+            raise RuntimeError(
+                f'Checkout đang ở nhánh {current_branch!r}, cần {REPO_BRANCH!r}: {REPO_DIR}'
             )
-            if changes.stdout.strip():
-                raise RuntimeError(f'Checkout cũ có thay đổi chưa lưu, không xóa: {REPO_DIR}')
-            shutil.rmtree(REPO_DIR)
-            print('Đã xóa source clone cũ:', REPO_DIR)
+        changes = subprocess.run(
+            ['git', '-C', str(REPO_DIR), 'status', '--porcelain', '--untracked-files=no'],
+            check=True, capture_output=True, text=True,
+        )
+        if changes.stdout.strip():
+            raise RuntimeError(f'Checkout có thay đổi source chưa lưu; commit hoặc stash trước: {REPO_DIR}')
+        subprocess.run(
+            ['git', '-C', str(REPO_DIR), 'pull', '--ff-only', 'origin', REPO_BRANCH],
+            check=True,
+        )
+        print('Đã cập nhật source clone:', REPO_DIR)
+    else:
         subprocess.run(
             ['git', 'clone', '--depth', '1', '--branch', REPO_BRANCH,
              REPO_URL, str(REPO_DIR)],
