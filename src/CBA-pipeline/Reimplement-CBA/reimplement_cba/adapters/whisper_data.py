@@ -76,8 +76,10 @@ class PhoWhisperDataCollator:
         processor: Any,
         *,
         decoder_start_token_id: int | None = None,
+        input_features_dtype: Any | None = None,
     ) -> None:
         self.processor = processor
+        self.input_features_dtype = input_features_dtype
         if decoder_start_token_id is None:
             prefix_tokens = getattr(processor.tokenizer, "prefix_tokens", None)
             if prefix_tokens:
@@ -96,6 +98,10 @@ class PhoWhisperDataCollator:
             audio_features,
             return_tensors="pt",
         )
+        if self.input_features_dtype is not None:
+            batch["input_features"] = batch["input_features"].to(
+                dtype=self.input_features_dtype
+            )
 
         label_features = [{"input_ids": feature["labels"]} for feature in features]
         labels_batch = self.processor.tokenizer.pad(

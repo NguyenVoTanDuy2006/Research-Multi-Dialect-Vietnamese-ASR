@@ -277,6 +277,7 @@ class AdaLoRATrainer:
             data_collator=PhoWhisperDataCollator(
                 processor,
                 decoder_start_token_id=getattr(model.config, "decoder_start_token_id", None),
+                input_features_dtype=dtype,
             ),
             processing_class=processor,
             allocation_total_steps=total_steps,
