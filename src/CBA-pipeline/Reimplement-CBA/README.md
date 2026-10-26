@@ -2,6 +2,25 @@
 
 Reimplementation of the CBA-Whisper training flow for ViMD. The package is separate from the author's checkout in `../CBA-Whisper` and reuses the workspace's `mdv_asr_module` for ViMD dataset access.
 
+## Push the branch and clone it elsewhere
+
+From the workspace root on the development machine, publish this branch first:
+
+```bash
+git push -u origin research-CBA-Whisper
+```
+
+Then clone the branch on Kaggle or another machine:
+
+```bash
+git clone --branch research-CBA-Whisper --single-branch https://github.com/NguyenVoTanDuy2006/Research-Multi-Dialect-Vietnamese-ASR.git
+cd Research-Multi-Dialect-Vietnamese-ASR
+python -m pip install -e '.[data,train,semantic]'
+python src/CBA-pipeline/Reimplement-CBA/notebooks/run_vimd_small.py
+```
+
+The smoke script also shows the equivalent Kaggle Notebook commands. Set `VIMD_ROOT` if the ViMD small dataset is mounted at a different location. No GitHub token belongs in the script.
+
 ## Validate and inspect the workflow
 
 Run these commands from this directory:
@@ -24,7 +43,7 @@ From this directory, after installing the dependencies and mounting ViMD small:
 PYTHONPATH=../../../src python -m reimplement_cba run --config configs/vimd_phowhisper_small.json
 ```
 
-For a smoke run, open [`notebooks/run_vimd_small.py`](notebooks/run_vimd_small.py) as a Python notebook in VS Code (`# %%` cells), or run it with `python notebooks/run_vimd_small.py`. It checks dependencies and dataset splits before running one CL round with one training epoch; edit `VIMD_ROOT` and the round/epoch settings in the script.
+For a smoke run, open [`notebooks/run_vimd_small.py`](notebooks/run_vimd_small.py) as a Python notebook in VS Code (`# %%` cells), or run it with `python notebooks/run_vimd_small.py`. It checks dependencies and dataset splits, then runs one CL round with one training epoch on the first three eligible train samples and the first three validation/test samples. Edit `VIMD_ROOT`, `SMOKE_SAMPLES_PER_SPLIT`, and the round/epoch settings in the script. The smoke metrics are for pipeline checking only.
 
 `run` filters the training split, transcribes the retained training samples and full validation split with the unadapted PhoWhisper model, and computes baseline SemScore. Each curriculum round trains AdaLoRA, transcribes validation with every saved epoch checkpoint and the final adapter, ranks them by validation SemScore then WER, and scores the selected adapter on the current training pool. The adaptive rule chooses samples for the next round. The best round checkpoint is selected on validation; test is evaluated once for final reporting. `training.epochs` controls epochs **within** each round; `curriculum.max_rounds` controls the number of training rounds.
 

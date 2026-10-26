@@ -258,9 +258,20 @@ def validate_config(config: CBAConfig, *, check_data: bool = False) -> dict:
         adapter.close()
 
 
-def run(config: CBAConfig, *, runtime: WorkflowRuntime | None = None) -> dict[str, Any]:
+def run(
+    config: CBAConfig,
+    *,
+    runtime: WorkflowRuntime | None = None,
+    max_samples_per_split: int | None = None,
+) -> dict[str, Any]:
     """Run baseline, AdaLoRA curriculum rounds, checkpoint selection, and final test."""
     config.validate()
+    if max_samples_per_split is not None and (
+        isinstance(max_samples_per_split, bool)
+        or not isinstance(max_samples_per_split, int)
+        or max_samples_per_split < 1
+    ):
+        raise ValueError("max_samples_per_split must be a positive integer or None")
     runtime = runtime or WorkflowRuntime()
     output_dir = config.output_dir
     summary_path = output_dir / "run-summary.json"
@@ -274,14 +285,16 @@ def run(config: CBAConfig, *, runtime: WorkflowRuntime | None = None) -> dict[st
         vimd.validate_splits()
         splits = _split_records(list(vimd.open().index.records))
         train_pool, initial_rejected = _initial_train_pool(config, splits["train"])
+        train_pool = train_pool[:max_samples_per_split]
         write_predictions(
             initial_rejected,
             output_dir / "preprocess" / "initial-train-rejected.jsonl",
         )
-        validation = splits["validation"]
-        test = splits["test"]
+        validation = splits["validation"][:max_samples_per_split]
+        test = splits["test"][:max_samples_per_split]
         summary: dict[str, Any] = {
             "status": "running", "config": config.summary(),
+            "sample_limit_per_split": max_samples_per_split,
             "initial_train_count": len(train_pool),
             "initial_train_rejected_count": len(initial_rejected),
             "rounds": [],

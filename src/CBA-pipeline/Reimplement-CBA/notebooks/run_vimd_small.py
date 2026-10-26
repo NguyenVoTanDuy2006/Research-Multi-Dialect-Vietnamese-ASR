@@ -4,9 +4,22 @@
 # %% [markdown]
 # # Chạy thử CBA trên ViMD small
 #
-# Script này dùng trực tiếp `reimplement_cba.workflow.run`: baseline PhoWhisper, fine-tune AdaLoRA, lọc curriculum, chọn checkpoint trên validation rồi đánh giá test. Mặc định chạy **1 vòng CL × 1 epoch** để kiểm tra pipeline; đổi hai biến ở ô cấu hình thành `2` để chạy cấu hình 2 vòng × 2 epoch. Mỗi lần tạo cấu hình sẽ dùng một thư mục output mới.
+# Script này dùng trực tiếp `reimplement_cba.workflow.run`: baseline PhoWhisper, fine-tune AdaLoRA, lọc curriculum, chọn checkpoint trên validation rồi đánh giá test. Mặc định chạy **1 vòng CL × 1 epoch** trên tối đa 3 mẫu mỗi split để kiểm tra pipeline; đổi biến số mẫu hoặc hai biến vòng/epoch ở ô cấu hình để mở rộng. Mỗi lần tạo cấu hình sẽ dùng một thư mục output mới.
 #
 # Mở file `.py` trong VS Code để chạy từng ô `# %%`, hoặc chạy cả file bằng Python 3.11. Từ thư mục gốc của workspace, cài các thư viện cần cho backend Transformers: `python -m pip install -e '.[data,train,semantic]'`. Dữ liệu ViMD small phải có sẵn trên máy; script không tải dữ liệu.
+
+# %% [markdown]
+# ## 0. Lấy project về Kaggle hoặc máy mới
+#
+# Push nhánh `research-CBA-Whisper` từ máy phát triển lên GitHub trước. Trong Kaggle Notebook, chạy các lệnh sau ở một ô riêng rồi mở file script từ checkout vừa clone:
+#
+# ```python
+# !git clone --branch research-CBA-Whisper --single-branch https://github.com/NguyenVoTanDuy2006/Research-Multi-Dialect-Vietnamese-ASR.git /kaggle/working/Research-Multi-Dialect-Vietnamese-ASR
+# %cd /kaggle/working/Research-Multi-Dialect-Vietnamese-ASR
+# %pip install -e '.[data,train,semantic]'
+# ```
+#
+# Nếu chạy trực tiếp file `.py` sau khi clone, dùng `python src/CBA-pipeline/Reimplement-CBA/notebooks/run_vimd_small.py`. Không đặt token GitHub trong file này.
 
 # %% [markdown]
 # ## 1. Tìm project và kiểm tra thư viện
@@ -62,6 +75,7 @@ from reimplement_cba.config import CBAConfig
 VIMD_ROOT = None  # Ví dụ: '/data/vimd/small-vimd'
 SMOKE_ROUNDS = 1
 SMOKE_EPOCHS = 1
+SMOKE_SAMPLES_PER_SPLIT = 3
 
 base_config = CBAConfig.from_file(project_dir / 'configs/vimd_phowhisper_small.json')
 values = deepcopy(base_config.values)
@@ -79,6 +93,7 @@ print('Dữ liệu:', config.dataset_config_path)
 print('Root override:', values['dataset']['root_override'])
 print('Output:', config.output_dir)
 print('CL rounds:', SMOKE_ROUNDS, '| epochs/round:', SMOKE_EPOCHS)
+print('Số mẫu tối đa mỗi split:', SMOKE_SAMPLES_PER_SPLIT)
 
 # %% [markdown]
 # ## 3. Kiểm tra ViMD trước khi huấn luyện
@@ -101,12 +116,12 @@ with ViMDAdapter(config) as vimd:
 # %% [markdown]
 # ## 4. Chạy workflow
 #
-# Ô này thực sự fine-tune model và tính NLI, BERTScore, phonetic similarity. Với PhoWhisper-medium, thời gian chạy và bộ nhớ GPU có thể đáng kể dù đang dùng ViMD small. Workflow ghi từng giai đoạn vào `output_dir`; hãy dùng một cấu hình/output mới khi chạy lại.
+# Ô này fine-tune trên 3 mẫu train hợp lệ đầu tiên, dùng 3 mẫu đầu của validation và test, rồi tính NLI, BERTScore, phonetic similarity. Đây chỉ là smoke run; metrics trên 3 mẫu không đại diện cho toàn bộ ViMD small. Workflow ghi từng giai đoạn vào `output_dir`; hãy dùng một cấu hình/output mới khi chạy lại.
 
 # %%
 from reimplement_cba.workflow import run
 
-summary = run(config)
+summary = run(config, max_samples_per_split=SMOKE_SAMPLES_PER_SPLIT)
 print('Trạng thái:', summary['status'])
 print('Số vòng CL:', len(summary['rounds']))
 print('Checkpoint được chọn:', summary['final']['checkpoint'])

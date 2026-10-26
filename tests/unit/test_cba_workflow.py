@@ -173,6 +173,25 @@ class FakeRuntime:
 
 
 class WorkflowTests(unittest.TestCase):
+    def test_smoke_limit_uses_first_eligible_train_and_first_validation_test_records(self):
+        with TemporaryDirectory() as temporary:
+            runtime = FakeRuntime()
+            runtime.dataset.index.records.extend([
+                record("v2", "validation"), record("t2", "test"),
+            ])
+
+            summary = run(
+                make_config(temporary, rounds=1),
+                runtime=runtime,
+                max_samples_per_split=1,
+            )
+
+            self.assertEqual(summary["initial_train_count"], 1)
+            self.assertEqual(runtime.train_calls[0]["train_ids"], ["a"])
+            self.assertEqual(summary["baseline_validation"]["n_samples"], 1)
+            self.assertEqual(summary["final"]["test"]["n_samples"], 1)
+            self.assertEqual(summary["sample_limit_per_split"], 1)
+
     def test_run_cli_prints_summary_location_and_final_metrics(self):
         from reimplement_cba.cli import main
 
