@@ -49,6 +49,15 @@ print('HF_TOKEN available: True')
 
 script_path = Path(__file__).resolve() if '__file__' in globals() else None
 if KAGGLE_WORKING.is_dir():
+    loaded_cba_modules = [
+        name for name in sys.modules
+        if name == 'reimplement_cba' or name.startswith('reimplement_cba.')
+    ]
+    if loaded_cba_modules:
+        raise RuntimeError(
+            'Kernel đã nạp code CBA trước khi cập nhật source. Restart kernel, '
+            'rồi chạy lại notebook từ cell 0 để dùng code mới.'
+        )
     if REPO_DIR.is_symlink():
         raise ValueError(f'Không cập nhật symlink source: {REPO_DIR}')
     if REPO_DIR.exists():

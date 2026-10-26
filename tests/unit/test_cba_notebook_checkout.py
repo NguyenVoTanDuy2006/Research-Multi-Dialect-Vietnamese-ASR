@@ -5,6 +5,7 @@ import subprocess
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from types import SimpleNamespace
 
 
 NOTEBOOK = (
@@ -18,7 +19,9 @@ def git(*args: object) -> None:
     subprocess.run(["git", *(str(arg) for arg in args)], check=True, capture_output=True)
 
 
-def run_checkout_cell(working: Path, origin: Path) -> None:
+def run_checkout_cell(
+    working: Path, origin: Path, *, loaded_modules: dict[str, object] | None = None
+) -> None:
     source = ast.parse(NOTEBOOK.read_text(encoding="utf-8"))
     kaggle_block = next(
         node for node in source.body
@@ -45,11 +48,24 @@ def run_checkout_cell(working: Path, origin: Path) -> None:
         "PROJECT_RELATIVE": Path("src/CBA-pipeline/Reimplement-CBA"),
         "running_from_clone": False,
         "subprocess": subprocess,
+        "sys": SimpleNamespace(modules=loaded_modules or {}),
     }
     exec(code, scope)
 
 
 class NotebookCheckoutTests(unittest.TestCase):
+    def test_refuses_to_update_source_in_kernel_with_loaded_cba_modules(self):
+        with TemporaryDirectory() as directory:
+            working = Path(directory) / "working"
+            (working / "mdv_asr_source").mkdir(parents=True)
+
+            with self.assertRaisesRegex(RuntimeError, "Restart kernel"):
+                run_checkout_cell(
+                    working,
+                    Path(directory) / "origin.git",
+                    loaded_modules={"reimplement_cba": object()},
+                )
+
     def test_existing_checkout_fast_forwards_and_preserves_untracked_output(self):
         with TemporaryDirectory() as directory:
             root = Path(directory)
