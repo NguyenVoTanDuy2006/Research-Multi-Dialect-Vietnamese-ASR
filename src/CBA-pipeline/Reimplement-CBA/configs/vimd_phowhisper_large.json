@@ -1,0 +1,86 @@
+{
+  "run_id": "cba_vimd_small_phowhisper_large",
+  "dataset": {
+    "config_path": "../../../mdv_asr_module/configs/datasets/vimd_small.json",
+    "root_override": null,
+    "required_splits": ["train", "validation", "test"]
+  },
+  "model": {
+    "base_model": "vinai/PhoWhisper-large",
+    "processor_model": null,
+    "revision": null,
+    "language": "vi",
+    "task": "transcribe",
+    "device": "auto",
+    "compute_type": "float16",
+    "max_new_tokens": 128,
+    "num_beams": 1
+  },
+  "inference": {
+    "backend": "transformers",
+    "ct2_model_path": null,
+    "batch_size": 1,
+    "vad": {
+      "method": "pyannote",
+      "chunk_size_seconds": 30,
+      "onset": 0.3,
+      "offset": 0.3
+    }
+  },
+  "audio": {
+    "sample_rate": 16000,
+    "mono": true,
+    "min_duration_seconds": 0.5,
+    "max_duration_seconds": 30.0,
+    "long_form_max_duration_seconds": 600.0
+  },
+  "initial_rule": {
+    "reject_transcript_markers": ["(", ")", "[", "]", "{", "}"],
+    "english_sample_ids_manifest": "../manifests/vimd_english_sample_ids.json"
+  },
+  "training": {
+    "method": "adalora",
+    "epochs": 2,
+    "batch_size": 1,
+    "gradient_accumulation_steps": 6,
+    "learning_rate": 0.001,
+    "warmup_steps": 50,
+    "init_r": 12,
+    "target_r": 4,
+    "target_modules": ["k_proj", "q_proj", "v_proj", "out_proj", "fc1", "fc2"]
+  },
+  "curriculum": {
+    "max_rounds": 2,
+    "domain": "in_domain",
+    "threshold": 50.0,
+    "round_initialization": "resume_previous_adapter"
+  },
+  "checkpoint_selection": {
+    "primary_metric": "semscore",
+    "primary_direction": "max",
+    "tie_break_metric": "wer",
+    "tie_break_direction": "min"
+  },
+  "metrics": {
+    "batch_size": 1,
+    "device": "auto",
+    "weights": {
+      "nli": 1.0,
+      "bertscore_f1": 1.0,
+      "phonetic_similarity": 1.0
+    },
+    "nli": {
+      "model": "MoritzLaurer/mDeBERTa-v3-base-mnli-xnli",
+      "max_length": 256
+    },
+    "bertscore": {
+      "model": "FacebookAI/xlm-roberta-large",
+      "num_layers": 17
+    },
+    "phonetic": {
+      "vocabulary_path": null,
+      "transformations_path": null
+    }
+  },
+  "output_dir": "../outputs/cba_vimd_small_phowhisper_large"
+}

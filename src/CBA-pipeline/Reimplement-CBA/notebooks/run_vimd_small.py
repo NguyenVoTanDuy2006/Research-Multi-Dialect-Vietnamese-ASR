@@ -64,7 +64,7 @@ print('CUDA:', torch.cuda.is_available())
 # %% [markdown]
 # ## 2. Cấu hình chạy thử
 #
-# Đặt `VIMD_ROOT` thành thư mục ViMD small trên máy. Nếu chạy ở Kaggle và đường dẫn trong dataset config đã tồn tại, giữ `None`. Script giữ backend `transformers`; phần fine-tune vẫn dùng PhoWhisper-medium và AdaLoRA như cấu hình project.
+# Đặt `VIMD_ROOT` thành thư mục ViMD small trên máy. Nếu chạy ở Kaggle và đường dẫn trong dataset config đã tồn tại, giữ `None`. Đổi `CONFIG_FILENAME` sang `vimd_phowhisper_large.json` để chạy PhoWhisper-large. Script giữ backend `transformers` và AdaLoRA.
 
 # %%
 from copy import deepcopy
@@ -73,11 +73,12 @@ from uuid import uuid4
 from reimplement_cba.config import CBAConfig
 
 VIMD_ROOT = None  # Ví dụ: '/data/vimd/small-vimd'
+CONFIG_FILENAME = 'vimd_phowhisper_small.json'  # Đổi thành 'vimd_phowhisper_large.json' khi cần.
 SMOKE_ROUNDS = 1
 SMOKE_EPOCHS = 1
 SMOKE_SAMPLES_PER_SPLIT = 3
 
-base_config = CBAConfig.from_file(project_dir / 'configs/vimd_phowhisper_small.json')
+base_config = CBAConfig.from_file(project_dir / 'configs' / CONFIG_FILENAME)
 values = deepcopy(base_config.values)
 if VIMD_ROOT is not None:
     values['dataset']['root_override'] = str(Path(VIMD_ROOT).expanduser().resolve())
@@ -85,7 +86,7 @@ values['curriculum']['max_rounds'] = SMOKE_ROUNDS
 values['training']['epochs'] = SMOKE_EPOCHS
 values['inference']['backend'] = 'transformers'
 run_label = datetime.now().strftime('%Y%m%d-%H%M%S') + '-' + uuid4().hex[:6]
-values['run_id'] = f'script-vimd-small-{run_label}'
+values['run_id'] = f'script-{Path(CONFIG_FILENAME).stem}-{run_label}'
 values['output_dir'] = str(project_dir / 'outputs' / values['run_id'])
 config = CBAConfig(base_config.path, values)
 config.validate()

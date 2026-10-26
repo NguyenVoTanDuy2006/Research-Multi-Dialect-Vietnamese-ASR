@@ -45,6 +45,12 @@ PYTHONPATH=../../../src python -m reimplement_cba run --config configs/vimd_phow
 
 For a smoke run, open [`notebooks/run_vimd_small.py`](notebooks/run_vimd_small.py) as a Python notebook in VS Code (`# %%` cells), or run it with `python notebooks/run_vimd_small.py`. It checks dependencies and dataset splits, then runs one CL round with one training epoch on the first three eligible train samples and the first three validation/test samples. Edit `VIMD_ROOT`, `SMOKE_SAMPLES_PER_SPLIT`, and the round/epoch settings in the script. The smoke metrics are for pipeline checking only.
 
+To use PhoWhisper-large with the same ViMD small dataset, select [`configs/vimd_phowhisper_large.json`](configs/vimd_phowhisper_large.json). It uses training batch size 1 with gradient accumulation 6, and batch size 1 for inference and semantic metrics. Set `CONFIG_FILENAME = 'vimd_phowhisper_large.json'` in the smoke script, or run the full workflow with:
+
+```bash
+PYTHONPATH=../../../src python -m reimplement_cba run --config configs/vimd_phowhisper_large.json
+```
+
 `run` filters the training split, transcribes the retained training samples and full validation split with the unadapted PhoWhisper model, and computes baseline SemScore. Each curriculum round trains AdaLoRA, transcribes validation with every saved epoch checkpoint and the final adapter, ranks them by validation SemScore then WER, and scores the selected adapter on the current training pool. The adaptive rule chooses samples for the next round. The best round checkpoint is selected on validation; test is evaluated once for final reporting. `training.epochs` controls epochs **within** each round; `curriculum.max_rounds` controls the number of training rounds.
 
 Results are written under `output_dir`: `run-summary.json`, initial exclusions in `preprocess/`, validation and training predictions in `predictions/`, per-sample decisions in `curriculum/`, and adapters in `adapters/round-N/`. Use a fresh `output_dir` for each run; the command refuses to reuse an existing run summary or round-1 adapter. For faster-whisper or WhisperX, `run` prepares the required CT2 baseline and checkpoint artifacts automatically unless `inference.ct2_model_path` supplies an existing baseline artifact.
