@@ -236,19 +236,14 @@ if 'final' in report:
 # %% [markdown]
 # ## 6. Dọn source clone khỏi Kaggle Output
 #
-# Chạy sau khi workflow và phần xem báo cáo đã kết thúc. Chỉ xóa checkout
-# `/kaggle/working/mdv_asr_source`; giữ `OUTPUT_DIR` và các checkpoint trong
-# `/kaggle/working/outputs/cba_whisper/` để tải về từ Kaggle Output.
+# Chạy sau khi workflow và phần xem báo cáo đã kết thúc. Xóa toàn bộ checkout
+# `/kaggle/working/mdv_asr_source`, kể cả output nằm bên trong checkout.
+# `OUTPUT_DIR` ở `/kaggle/working/outputs/cba_whisper/` được giữ lại.
 
 # %%
 from mdv_asr_module.runtime.cleanup import NotebookOutputCleaner
 
 if KAGGLE_WORKING.is_dir():
-    legacy_outputs = (REPO_DIR / 'outputs', REPO_DIR / PROJECT_RELATIVE / 'outputs')
-    if any(path.exists() for path in legacy_outputs):
-        raise RuntimeError(
-            f'Source còn output bên trong; chuyển output ra ngoài trước khi dọn: {REPO_DIR}'
-        )
     removed = NotebookOutputCleaner(working_dir=KAGGLE_WORKING).remove_source_checkout(
         REPO_DIR, preserve_paths=[OUTPUT_DIR]
     )
