@@ -4,6 +4,7 @@ import json
 import sys
 import types
 import unittest
+from contextlib import nullcontext
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
@@ -25,6 +26,7 @@ from reimplement_cba.adapters.inference import (  # noqa: E402
     _ct2_runtime_settings,
     create_transcriber,
 )
+from reimplement_cba.adapters.whisper import PhoWhisperAdapter  # noqa: E402
 from reimplement_cba.config import CBAConfig  # noqa: E402
 from reimplement_cba.cli import _parser  # noqa: E402
 from reimplement_cba.stages.ct2_conversion import prepare_ct2_checkpoint  # noqa: E402
@@ -221,6 +223,58 @@ class WhisperXAdapterTests(unittest.TestCase):
             "chunk_size": 30, "vad_onset": 0.3, "vad_offset": 0.3
         })
         self.assertEqual(calls["transcribe"][1]["batch_size"], 8)
+
+
+class PhoWhisperGenerationSettingsTests(unittest.TestCase):
+    def test_short_form_generation_uses_new_token_limit_without_stored_max_length(self):
+        class FakeInputFeatures:
+            def to(self, device, dtype):
+                del device, dtype
+                return self
+
+        class FakeProcessor:
+            def __call__(self, waveform, **kwargs):
+                del waveform, kwargs
+                return {"input_features": FakeInputFeatures()}
+
+            def batch_decode(self, token_ids, skip_special_tokens):
+                del token_ids, skip_special_tokens
+                return ["xin chào"]
+
+        class FakeModel:
+            generation_config = types.SimpleNamespace(max_length=448)
+
+            def parameters(self):
+                return iter([types.SimpleNamespace(dtype="float16")])
+
+            def generate(self, **kwargs):
+                self.max_length_during_generation = self.generation_config.max_length
+                self.generation_kwargs = kwargs
+                return [[1, 2]]
+
+        class FakeTorch:
+            @staticmethod
+            def inference_mode():
+                return nullcontext()
+
+        adapter = PhoWhisperAdapter.__new__(PhoWhisperAdapter)
+        adapter.model = FakeModel()
+        adapter.processor = FakeProcessor()
+        adapter.device = "cpu"
+        adapter.min_duration_seconds = 0.5
+        adapter.max_duration_seconds = 600.0
+        adapter.language = "vi"
+        adapter.task = "transcribe"
+        adapter.max_new_tokens = 256
+        adapter.num_beams = 1
+
+        with patch.dict(sys.modules, {"torch": FakeTorch()}):
+            result = adapter.transcribe(DummyAudio())
+
+        self.assertEqual(result, "xin chào")
+        self.assertIsNone(adapter.model.max_length_during_generation)
+        self.assertEqual(adapter.model.generation_config.max_length, 448)
+        self.assertEqual(adapter.model.generation_kwargs["max_new_tokens"], 256)
 
 
 class CTranslate2PreparationTests(unittest.TestCase):

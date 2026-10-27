@@ -67,7 +67,7 @@ Results are written under `output_dir`: `run-summary.json`, initial exclusions i
 - Fine-tuning accepts audio from 0.5 to 30 seconds. Records outside this range are excluded from training and from the validation subset passed to `Seq2SeqTrainer`; each round writes their IDs, split, duration, and reason to `outputs/.../preprocess/round-N-rejected.jsonl`. Full validation and test records remain available for long-form inference and checkpoint metrics.
 - AdaLoRA starts at rank 12 and targets rank 4; two curriculum rounds resume the previous adapter.
 - Validation checkpoint ordering is SemScore descending, then WER ascending. Test is reserved for final reporting.
-- The sample configs allow up to 256 newly generated tokens for short-form ASR and 512 tokens per NLI reference/hypothesis pair. Transformers may warn that its model `max_length` and the configured `max_new_tokens` are both set; `max_new_tokens` takes precedence. An NLI pair longer than 512 tokens still raises an explicit error; long transcripts need a separate segmentation policy before full-dataset evaluation.
+- The sample configs allow up to 256 newly generated tokens for short-form ASR and 512 tokens per NLI reference/hypothesis pair. Short-form inference clears a legacy `generation_config.max_length` saved in some Whisper checkpoints while using `model.max_new_tokens`, avoiding the conflicting generation-length warning. NLI tokenization truncates pairs to `metrics.nli.max_length` so a long transcript does not exceed the model's input limit.
 
 ## PhoWhisper fine-tuning and inference backends
 

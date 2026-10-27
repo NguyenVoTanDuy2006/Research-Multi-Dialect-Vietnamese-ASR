@@ -168,8 +168,24 @@ class PhoWhisperAdapter:
             generation_kwargs["return_timestamps"] = True
         else:
             generation_kwargs["max_new_tokens"] = self.max_new_tokens
-        with torch.inference_mode():
-            token_ids = self.model.generate(**generation_kwargs)
+
+        # Whisper checkpoints may ship a legacy generation_config.max_length
+        # (e.g. 448). It conflicts with max_new_tokens even though the latter
+        # takes precedence. Clear that stored cap only for short-form calls;
+        # long-form Whisper generation keeps the checkpoint's original value.
+        generation_config = getattr(self.model, "generation_config", None)
+        restore_max_length = not is_long_form and generation_config is not None
+        original_max_length = (
+            generation_config.max_length if restore_max_length else None
+        )
+        if restore_max_length:
+            generation_config.max_length = None
+        try:
+            with torch.inference_mode():
+                token_ids = self.model.generate(**generation_kwargs)
+        finally:
+            if restore_max_length:
+                generation_config.max_length = original_max_length
         decoded = self.processor.batch_decode(token_ids, skip_special_tokens=True)
         return decoded[0].strip() if decoded else ""
 

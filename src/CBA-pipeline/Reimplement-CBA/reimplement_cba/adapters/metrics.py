@@ -233,13 +233,19 @@ class ViMDMetricsAdapter:
             premises = [text for ref, hyp in zip(refs, hyps) for text in (ref, hyp)]
             claims = [text for ref, hyp in zip(refs, hyps) for text in (hyp, ref)]
             encoded = self._nli_tokenizer(
-                premises, claims, padding=True, truncation=False, return_tensors="pt"
+                premises,
+                claims,
+                padding=True,
+                truncation=True,
+                max_length=self.nli_max_length,
+                return_tensors="pt",
             )
             sequence_length = int(encoded["input_ids"].shape[-1])
             if sequence_length > self.nli_max_length:
                 raise ValueError(
-                    f"NLI pair uses {sequence_length} tokens; configured maximum is "
-                    f"{self.nli_max_length}. Shorten the transcript or raise metrics.nli.max_length."
+                    f"NLI tokenizer returned {sequence_length} tokens after truncation to "
+                    f"metrics.nli.max_length={self.nli_max_length}; set that value within "
+                    "the tokenizer/model's supported maximum sequence length."
                 )
             encoded = {key: value.to(self.device) for key, value in encoded.items()}
             with torch.inference_mode():
