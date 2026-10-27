@@ -75,7 +75,8 @@
     },
     "bertscore": {
       "model": "FacebookAI/xlm-roberta-large",
-      "num_layers": 17
+      "num_layers": 17,
+      "long_text_policy": "chunk"
     },
     "phonetic": {
       "vocabulary_path": null,

@@ -16,6 +16,7 @@ from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any
 
+from .nli_chunking import build_nli_chunks
 from .vietnamese_phonetics import VietnamesePhoneticEncoder
 
 
@@ -59,6 +60,7 @@ class ViMDMetricsAdapter:
         nli_max_length: int = 256,
         bertscore_model: str = DEFAULT_BERTSCORE_MODEL,
         bertscore_layers: int = DEFAULT_BERTSCORE_LAYERS,
+        bertscore_long_text_policy: str = "chunk",
         batch_size: int = 8,
         device: str | None = None,
         nli_scorer: Any | None = None,
@@ -73,6 +75,8 @@ class ViMDMetricsAdapter:
             raise ValueError("nli_max_length must be at least 4")
         if bertscore_layers < 1:
             raise ValueError("bertscore_layers must be positive")
+        if bertscore_long_text_policy not in {"chunk", "error"}:
+            raise ValueError("bertscore_long_text_policy must be 'chunk' or 'error'")
         if (nli_tokenizer is None) != (nli_model_instance is None):
             raise ValueError("Pass both nli_tokenizer and nli_model_instance, or neither")
 
@@ -82,6 +86,7 @@ class ViMDMetricsAdapter:
         self.nli_max_length = int(nli_max_length)
         self.bertscore_model_name = bertscore_model
         self.bertscore_layers = int(bertscore_layers)
+        self.bertscore_long_text_policy = bertscore_long_text_policy
         self.batch_size = int(batch_size)
         self.device = device
         self._nli_scorer = nli_scorer
@@ -120,6 +125,7 @@ class ViMDMetricsAdapter:
             nli_max_length=int(nli.get("max_length", 256)),
             bertscore_model=bertscore.get("model", cls.DEFAULT_BERTSCORE_MODEL),
             bertscore_layers=int(bertscore.get("num_layers", cls.DEFAULT_BERTSCORE_LAYERS)),
+            bertscore_long_text_policy=bertscore.get("long_text_policy", "chunk"),
             batch_size=int(settings.get("batch_size", 8)),
             device=settings.get("device"),
             phonetic_encoder=VietnamesePhoneticEncoder(
@@ -226,26 +232,35 @@ class ViMDMetricsAdapter:
         self._load_nli()
         if self._nli_tokenizer is None:
             raise RuntimeError("NLI tokenizer was not loaded")
-        scores: list[float] = []
-        for start in range(0, len(references), self.batch_size):
-            refs = references[start:start + self.batch_size]
-            hyps = hypotheses[start:start + self.batch_size]
-            premises = [text for ref, hyp in zip(refs, hyps) for text in (ref, hyp)]
-            claims = [text for ref, hyp in zip(refs, hyps) for text in (hyp, ref)]
+        chunks_by_pair = [
+            build_nli_chunks(ref, hyp, self._nli_tokenizer, max_length=self.nli_max_length)
+            for ref, hyp in zip(references, hypotheses)
+        ]
+        chunk_scores = [[0.0] * len(chunks) for chunks in chunks_by_pair]
+        active = [
+            (pair_index, chunk_index, chunk)
+            for pair_index, chunks in enumerate(chunks_by_pair)
+            for chunk_index, chunk in enumerate(chunks)
+            if chunk.weight and chunk.reference and chunk.hypothesis
+        ]
+        for start in range(0, len(active), self.batch_size):
+            batch = active[start:start + self.batch_size]
+            premises = [text for _, _, chunk in batch
+                        for text in (chunk.reference, chunk.hypothesis)]
+            claims = [text for _, _, chunk in batch
+                      for text in (chunk.hypothesis, chunk.reference)]
             encoded = self._nli_tokenizer(
                 premises,
                 claims,
                 padding=True,
-                truncation=True,
-                max_length=self.nli_max_length,
+                truncation=False,
                 return_tensors="pt",
             )
             sequence_length = int(encoded["input_ids"].shape[-1])
             if sequence_length > self.nli_max_length:
                 raise ValueError(
-                    f"NLI tokenizer returned {sequence_length} tokens after truncation to "
-                    f"metrics.nli.max_length={self.nli_max_length}; set that value within "
-                    "the tokenizer/model's supported maximum sequence length."
+                    f"NLI aligned chunk uses {sequence_length} tokens, exceeding "
+                    f"metrics.nli.max_length={self.nli_max_length}; check tokenizer token counting."
                 )
             encoded = {key: value.to(self.device) for key, value in encoded.items()}
             with torch.inference_mode():
@@ -253,9 +268,17 @@ class ViMDMetricsAdapter:
                 logits = output.logits if hasattr(output, "logits") else output[0]
                 probabilities = torch.softmax(logits, dim=-1)[:, self._entailment_id]
             directional = probabilities.detach().float().cpu().tolist()
-            scores.extend((float(directional[i]) + float(directional[i + 1])) / 2
-                          for i in range(0, len(directional), 2))
-        return scores
+            for index, (pair_index, chunk_index, _) in enumerate(batch):
+                chunk_scores[pair_index][chunk_index] = (
+                    float(directional[2 * index]) + float(directional[2 * index + 1])
+                ) / 2
+        results = []
+        for chunks, scores in zip(chunks_by_pair, chunk_scores):
+            total_weight = sum(chunk.weight + chunk.unmatched_weight for chunk in chunks)
+            weighted_score = sum(chunk.weight * score
+                                 for chunk, score in zip(chunks, scores))
+            results.append(weighted_score / total_weight if total_weight else 0.0)
+        return results
 
     def _score_nli(self, references: list[str], hypotheses: list[str]) -> list[float]:
         if self._nli_scorer is None:
@@ -289,6 +312,7 @@ class ViMDMetricsAdapter:
                 num_layers=self.bertscore_layers,
                 device=self.device,
                 batch_size=self.batch_size,
+                long_text_policy=self.bertscore_long_text_policy,
                 scorer=self._bertscore_scorer,
             )
         return self._bertscore_metric
@@ -460,6 +484,7 @@ class ViMDMetricsAdapter:
             bertscore_metadata = {
                 "name": "BERTScore", "model": self.bertscore_model_name,
                 "revision": None, "num_layers": self.bertscore_layers,
+                "long_text_policy": self.bertscore_long_text_policy,
                 "status": "not_loaded",
             }
         else:
@@ -473,7 +498,8 @@ class ViMDMetricsAdapter:
                 "requested_revision": self.nli_revision,
                 "revision": self._nli_resolved_revision,
                 "max_length": self.nli_max_length,
-                "symmetry": "mean(P(entailment|ref,hyp), P(entailment|hyp,ref))",
+                "symmetry": "mean(P(entailment|ref,hyp), P(entailment|hyp,ref)) per aligned chunk",
+                "long_pair_strategy": "word-aligned token-budgeted chunks; unmatched tokens have zero-weighted score; token-weighted mean",
                 "status": "injected" if self._nli_scorer is not None else (
                     "loaded" if self._nli_model is not None else "not_loaded"
                 ),

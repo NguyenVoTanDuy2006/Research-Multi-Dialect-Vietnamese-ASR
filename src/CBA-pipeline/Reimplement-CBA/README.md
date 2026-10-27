@@ -68,7 +68,7 @@ Results are written under `output_dir`: `run-summary.json`, initial exclusions i
 - AdaLoRA starts at rank 12 and targets rank 4; two curriculum rounds resume the previous adapter.
 - PhoWhisper-medium configs use a per-device training batch of 1 with gradient accumulation of 6 to reduce activation memory. Trainer scales the effective batch by the visible GPU count.
 - Validation checkpoint ordering is SemScore descending, then WER ascending. Test is reserved for final reporting.
-- The sample configs allow up to 256 newly generated tokens for short-form ASR and 512 tokens per NLI reference/hypothesis pair. Short-form inference converts the token budget to a total decoder length that includes Whisper's four prefix tokens, avoiding a conflict with the checkpoint's saved generation length. NLI tokenization truncates pairs to `metrics.nli.max_length` so a long transcript does not exceed the model's input limit.
+- The sample configs allow up to 256 newly generated tokens for short-form ASR and 512 tokens per NLI reference/hypothesis pair. Short-form inference converts the token budget to a total decoder length that includes Whisper's four prefix tokens, avoiding a conflict with the checkpoint's saved generation length. Long NLI pairs are aligned by word, scored in non-truncated chunks, and combined with a token-weighted mean that penalizes unmatched words. BERTScore uses its existing chunked path when either transcript exceeds its separate 512-token limit. This changes SemScore for long pairs; compare scores near the curriculum threshold before a full run.
 
 ## PhoWhisper fine-tuning and inference backends
 
