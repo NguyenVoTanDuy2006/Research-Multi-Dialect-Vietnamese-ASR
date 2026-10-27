@@ -4,7 +4,7 @@
 # %% [markdown]
 # # Chạy thử CBA trên ViMD small
 #
-# Script này dùng trực tiếp `reimplement_cba.workflow.run`: baseline PhoWhisper, fine-tune AdaLoRA, lọc curriculum, chọn checkpoint trên validation rồi đánh giá test. Mặc định chạy **1 vòng CL × 1 epoch** trên tối đa 3 mẫu mỗi split để kiểm tra pipeline; đổi biến số mẫu hoặc hai biến vòng/epoch ở ô cấu hình để mở rộng. Mỗi lần tạo cấu hình sẽ dùng một thư mục output mới.
+# Script này dùng trực tiếp `reimplement_cba.workflow.run`: baseline PhoWhisper, fine-tune AdaLoRA, lọc curriculum, chọn checkpoint trên validation rồi đánh giá test. Mặc định chạy **2 vòng CL × 1 epoch** trên tối đa 3 mẫu mỗi split để kiểm tra pipeline; đổi biến số mẫu hoặc hai biến vòng/epoch ở ô cấu hình để mở rộng. Mỗi lần tạo cấu hình sẽ dùng một thư mục output mới.
 #
 # Mở file `.py` trong VS Code/Kaggle để chạy từng ô `# %%`, hoặc chạy cả file bằng Python 3.11. Trên Kaggle, ô đầu clone hoặc cập nhật source và cài dependency; output được lưu riêng trong `/kaggle/working/outputs/cba_whisper`. Dữ liệu ViMD small phải được gắn dưới Kaggle Input; script không tải dữ liệu.
 
@@ -147,7 +147,7 @@ from reimplement_cba.config import CBAConfig
 
 VIMD_ROOT = None  # Ví dụ: '/data/vimd/small-vimd'
 CONFIG_FILENAME = 'vimd_phowhisper_small.json'  # Đổi thành 'vimd_phowhisper_large.json' khi cần.
-SMOKE_ROUNDS = 1
+SMOKE_ROUNDS = 2
 SMOKE_EPOCHS = 1
 SMOKE_SAMPLES_PER_SPLIT = 3
 
