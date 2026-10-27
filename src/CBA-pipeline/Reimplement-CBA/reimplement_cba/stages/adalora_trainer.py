@@ -23,6 +23,7 @@ from reimplement_cba.adapters.whisper_data import (
 )
 from reimplement_cba.config import CBAConfig
 from reimplement_cba.stages.adalora_checkpoint import full_rank_save_config
+from reimplement_cba.stages.training_schedule import resolve_training_world_size
 
 
 def _find_adalora_model(model: Any) -> Any | None:
@@ -199,13 +200,17 @@ class AdaLoRATrainer:
         epochs = float(training_values["epochs"])
         batch_size = int(training_values["batch_size"])
         accumulation_steps = int(training_values.get("gradient_accumulation_steps", 1))
-        world_size = max(1, int(os.environ.get("WORLD_SIZE", "1")))
+        device, dtype, resolved_compute_type = self._runtime_device_dtype()
+        world_size = resolve_training_world_size(
+            device,
+            distributed_world_size=int(os.environ.get("WORLD_SIZE", "1")),
+            visible_gpu_count=(torch.cuda.device_count() if device == "cuda" else 0),
+        )
         updates_per_epoch = math.ceil(
             len(train_dataset) / (batch_size * world_size * accumulation_steps)
         )
         total_steps = max(1, math.ceil(updates_per_epoch * epochs))
 
-        device, dtype, resolved_compute_type = self._runtime_device_dtype()
         model = WhisperForConditionalGeneration.from_pretrained(
             model_checkpoint,
             dtype=dtype,

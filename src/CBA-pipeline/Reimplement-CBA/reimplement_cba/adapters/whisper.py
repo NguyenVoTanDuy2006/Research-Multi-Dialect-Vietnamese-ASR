@@ -167,26 +167,18 @@ class PhoWhisperAdapter:
         if is_long_form:
             generation_kwargs["return_timestamps"] = True
         else:
-            generation_kwargs["max_new_tokens"] = self.max_new_tokens
-
-        # Whisper checkpoints may ship a legacy generation_config.max_length
-        # (e.g. 448). It conflicts with max_new_tokens even though the latter
-        # takes precedence. Clear that stored cap only for short-form calls;
-        # long-form Whisper generation keeps the checkpoint's original value.
-        generation_config = getattr(self.model, "generation_config", None)
-        restore_max_length = not is_long_form and generation_config is not None
-        original_max_length = (
-            generation_config.max_length if restore_max_length else None
+            # Whisper's decoder prompt has four prefix tokens: start, language,
+            # task, and no-timestamps. max_length includes that prompt, so add
+            # it to the configured new-token budget. Supplying only max_length
+            # avoids a conflict with the checkpoint's own generation config.
+            generation_kwargs["max_length"] = self.max_new_tokens + 4
+        with torch.inference_mode():
+            token_ids = self.model.generate(**generation_kwargs)
+        decoded = self.processor.batch_decode(
+            token_ids,
+            skip_special_tokens=True,
+            clean_up_tokenization_spaces=False,
         )
-        if restore_max_length:
-            generation_config.max_length = None
-        try:
-            with torch.inference_mode():
-                token_ids = self.model.generate(**generation_kwargs)
-        finally:
-            if restore_max_length:
-                generation_config.max_length = original_max_length
-        decoded = self.processor.batch_decode(token_ids, skip_special_tokens=True)
         return decoded[0].strip() if decoded else ""
 
     def metadata(self) -> dict[str, Any]:

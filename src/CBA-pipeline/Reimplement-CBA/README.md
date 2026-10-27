@@ -66,8 +66,9 @@ Results are written under `output_dir`: `run-summary.json`, initial exclusions i
 - Initial training filtering removes configured transcript annotation markers and exact sample IDs in `manifests/vimd_english_sample_ids.json`. The English list is manually reviewed; it does not use automatic language detection. Filtering applies before the baseline and each AdaLoRA round.
 - Fine-tuning accepts audio from 0.5 to 30 seconds. Records outside this range are excluded from training and from the validation subset passed to `Seq2SeqTrainer`; each round writes their IDs, split, duration, and reason to `outputs/.../preprocess/round-N-rejected.jsonl`. Full validation and test records remain available for long-form inference and checkpoint metrics.
 - AdaLoRA starts at rank 12 and targets rank 4; two curriculum rounds resume the previous adapter.
+- PhoWhisper-medium configs use a per-device training batch of 1 with gradient accumulation of 6 to reduce activation memory. Trainer scales the effective batch by the visible GPU count.
 - Validation checkpoint ordering is SemScore descending, then WER ascending. Test is reserved for final reporting.
-- The sample configs allow up to 256 newly generated tokens for short-form ASR and 512 tokens per NLI reference/hypothesis pair. Short-form inference clears a legacy `generation_config.max_length` saved in some Whisper checkpoints while using `model.max_new_tokens`, avoiding the conflicting generation-length warning. NLI tokenization truncates pairs to `metrics.nli.max_length` so a long transcript does not exceed the model's input limit.
+- The sample configs allow up to 256 newly generated tokens for short-form ASR and 512 tokens per NLI reference/hypothesis pair. Short-form inference converts the token budget to a total decoder length that includes Whisper's four prefix tokens, avoiding a conflict with the checkpoint's saved generation length. NLI tokenization truncates pairs to `metrics.nli.max_length` so a long transcript does not exceed the model's input limit.
 
 ## PhoWhisper fine-tuning and inference backends
 

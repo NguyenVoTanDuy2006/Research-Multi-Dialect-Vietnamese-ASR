@@ -10,6 +10,9 @@ if str(CBA_ROOT) not in sys.path:
     sys.path.insert(0, str(CBA_ROOT))
 
 from reimplement_cba.stages.adalora_checkpoint import full_rank_save_config  # noqa: E402
+from reimplement_cba.stages.training_schedule import (  # noqa: E402
+    resolve_training_world_size,
+)
 
 
 class FullRankSaveConfigTests(unittest.TestCase):
@@ -28,6 +31,24 @@ class FullRankSaveConfigTests(unittest.TestCase):
             with full_rank_save_config(model):
                 raise RuntimeError("disk full")
         self.assertEqual(configuration.rank_pattern, {"layer": 3})
+
+
+class AdaLoRATrainingWorldSizeTests(unittest.TestCase):
+    def test_uses_visible_gpus_for_single_process_dataparallel(self):
+        self.assertEqual(
+            resolve_training_world_size(
+                "cuda", distributed_world_size=1, visible_gpu_count=2
+            ),
+            2,
+        )
+
+    def test_prefers_distributed_world_size(self):
+        self.assertEqual(
+            resolve_training_world_size(
+                "cuda", distributed_world_size=4, visible_gpu_count=2
+            ),
+            4,
+        )
 
 
 if __name__ == "__main__":

@@ -237,8 +237,11 @@ class PhoWhisperGenerationSettingsTests(unittest.TestCase):
                 del waveform, kwargs
                 return {"input_features": FakeInputFeatures()}
 
-            def batch_decode(self, token_ids, skip_special_tokens):
+            def batch_decode(
+                self, token_ids, skip_special_tokens, clean_up_tokenization_spaces
+            ):
                 del token_ids, skip_special_tokens
+                self.clean_up_tokenization_spaces = clean_up_tokenization_spaces
                 return ["xin chào"]
 
         class FakeModel:
@@ -272,9 +275,20 @@ class PhoWhisperGenerationSettingsTests(unittest.TestCase):
             result = adapter.transcribe(DummyAudio())
 
         self.assertEqual(result, "xin chào")
-        self.assertIsNone(adapter.model.max_length_during_generation)
+        self.assertEqual(adapter.model.max_length_during_generation, 448)
         self.assertEqual(adapter.model.generation_config.max_length, 448)
-        self.assertEqual(adapter.model.generation_kwargs["max_new_tokens"], 256)
+        self.assertEqual(adapter.model.generation_kwargs["max_length"], 260)
+        self.assertNotIn("max_new_tokens", adapter.model.generation_kwargs)
+        self.assertFalse(adapter.processor.clean_up_tokenization_spaces)
+
+    def test_medium_model_configs_keep_microbatch_small(self):
+        for filename in ("vimd_phowhisper_small.json", "vimd_phowhisper_medium.json"):
+            with self.subTest(config=filename):
+                config = json.loads(
+                    (CBA_ROOT / "configs" / filename).read_text(encoding="utf-8")
+                )
+                self.assertEqual(config["training"]["batch_size"], 1)
+                self.assertEqual(config["training"]["gradient_accumulation_steps"], 6)
 
 
 class CTranslate2PreparationTests(unittest.TestCase):

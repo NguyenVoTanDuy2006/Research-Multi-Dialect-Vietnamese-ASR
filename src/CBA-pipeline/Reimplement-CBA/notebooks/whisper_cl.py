@@ -175,6 +175,8 @@ print('Dữ liệu:', config.dataset_config_path)
 print('Root override:', values['dataset']['root_override'])
 print('Output:', OUTPUT_DIR)
 print('CL rounds:', SMOKE_ROUNDS, '| epochs/round:', SMOKE_EPOCHS)
+print('Train batch/device:', values['training']['batch_size'],
+      '| gradient accumulation:', values['training']['gradient_accumulation_steps'])
 print('Số mẫu tối đa mỗi split:', SMOKE_SAMPLES_PER_SPLIT)
 
 # %% [markdown]
